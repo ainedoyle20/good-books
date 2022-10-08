@@ -1,0 +1,29 @@
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: 'Josefin Sans';
+  background-color: rgba(244,241,234,0.5);
+}
+
+body::-webkit-scrollbar {
+  display: none;
+}
+
+* {
+  padding: 0px;
+  margin: 0px;
+  box-sizing: border-box;
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;  /* Firefox */
+}
+
+a {
+  color: "black";
+  text-decoration: none;
+}
+
+/* ::-webkit-scrollbar {
+  width: 0px;
+} */

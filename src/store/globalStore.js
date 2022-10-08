@@ -1,9 +1,10 @@
-import create from "zustand/react";
+import create from "zustand";
 import {persist} from "zustand/middleware";
 
 const globalStore = (set) => ({
   userDetails: null,
   otherUserDetails: null,
+  navSection: "",
 
   getUserDetails: async () => {
 
@@ -11,6 +12,10 @@ const globalStore = (set) => ({
 
   getOtherUserDetails: async () => {
 
+  },
+
+  updateNavSection: (navSection) => {
+    set({ navSection });
   }
 });
 
