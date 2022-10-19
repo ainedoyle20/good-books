@@ -1,12 +1,14 @@
 import React, {useState} from 'react';
 import { useLocation, Link } from 'react-router-dom';
 import { Stack, Typography, Box } from '@mui/material';
+import { GoogleLogin } from '@react-oauth/google';
 
 import useGlobalStore from '../../store/globalStore';
 import { SearchBar, Dropdown } from './';
+import { createOrGetUser } from '../../utils'
 
 const Navbar = () => {
-  const { userDetails } = useGlobalStore();
+  const { user, addUser, removeUser } = useGlobalStore();
   const [showSearchBar, setShowSearchBar] = useState(false);
   const [showDropdown, setShowDropdown] = useState(false);
   const {pathname} = useLocation();
@@ -54,7 +56,7 @@ const Navbar = () => {
           </Typography>
         </Link> 
 
-        {userDetails ? (
+        {user ? (
           <Stack
             direction="row"
             height="100%"
@@ -92,7 +94,7 @@ const Navbar = () => {
 
         <SearchBar showSearchBar={showSearchBar} setShowSearchBar={setShowSearchBar} />
 
-        {userDetails ? (
+        {user ? (
           <Box  
             onClick={() => setShowDropdown((prev) => !prev)}
             padding="0 10px"
@@ -105,24 +107,27 @@ const Navbar = () => {
             }}
           >
             <img 
-              src="https://s.gr-assets.com/assets/nophoto/user/u_60x60-267f0ca0ea48fd3acfd44b95afa64f01.png"
+              src={user?.image ? user?.image : "https://s.gr-assets.com/assets/nophoto/user/u_60x60-267f0ca0ea48fd3acfd44b95afa64f01.png"}
               alt="notifications logo"
               height="38px"
               width="38px"
-              style={{ borderRadius: "100%", border: "1px solid #9e795d"}}
+              style={{ borderRadius: "100%", border: `${user?.image ? "none" : "1px solid #9e795d"}`}}
             />
           </Box>
         ) : (
-          <button>Login with Google</button>
+          <GoogleLogin 
+            onSuccess={(response) => createOrGetUser(response, addUser, removeUser)}
+            onError={() => console.log('Error logging in')}
+          />
         )}
         
       </Stack>
 
       {showDropdown ? (
-        <Dropdown />
+        <Dropdown setShowDropdown={setShowDropdown} />
       ) : null}
 
-      {userDetails ? (
+      {user ? (
         <Stack 
           direction="row"
           position="fixed"

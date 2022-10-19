@@ -2,7 +2,10 @@ import React, {useState, useEffect} from 'react';
 import { Box, Typography } from '@mui/material';
 import { useLocation, useNavigate } from 'react-router-dom';
 
+import useGlobalStore from '../../store/globalStore';
+
 const ScrollButton = () => {
+  const { updateSidebarActiveOption } = useGlobalStore();
   const [showScrollBtn, setShowScrollBtn] = useState(false);
   const { pathname } = useLocation();
   const navigate = useNavigate();
@@ -24,7 +27,8 @@ const ScrollButton = () => {
 
 
   const handleScrollTopTop = () => {
-    navigate("/profile");
+    navigate("#profile_section");
+    updateSidebarActiveOption("profile_section");
     document.getElementById("profile_section").scrollIntoView({
       behavior: "smooth"
     });

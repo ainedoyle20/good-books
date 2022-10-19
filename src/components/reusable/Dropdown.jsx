@@ -1,26 +1,32 @@
 import React, {useState} from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { Stack, Typography, Divider } from '@mui/material';
+import { googleLogout } from '@react-oauth/google';
 
 import useGlobalStore from '../../store/globalStore';
 
-const Dropdown = () => {
-  const { updateNavSection } = useGlobalStore();
+const Dropdown = ({ setShowDropdown }) => {
+  const { updateNavSection, removeUser, user } = useGlobalStore();
   const [dropDownTitles] = useState(["Profile", "Friends", "Groups", "Discussions", "Messages", "Reading Challange"]);
   const navigate = useNavigate();
   const { pathname } = useLocation();
 
   const handleClick = (e) => {
     const sectionId = `${e.target.innerText.toLowerCase().replace(" ", "_")}_section`;
-    if (pathname.includes("/profile")) {
-      console.log('Already in profile page');
-      document.getElementById(sectionId).scrollIntoView({
-        behavior: 'smooth'
-      });
+    if (sectionId === 'profile_section') {
+      navigate(`/profile/${user._id}`);
+      window.location.reload();
     } else {
       updateNavSection(sectionId);
-      navigate("/profile");
+      setShowDropdown(false);
+      navigate(`/profile/${user._id}`);
     }
+  }
+
+  const handleLogout = () => {
+    googleLogout();
+    removeUser();
+    setShowDropdown(false);
   }
 
   return (
@@ -46,7 +52,9 @@ const Dropdown = () => {
 
       <Divider component="li" style={{ listStyle: "none", borderColor: "#382110", marginLeft: "10px", marginRight: "10px"}} />
 
-      <Typography padding="0 15px" width="100%" variant="h6" color="#382110" sx={{ ":hover": { textDecoration: "underline", cursor: "pointer" }}}>
+      <Typography padding="0 15px" width="100%" variant="h6" color="#382110" sx={{ ":hover": { textDecoration: "underline", cursor: "pointer" }}}
+        onClick={handleLogout}
+      >
         Logout
       </Typography>
     </Stack>

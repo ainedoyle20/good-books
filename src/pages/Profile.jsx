@@ -1,5 +1,5 @@
-import React, {useEffect} from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, {useEffect, useState} from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
 import { Stack } from '@mui/material';
 
 import useGlobalStore from '../store/globalStore';
@@ -9,29 +9,62 @@ import {
   GroupsSection,
   DiscussionsSection,
   MessagesSection,
-  ReadingChallangeSection 
+  ReadingChallangeSection,
 } from '../components/sections';
-import { Loader } from '../components/reusable';
+import { Loader, Sidebar } from '../components/reusable';
+import { fetchUserDetails, fetchAllUsers } from '../utils';
 
 const Profile = () => {
-  const { navSection, updateNavSection, userDetails } = useGlobalStore();
+  const { 
+    navSection,
+    updateNavSection,
+    user,
+    userDetails,
+    addUserDetails,
+    removeUserDetails,
+    updateSidebarActiveOption,
+    updateAllUsers, 
+  } = useGlobalStore();
+
   const navigate = useNavigate();
+  const {id} = useParams();
 
   useEffect(() => {
-    if (!userDetails) {
+    if (!user) {
       navigate("/");
     }
-  }, [userDetails]);
+  }, [user]);
 
   useEffect(() => {
     if (navSection?.length && userDetails !== null) {
       document.getElementById(navSection).scrollIntoView({
         behavior: 'smooth'
       });
+
+      updateSidebarActiveOption(navSection);
+      updateNavSection("");
+    } else {
+      return;
+    }
+  }, [userDetails]); 
+
+  useEffect(() => {
+    const getUserDetails = async () => {
+      fetchUserDetails(id, addUserDetails);
     }
 
-    updateNavSection("");
-  }, []); 
+    if (user) {
+      getUserDetails();
+    }
+
+    return () => {
+      removeUserDetails();
+    }
+  }, [id]);
+
+  useEffect(() => {
+    fetchAllUsers(updateAllUsers);
+  }, []);
 
   if (!userDetails) {
     return <Loader />
@@ -43,12 +76,12 @@ const Profile = () => {
         paddingTop: { xs: "120px", md: "60px"}
       }}
     >
+      <Sidebar />
       <ProfileSection />
       <FriendsSection />
       <GroupsSection />
       <DiscussionsSection />
       <MessagesSection />
-      <ReadingChallangeSection />
     </Stack>
   );
 }

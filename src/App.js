@@ -2,7 +2,7 @@ import React from 'react';
 import { Routes, Route } from 'react-router-dom';
 import { Box } from '@mui/material';
 
-import { Home, Profile, FriendProfile } from './pages';
+import { Home, Profile } from './pages';
 import { Navbar, ScrollButton } from './components/reusable';
 
 const App = () => {
@@ -11,8 +11,7 @@ const App = () => {
       <Navbar />
       <Routes>
         <Route path="/" element={<Home />} />
-        <Route path="/profile" element={<Profile />} />
-        <Route path="/profile/:id" element={<FriendProfile />} />
+        <Route path="/profile/:id" element={<Profile />} />
       </Routes>
       <ScrollButton />
     </Box>
