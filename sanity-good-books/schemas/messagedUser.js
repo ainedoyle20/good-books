@@ -7,12 +7,13 @@ export default {
       name: 'textMessages',
       title: 'Text Messages',
       type: 'array',
-      of: [{ type: 'message'}]
+      of: [{ type: 'datedMessages'}]
     },
     {
       name: 'messageFriend',
       title: 'Message Friend',
-      type: 'savedFriends',
+      type: 'reference',
+      to: [{ type: 'user' }]
     }
   ]
 }

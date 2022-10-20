@@ -1,15 +1,27 @@
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import { Box } from '@mui/material';
 
-const MessageItem = ({ message }) => {
-  const [textMessage] = useState(
-    message?.textMessages 
-    ? message?.textMessages[message?.textMessages?.length-1]?.text 
-    : ""
-  )
+const MessageItem = ({ message, handleClickedMessagedFriend }) => {
+  const [textMessage, setTextMessage] = useState("");
+
+  useEffect(() => {
+    
+    const lastDatedMessageObject = message.textMessages[message.textMessages.length -1];
+    const {messages} = lastDatedMessageObject;
+    if (messages?.length) {
+      setTextMessage(messages[messages.length-1]?.text);
+    } else {
+      setTextMessage("");
+    }
+
+  }, []);
+
   return (
     <Box
-      onClick={() => console.log("open message modal")}
+      onClick={() => {
+        console.log("open message modal: ", message);
+        handleClickedMessagedFriend(message);
+      }}
       sx={{
         display: "flex",
         alignItems: 'center',

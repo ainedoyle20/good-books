@@ -9,11 +9,8 @@ import postedBy from './postedBy';
 import group from './group';
 import discussion from './discussion';
 import message from './message';
-import savedFriends from './savedFriends';
-import savedGroups from './savedGroups';
-import savedDiscussions from './savedDiscussions';
-import savedBook from './savedBook';
 import messagedUser from './messagedUser';
+import datedMessages from './datedMessages';
 
 // Then we give our schema to the builder and provide the result to Sanity
 export default createSchema({
@@ -28,10 +25,7 @@ export default createSchema({
     group,
     discussion,
     message,
-    savedFriends,
-    savedGroups,
-    savedDiscussions,
-    savedBook,
     messagedUser,
+    datedMessages
   ]),
 })

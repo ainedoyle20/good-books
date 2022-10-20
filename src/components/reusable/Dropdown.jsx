@@ -6,21 +6,15 @@ import { googleLogout } from '@react-oauth/google';
 import useGlobalStore from '../../store/globalStore';
 
 const Dropdown = ({ setShowDropdown }) => {
+  console.log("open");
   const { updateNavSection, removeUser, user } = useGlobalStore();
   const [dropDownTitles] = useState(["Profile", "Friends", "Groups", "Discussions", "Messages", "Reading Challange"]);
   const navigate = useNavigate();
   const { pathname } = useLocation();
 
   const handleClick = (e) => {
-    const sectionId = `${e.target.innerText.toLowerCase().replace(" ", "_")}_section`;
-    if (sectionId === 'profile_section') {
-      navigate(`/profile/${user._id}`);
-      window.location.reload();
-    } else {
-      updateNavSection(sectionId);
-      setShowDropdown(false);
-      navigate(`/profile/${user._id}`);
-    }
+    navigate(`/profile/${user._id}`);
+    window.location.reload();
   }
 
   const handleLogout = () => {
@@ -31,7 +25,7 @@ const Dropdown = ({ setShowDropdown }) => {
 
   return (
     <Stack
-      position="absolute"
+      position="fixed"
       top="60px"
       right="5px"
       spacing={2}
@@ -44,11 +38,9 @@ const Dropdown = ({ setShowDropdown }) => {
         backgroundColor: "#FFFFFF",
       }}
     >
-      {dropDownTitles.map((title, idx) => (
-        <Typography key={`${title}${idx}`} onClick={(e) => handleClick(e)} padding="0 15px" width="100%" variant="h6" color="#382110" sx={{ ":hover": { textDecoration: "underline", cursor: "pointer"}}}>
-          {title}
-        </Typography>
-      ))}
+      <Typography onClick={(e) => handleClick(e)} padding="0 15px" width="100%" variant="h6" color="#382110" sx={{ ":hover": { textDecoration: "underline", cursor: "pointer"}}}>
+        Profile
+      </Typography>
 
       <Divider component="li" style={{ listStyle: "none", borderColor: "#382110", marginLeft: "10px", marginRight: "10px"}} />
 

@@ -4,7 +4,7 @@ import { Box, Typography } from '@mui/material';
 
 import { befriendMember, unfriendMember } from "../../utils";
 
-const FriendItem = ({ member, showFriends, user, userDetails, inMessages }) => {
+const FriendItem = ({ member, showFriends, user, userDetails, inMessages, handleClickedFriend }) => {
   const {id} = useParams();
   const navigate = useNavigate();
 
@@ -30,8 +30,10 @@ const FriendItem = ({ member, showFriends, user, userDetails, inMessages }) => {
     <Box
       key={member?._id}
       onClick={() => {
-        navigate(`/profile/${member?._id}`);
-        window.location.reload();
+        if (!inMessages) {
+          navigate(`/profile/${member?._id}`);
+          window.location.reload();
+        } 
       }}
       sx={{
         display: "flex",
@@ -41,7 +43,7 @@ const FriendItem = ({ member, showFriends, user, userDetails, inMessages }) => {
         borderTop: '1px solid #382110',
         borderBottom: '1px solid #382110',
         ':hover': { borderTop: '3px solid #382110', borderBottom: '3px solid #382110'},
-        cursor: 'pointer',
+        cursor: inMessages ? "default" : 'pointer',
       }}
     >
       <img 
@@ -53,7 +55,7 @@ const FriendItem = ({ member, showFriends, user, userDetails, inMessages }) => {
       />
 
       <Box component="span" 
-        sx={{ fontSize: 20, width: '300px', cursor: 'pointer' }}
+        sx={{ fontSize: 20, width: '300px' }}
       >
         {member?.userName}
       </Box>
@@ -65,12 +67,14 @@ const FriendItem = ({ member, showFriends, user, userDetails, inMessages }) => {
               onClick={(e) => {
                 e.stopPropagation();
                 console.log("open message modal")
+                handleClickedFriend(member._id);
               }}
               sx={{
                 padding: '5px 10px',
                 borderRadius: "10%",
                 fontSize: '18px',
-                backgroundColor: "#efebe9"
+                backgroundColor: "#efebe9",
+                cursor: 'pointer'
               }}
             >
               Message

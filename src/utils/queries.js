@@ -53,12 +53,15 @@ export const userDetailsQuery = (id) => {
       },
       textMessages[]{
         _key,
-        postedBy->{
-          _id,
-          userName,
-          image,
-        },
-        text
+        messageDate,
+        messages[]{
+          postedBy->{
+            _id,
+            userName,
+            image,
+          },
+          text
+        }
       }
     },
     readingChallange,

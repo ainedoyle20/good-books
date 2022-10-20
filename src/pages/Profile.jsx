@@ -46,7 +46,7 @@ const Profile = () => {
     } else {
       return;
     }
-  }, [userDetails]); 
+  }, []); 
 
   useEffect(() => {
     const getUserDetails = async () => {
@@ -66,7 +66,7 @@ const Profile = () => {
     fetchAllUsers(updateAllUsers);
   }, []);
 
-  if (!userDetails) {
+  if (!userDetails || !user) {
     return <Loader />
   }
 

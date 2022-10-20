@@ -46,6 +46,7 @@ export const fetchUserDetails = async (id, setUserDetails) => {
   try {
     const data = await client.fetch(query);
     setUserDetails(data[0]);
+    return data[0];
   } catch (error) {
     console.log("error fetching user details: ", error);
   }
@@ -110,7 +111,7 @@ export const createGroup = async (userId, groupName, groupMembers, isPublic) => 
   const members = groupMembers.map((memberId) => (
     {
       _key: uuidv4(),
-      _type: 'savedFriends',
+      _type: 'reference',
       _ref: `${memberId}`
     }
   ));
@@ -137,7 +138,7 @@ export const createGroup = async (userId, groupName, groupMembers, isPublic) => 
         .setIfMissing({ groups: [] }).insert("after", "groups[-1]", [{
           _key: uuidv4(),
           _ref: _id,
-          _type: 'savedGroups',
+          _type: 'reference',
         }])
         .commit()
     }));
@@ -216,4 +217,49 @@ export const deleteGroups = async (selectedGroupsArray) => {
   // } catch (error) {
   //   console.log('Error deleting groups: ', error);
   // }
+}
+
+export const createMessageObject = async (userId, friendId) => {
+  const ids = [`${userId}`, `${friendId}`];
+  const uniqueKey = uuidv4();
+  const datedMessagesKey = uuidv4();
+  // const messageObj = {
+  //   _key: uuidv4(),
+  //   _type: 'messagedUser',
+  //   messageFriend: {
+  //     _ref: friendId,
+  //     _type: 'savedFriends',
+  //   },
+  //   textMessages: [],
+  // }
+
+  try {
+    const data = await Promise.all(ids.map(async (id, idx) => (
+      await client.patch(id)
+        .setIfMissing({ messages: []})
+        .insert("after", "messages[-1]", [{
+          _key: uniqueKey,
+          _type: 'messagedUser',
+          messageFriend: {
+            _ref: idx === 0 ? ids[1] : ids[0],
+            _type: 'reference',
+          },
+          textMessages: [
+            {
+              _type: 'datedMessages',
+              _key: datedMessagesKey,
+              messageDate: new Date().toString(),
+              messages: [],
+            }
+          ],
+        }])
+        .commit()
+    )));
+
+    const messageKey = data[0]?.messages?.filter((obj) => obj._key === uniqueKey);
+    console.log("messageKey: ", messageKey[0]?._key);
+    return messageKey[0]?._key;
+  } catch (error) {
+    console.log("Error creating messageObject: ", error);
+  }
 }

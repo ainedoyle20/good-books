@@ -17,19 +17,28 @@ export default {
       name: 'members',
       title: 'Members',
       type: 'array',
-      of: [{ type: 'savedFriends' }],
+      of: [{
+        type: 'reference',
+        to: [{ type: 'user' }]
+      }],
     },
     {
       name: 'removedMembers',
       title: 'Removed Members',
       type: 'array',
-      of: [{ type: 'savedFriends'}],
+      of: [{
+        type: 'reference',
+        to: [{ type: 'user' }]
+      }],
     },
     {
       name: 'discussions',
       title: 'Discussions',
       type: 'array',
-      of: [{ type: 'savedDiscussions' }],
+      of: [{
+        type: 'reference',
+        to: [{ type: 'discussion'}]
+      }],
     },
     {
       name: 'public',

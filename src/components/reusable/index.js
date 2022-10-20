@@ -9,3 +9,4 @@ export { default as CreateGroupModal } from './CreateGroupModal';
 export { default as FriendItem } from './FriendItem';
 export { default as DiscussionItem } from './DiscussionItem';
 export { default as MessageItem } from './MessageItem';
+export { default as MessageModal } from './MessageModal';

@@ -22,7 +22,10 @@ export default {
       name: 'participants',
       title: 'Participants',
       type: 'array',
-      of: [{ type: 'savedFriends' }],
+      of: [{
+        type: 'reference',
+        to: [{ type: 'user' }]
+      }],
     },
     {
       name: 'contributions',

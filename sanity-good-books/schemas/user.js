@@ -17,31 +17,46 @@ export default {
       name: 'readShelf',
       title: 'Read Shelf',
       type: 'array',
-      of: [{ type: 'savedBook' }],
+      of: [{
+        type: 'reference',
+        to: [{ type: 'bookDetails'}]
+      }],
     },
     {
       name: 'readingShelf',
       title: 'Currently Reading Shelf',
       type: 'array',
-      of: [{ type: 'savedBook' }],
+      of: [{
+        type: 'reference',
+        to: [{ type: 'bookDetails'}]
+      }],
     },
     {
       name: 'wantToReadShelf',
       title: 'Want To Read Shelf',
       type: 'array',
-      of: [{ type: 'savedBook' }],
+      of: [{
+        type: 'reference',
+        to: [{ type: 'bookDetails'}]
+      }],
     },
     {
       name: 'friends',
       title: 'Friends',
       type: 'array',
-      of: [{ type: 'savedFriends'}]
+      of: [{
+        type: 'reference',
+        to: [{ type: 'user' }]
+      }]
     },
     {
       name: 'groups',
       title: 'Groups',
       type: 'array',
-      of: [{ type: 'savedGroups'}],
+      of: [{
+        type: 'reference',
+        to: [{ type: 'group'}]
+      }],
     },
     {
       name: 'messages',
