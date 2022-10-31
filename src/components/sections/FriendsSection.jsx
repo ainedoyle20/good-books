@@ -4,7 +4,8 @@ import { BsChevronBarUp, BsChevronBarDown } from 'react-icons/bs';
 import { useParams } from 'react-router-dom';
 
 import useGlobalStore from '../../store/globalStore';
-import { FriendItem } from '../reusable'
+import { FriendItem, ReqFriendItem } from '../reusable'
+import { test } from '../../utils';
 
 const FriendsSection = () => {
   const { allUsers, userDetails, user } = useGlobalStore();
@@ -12,6 +13,7 @@ const FriendsSection = () => {
   const {id} = useParams();
 
   const [showFriends, setShowFriends] = useState(true);
+  const [showFriendReqs, setShowFriendReqs] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const [filteredFriends, setFilteredFriends] = useState(userDetails?.friends ? userDetails?.friends : []);
   const [filteredMembers, setFilteredMembers] = useState(allUsers.filter((member) => member?._id !== id));
@@ -29,6 +31,11 @@ const FriendsSection = () => {
     }
 
   }, [searchTerm]);
+
+  // useEffect(() => {
+  //   console.log('testing')
+  //   test();
+  // }, [])
 
   const scrollRef = useRef(null);
 
@@ -57,12 +64,13 @@ const FriendsSection = () => {
           <Typography
             onClick={() => {
               setShowFriends(true);
+              setShowFriendReqs(false);
               setSearchTerm("");
               setFilteredFriends(userDetails?.friends ? userDetails?.friends : []);
             }}
             sx={{
               fontSize: 25,
-              textDecoration: showFriends ? 'underline' : 'none',
+              textDecoration: showFriends && !showFriendReqs ? 'underline' : 'none',
               margin: '0 20px',
               color: '#382110',
               fontWeight: '300',
@@ -74,12 +82,13 @@ const FriendsSection = () => {
           <Typography
             onClick={() => {
               setShowFriends(false);
+              setShowFriendReqs(false);
               setSearchTerm("");
               setFilteredMembers(allUsers.filter((member) => member?._id !== id));
             }}
             sx={{
               fontSize: 25,
-              textDecoration: !showFriends ? 'underline' : 'none',
+              textDecoration: !showFriends && !showFriendReqs ? 'underline' : 'none',
               margin: '0 20px',
               color: '#382110',
               fontWeight: '300',
@@ -88,40 +97,62 @@ const FriendsSection = () => {
           >
             users
           </Typography>
+          {user._id === id ? (
+            <Typography
+              onClick={() => {
+                setShowFriendReqs(true);
+              }}
+              sx={{
+                fontSize: 25,
+                textDecoration: showFriendReqs ? 'underline' : 'none',
+                margin: '0 20px',
+                color: '#382110',
+                fontWeight: '300',
+                cursor: 'pointer',
+              }}
+            >
+              requested
+            </Typography>
+          ) : (
+            null
+          )}
         </Box>
 
-        <Stack width="100%">
-          <Box sx={{ position: 'relative', backgroundColor: 'white', width: "40%"}}>
-            <input
-              type="text"
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              placeholder={showFriends ? "Search friends..." : "Search users..."}
-              style={{
-                position: "relative",
-                width: "80%",
-                height: '100%',
-                padding: "10px 5px",
-                fontSize: '18px',
-                outline: 'none',
-                border: 'none',
-              }}
-            />
+        {!showFriendReqs && 
+          <Stack width="100%">
+            <Box sx={{ position: 'relative', backgroundColor: 'white', width: "40%"}}>
+              <input
+                type="text"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                placeholder={showFriends ? "Search friends..." : "Search users..."}
+                style={{
+                  position: "relative",
+                  width: "80%",
+                  height: '100%',
+                  padding: "10px 5px",
+                  fontSize: '18px',
+                  outline: 'none',
+                  border: 'none',
+                }}
+              />
 
-            <img
-              src="https://s.gr-assets.com/assets/layout/header/icn_nav_search.svg"
-              alt="search"
-              height="20px"
-              width="20px"
-              style={{ 
-                position: 'absolute',
-                right: 10,
-                top: "10px",
-              }}
-            />
-          </Box>
-          
-        </Stack>
+              <img
+                src="https://s.gr-assets.com/assets/layout/header/icn_nav_search.svg"
+                alt="search"
+                height="20px"
+                width="20px"
+                style={{ 
+                  position: 'absolute',
+                  right: 10,
+                  top: "10px",
+                }}
+              />
+            </Box>
+            
+          </Stack>
+        }
+        
       </Stack>
 
       <Box component="span" fontSize={40} sx={{ cursor: 'pointer', marginBottom: 2}}
@@ -145,7 +176,7 @@ const FriendsSection = () => {
         }}
         
       >
-        {showFriends ? 
+        {showFriends && !showFriendReqs ? 
           filteredFriends.length ?
             filteredFriends.map((friend) => (
               <FriendItem 
@@ -203,7 +234,7 @@ const FriendsSection = () => {
           : null   
         }
 
-        {!showFriends ? (
+        {!showFriends && !showFriendReqs ? (
           filteredMembers.length ? (
             filteredMembers.map((member) => (
               <FriendItem 
@@ -240,6 +271,13 @@ const FriendsSection = () => {
             >This application has no other members</Typography>
           )
           ) : null
+        }
+
+        {showFriendReqs 
+          ? userDetails.friendRequests?.map((friendReq) => (
+            <ReqFriendItem key={friendReq._id} member={friendReq} user={user} />
+          ))
+          : null
         }
       </Stack>  
       

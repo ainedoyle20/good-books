@@ -7,6 +7,7 @@ export { default as Sidebar } from './Sidebar';
 export { default as GroupItem } from './GroupItem';
 export { default as CreateGroupModal } from './CreateGroupModal';
 export { default as FriendItem } from './FriendItem';
+export { default as ReqFriendItem } from './ReqFriendItem';
 export { default as DiscussionItem } from './DiscussionItem';
 export { default as MessageItem } from './MessageItem';
 export { default as MessageModal } from './MessageModal';

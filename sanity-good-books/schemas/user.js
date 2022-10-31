@@ -50,6 +50,24 @@ export default {
       }]
     },
     {
+      name: 'requestedFriends',
+      title: 'Requested Friends',
+      type: 'array',
+      of: [{
+        type: 'reference',
+        to: [{ type: 'user' }]
+      }]
+    },
+    {
+      name: 'friendRequests',
+      title: 'friendRequests',
+      type: 'array',
+      of: [{
+        type: 'reference',
+        to: [{ type: 'user' }]
+      }]
+    },
+    {
       name: 'groups',
       title: 'Groups',
       type: 'array',
@@ -59,8 +77,8 @@ export default {
       }],
     },
     {
-      name: 'messages',
-      title: 'Messages',
+      name: 'messagedUsers',
+      title: 'Messaged Users',
       type: 'array',
       of: [{ type: 'messagedUser'}]
     },

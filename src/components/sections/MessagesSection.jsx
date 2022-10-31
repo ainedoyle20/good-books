@@ -8,14 +8,15 @@ import { FriendItem, MessageItem, MessageModal } from '../reusable';
 import { createMessageObject, fetchUserDetails } from '../../utils';
 
 const MessagesSection = () => {
-  const { user, userDetails, addUserDetails, navSection } = useGlobalStore();
+  const { user, userDetails, addUserDetails } = useGlobalStore();
+  // console.log(userDetails.messagedUsers);
   const {id} = useParams();
   const ref = useRef();
 
   const [showMessageModal, setShowMessageModal] = useState(false);
   const [messageObject, setMessageObject] = useState(null);
   const [showMessages, setShowMessages] = useState(true);
-  const [filteredMessageFriends, setFilteredMessageFriends] = useState(userDetails?.messages || [])
+  const [filteredMessageFriends, setFilteredMessageFriends] = useState(userDetails?.messagedUsers || [])
   const [filteredFriends, setFilteredFriends] = useState(userDetails?.friends || []);
   const [searchTerm, setSearchTerm] = useState("");
 
@@ -75,8 +76,8 @@ const MessagesSection = () => {
       
       if (messageKey) {
         const updatedUserDetails = await fetchUserDetails(user._id, addUserDetails);
-        console.log("updatedUserDetails: ", updatedUserDetails?.messages);
-        const message = updatedUserDetails?.messages?.filter((obj) => (
+        console.log("updatedUserDetails: ", updatedUserDetails?.messagedUsers);
+        const message = updatedUserDetails?.messagedUsers?.filter((obj) => (
           obj._key === messageKey
         ));
         console.log("message[0]: ", message[0]);
@@ -101,7 +102,22 @@ const MessagesSection = () => {
       display="flex"
       alignItems="center"
       justifyContent="center"
+      position="relative"
     >
+      <Typography
+        position="absolute"
+        top="90px"
+        right="70px"
+        color="black"
+        fontSize="20px"
+        onClick={() => setShowMessageModal(false)}
+        sx={{
+          cursor: "pointer",
+          display: showMessageModal ? "block" : "none",
+        }}
+      >
+        Back
+      </Typography>
       
       {!showMessageModal ? (
         <>
@@ -118,7 +134,7 @@ const MessagesSection = () => {
                 onClick={() => {
                   setShowMessages(true);
                   setSearchTerm("");
-                  setFilteredMessageFriends(userDetails?.messages || []);
+                  setFilteredMessageFriends(userDetails?.messagedUsers || []);
                 }}
                 sx={{
                   fontSize: 25,
@@ -206,10 +222,10 @@ const MessagesSection = () => {
           >
             {showMessages ? (
               filteredMessageFriends?.length ?
-                filteredMessageFriends.map((message) => (
+                filteredMessageFriends.map((messagedFriend) => (
                   <MessageItem
-                    key={message._key}
-                    message={message}
+                    key={messagedFriend._key}
+                    message={messagedFriend}
                     handleClickedMessagedFriend={handleClickedMessagedFriend}
                   />
                 )) 

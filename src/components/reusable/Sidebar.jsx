@@ -16,6 +16,7 @@ const Sidebar = () => {
         height: '100%',
         padding: '10px',
         backgroundColor: '#f4f1ea',
+        zIndex: 1000
       }}
     >
       {sidebarOptions.map((option, idx) => (

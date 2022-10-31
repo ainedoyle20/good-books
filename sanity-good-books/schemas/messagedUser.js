@@ -4,16 +4,16 @@ export default {
   type: 'document',
   fields: [
     {
-      name: 'textMessages',
-      title: 'Text Messages',
-      type: 'array',
-      of: [{ type: 'datedMessages'}]
-    },
-    {
       name: 'messageFriend',
       title: 'Message Friend',
       type: 'reference',
       to: [{ type: 'user' }]
-    }
+    },
+    {
+      name: 'datedMessages',
+      title: 'Dated Messages',
+      type: 'array',
+      of: [{ type: 'datedMessages' }],
+    },
   ]
 }

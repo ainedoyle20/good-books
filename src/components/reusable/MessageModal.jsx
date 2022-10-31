@@ -1,45 +1,60 @@
 import React, {useState, useRef} from 'react';
 import { Stack, Box, Typography } from '@mui/material';
-import { BsChevronBarUp, BsChevronBarDown } from 'react-icons/bs'
+import { BsChevronBarUp, BsChevronBarDown } from 'react-icons/bs';
+
+import CreateMessage from './CreateMessage';
+import { sendMessage } from '../../utils';
 
 const MessageModal = ({ messageObj, setShowMessageModal, user }) => {
-  console.log("messageObj: ", messageObj, "user: ", user);
-  const [searchTerm, setSearchTerm] = useState("");
-
+  const [isCurrentDate, setIsCurrentDate] = useState(false);
   const ref = useRef();
 
-  const formatDate = (dateStr) => {
-    const dateArray = dateStr.split(" ").slice(0, 3);
-
-    const swap = (arr, idx1, idx2) => {
-        return [arr[idx1], arr[idx2]] = [arr[idx2], arr[idx1]];
-    }
-
-    swap(dateArray, 1, 2);
-
-    dateArray[0] = dateArray[0] + ",";
-
-    const formatedDate = dateArray.join(" ");
-
-    return formatedDate;
-  }
-
-  // setShowMessageModal(false);
-
-  const isYesterday = (stringDate) => {
-    const yesterday = new Date();
-    yesterday.setDate(yesterday.getDate() - 1);
-
-    if (yesterday.toDateString() === new Date(stringDate).toDateString()) {
-      return true;
-    } else {
-      return false;
-    }
-  }
+  const {_key, messageFriend, datedMessages } = messageObj;
 
   const scroll = (scrollOffset) => {
     ref.current.scrollTop += scrollOffset;
   };
+
+  const formatDateString = (str) => {
+    let strArr = str.split(" ").slice(0, 3);
+
+    const swap = (arr, idx1, idx2) => {
+      return [arr[idx1], arr[idx2]] = [arr[idx2], arr[idx1]];
+    }
+    swap(strArr, 1, 2);
+
+    strArr[0] = strArr[0] + ",";
+
+    let formattedStr = strArr.join(" ");
+
+    return formattedStr;
+  }
+
+  const checkIfNewDate = () => {
+    const currentDateString = new Date().toDateString();
+    const dateString = datedMessages[datedMessages.length-1]?.messageDate;
+    if (currentDateString === dateString) {
+      console.log("NOT new date");
+      return false;
+    } else {
+      console.log("IS new date");
+      return true;
+    }
+  }
+
+  const handleCreateMessage = async (message) => {
+    const isNewDate = checkIfNewDate();
+
+    if (isNewDate) {
+      await sendMessage(user._id, messageFriend._id, _key, false, isNewDate, message);
+      window.location.reload();
+    } else {
+      const messageKey = datedMessages[datedMessages.length - 1]._key;
+      await sendMessage(user._id, messageFriend._id, _key, messageKey, isNewDate, message);
+      window.location.reload();
+    }
+    
+  }
 
   return (
     <Stack
@@ -48,6 +63,7 @@ const MessageModal = ({ messageObj, setShowMessageModal, user }) => {
       display="flex"
       alignItems="center"
       justifyContent="center"
+      paddingTop="40px"
     >
       <Stack width="50%" 
         sx={{ 
@@ -59,7 +75,7 @@ const MessageModal = ({ messageObj, setShowMessageModal, user }) => {
       >
         <img
           alt="profile pic"
-          src={messageObj?.messageFriend?.image}
+          src={messageFriend?.image}
           onError={(e) => {
             e.target.src="https://s.gr-assets.com/assets/nophoto/user/u_60x60-267f0ca0ea48fd3acfd44b95afa64f01.png"
             e.onerror=null
@@ -81,43 +97,12 @@ const MessageModal = ({ messageObj, setShowMessageModal, user }) => {
             cursor: 'pointer',
           }}
         >
-          {messageObj?.messageFriend?.userName}
+          {messageFriend?.userName}
         </Typography>
 
-        <Stack direction="row" width="100%" sx={{ display: 'flex', alignItems: 'center'}}>
-          <Box sx={{ position: 'relative', backgroundColor: 'white', width: "40%"}}>
-            <input
-              type="text"
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              placeholder="Search..."
-              style={{
-                position: "relative",
-                width: "80%",
-                height: '100%',
-                padding: "10px 5px",
-                fontSize: '18px',
-                outline: 'none',
-                border: 'none',
-              }}
-            />
-
-            <img
-              src="https://s.gr-assets.com/assets/layout/header/icn_nav_search.svg"
-              alt="search"
-              height="20px"
-              width="20px"
-              style={{ 
-                position: 'absolute',
-                right: 10,
-                top: "10px",
-              }}
-            />
-          </Box>
-        </Stack>
       </Stack>
 
-      <Box component="span" fontSize={40} sx={{ cursor: 'pointer', marginBottom: 2}}
+      <Box component="span" fontSize={40} sx={{ cursor: 'pointer', marginBottom: 3}}
         onClick={() => scroll(-390)}
       >
         <BsChevronBarUp />
@@ -126,11 +111,13 @@ const MessageModal = ({ messageObj, setShowMessageModal, user }) => {
       <Stack
         ref={ref}
         sx={{
-          borderRight: '1px solid #382110',
-          borderLeft: '1px solid #382110',
-          padding: '15px 0',
+          position: "relative",
+          border: '1px solid #382110',
+          borderTop: "none",
+          borderBottom: "none",
+          paddingTop: '15px',
           width: '50%',
-          height: '400px',
+          height: '500px',
           overflowY: 'scroll',
           '&::-webkit-scrollbar':{
             width:0,
@@ -138,10 +125,56 @@ const MessageModal = ({ messageObj, setShowMessageModal, user }) => {
         }}
         
       >
-        
+        {datedMessages.map(({ _key, messageDate, texts }) => {
+          const dateString = formatDateString(messageDate);
+          return (
+            <Stack
+              key={_key}
+              sx={{
+                width: "100%",
+                height: "100%",
+                display: "flex",
+                alignItems: "center"
+              }}
+            >
+              <Typography
+                color="#757575"
+              >
+                {dateString}
+              </Typography>
+
+              {texts.map(({text, postedBy}, idx) => (
+                <Box
+                  key={`${text}-${idx}`}
+                  sx={{
+                    width: "100%",
+                    display: "flex",
+                    justifyContent: postedBy._id === user._id ? "flex-end" : "flex-start",
+                    margin: "10px 0",
+                    padding: "0 10px"
+                  }}
+                >
+                  <p
+                    style={{ 
+                      width: "40%", 
+                      padding: "15px",  
+                      borderRadius: "15px",
+                      fontSize: "18px",
+                      backgroundColor: postedBy._id === user._id ? "#e3f2fd" : "#e0e0e0"
+                    }}
+                  >
+                    {text}
+                  </p>
+                </Box>
+              ))}
+            </Stack>
+          );
+        })}
+
+        <CreateMessage handleCreateMessage={handleCreateMessage} />
       </Stack> 
       
-      <Box component="span" fontSize={40} sx={{ cursor: 'pointer', marginTop: 2}}
+      <Box component="span" fontSize={40} sx={{ cursor: 'pointer', marginTop: 4}}
         onClick={() => scroll(390)}
       >
         <BsChevronBarDown />

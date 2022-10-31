@@ -81,19 +81,64 @@ export const decrementReadingChallange = async (id) => {
   }
 }
 
-export const befriendMember = async (userId, memberId) => {
-  console.log("userId: ", userId);
-  console.log("memberId: ", memberId);
+export const requestFriendship = async (userId, memberId) => {
+  // console.log("userId: ", userId);
+  // console.log("memberId: ", memberId);
   try {
-    await client.patch(userId).setIfMissing({ friends: [] }).insert("after", "friends[-1]", [{ 
-      _key: uuidv4(),
-      _type: 'user',
-      _ref: memberId 
-    }])
-    .commit();
+    await client.patch(memberId)
+      .setIfMissing({ friendRequests: [] })
+      .insert("after", "friendRequests[-1]", [{ 
+        _key: uuidv4(),
+        _type: 'reference',
+        _ref: userId 
+      }])
+      .commit();
+
+    await client.patch(userId)
+      .setIfMissing({ requestedFriends: [] })
+      .insert("after", "requestedFriends[-1]", [{ 
+        _key: uuidv4(),
+        _type: 'reference',
+        _ref: memberId 
+      }])
+      .commit();
+    
     return true;
   } catch (error) {
-    console.log('Error befriending user: ', error);
+    console.log('Error requesting friendship: ', error);
+  }
+}
+
+export const acceptFriendRequest = async (userId, memberId) => {
+  const ids = [userId, memberId];
+  // console.log("userId: ", userId);
+  // console.log("memberId: ", memberId);
+  try {
+    await Promise.all(ids.map(async (id) => {
+      if (id === userId) {
+        await client.patch(userId).setIfMissing({ friends: [] }).insert("after", "friends[-1]", [{ 
+          _key: uuidv4(),
+          _type: 'reference',
+          _ref: memberId 
+        }])
+        .unset([`friendRequests[_ref=="${memberId}"]`])
+        .commit();
+      } else {
+        await client.patch(memberId).setIfMissing({ friends: [] }).insert("after", "friends[-1]", [{ 
+          _key: uuidv4(),
+          _type: 'reference',
+          _ref: userId 
+        }])
+        .unset([`requestedFriends[_ref=="${userId}"]`])
+        .commit();
+      }
+    }))
+
+    // await client.patch(userId).unset([`requestedFriends[_ref=="${memberId}"]`]).commit();
+
+    return true;
+  } catch (error) {
+    console.log('Error accepting friendship: ', error);
   }
 }
 
@@ -101,6 +146,7 @@ export const unfriendMember = async (userId, friendId) => {
   console.log("friendId: ", friendId);
   try {
     await client.patch(userId).unset([`friends[_ref=="${friendId}"]`]).commit();
+    await client.patch(friendId).unset([`friends[_ref=="${userId}"]`]).commit();
     return true;
   } catch (error) {
     console.log("Error unfriending memeber: ", error);
@@ -236,30 +282,107 @@ export const createMessageObject = async (userId, friendId) => {
   try {
     const data = await Promise.all(ids.map(async (id, idx) => (
       await client.patch(id)
-        .setIfMissing({ messages: []})
-        .insert("after", "messages[-1]", [{
+        .setIfMissing({ messagedUsers: []})
+        .insert("after", "messagedUsers[-1]", [{
           _key: uniqueKey,
           _type: 'messagedUser',
           messageFriend: {
             _ref: idx === 0 ? ids[1] : ids[0],
             _type: 'reference',
           },
-          textMessages: [
+          datedMessages: [
             {
               _type: 'datedMessages',
               _key: datedMessagesKey,
-              messageDate: new Date().toString(),
-              messages: [],
+              messageDate: new Date().toDateString(),
+              texts: [],
             }
           ],
         }])
         .commit()
     )));
 
-    const messageKey = data[0]?.messages?.filter((obj) => obj._key === uniqueKey);
+    const messageKey = data[0]?.messagedUsers?.filter((obj) => obj._key === uniqueKey);
     console.log("messageKey: ", messageKey[0]?._key);
-    return messageKey[0]?._key;
+    console.log("uniqueKey: ", uniqueKey);
+    // return messageKey[0]?._key;
+
+    return uniqueKey;
   } catch (error) {
     console.log("Error creating messageObject: ", error);
+  }
+}
+
+export const sendMessage = async (userId, friendId, messagedUserKey, datedMessageKey, isNewDate, text) => {
+  const ids = [userId, friendId];
+  const newMessageKey = uuidv4();
+  const newDatedMessageKey = uuidv4();
+
+  if (isNewDate) {
+    try {
+      await Promise.all(ids.map(async (id) => (
+        await client.patch(id)
+          .insert("after", `[_key=="${messagedUserKey}"].datedMessages[-1]`, [{
+            _type: 'datedMessages',
+            _key: newDatedMessageKey,
+            messageDate: new Date().toDateString(),
+            texts: [{
+              _type: 'message',
+              _key: newMessageKey,
+              text: text,
+              postedBy: {
+                _type: 'postedBy',
+                _ref: userId
+              }
+            }],
+          }])
+          .commit()
+      )));
+
+      console.log('added text with new date');
+
+    } catch (error) {
+      console.log("Error sending message with new Date: ", error);
+    }
+  } else {
+    try {
+      await Promise.all(ids.map(async (id) => (
+        await client.patch(id)
+          .insert("after", `messagedUsers[_key=="${messagedUserKey}"].datedMessages[_key=="${datedMessageKey}"].texts[-1]`, [{
+            _type: 'message',
+            _key: newMessageKey,
+            text: text,
+            postedBy: {
+              _type: 'postedBy',
+              _ref: userId
+            }
+          }]).commit()
+      )))
+  
+      console.log("added text");
+    } catch (error) {
+      console.log("Error adding text: ", error);
+    }
+  }
+}
+
+export const test = async (userId, friendId, messagedUserKey, datedMessageKey, text) => {
+  const firstKey = 'ff8b3516ccf0';
+  const secondKey = '77f51a034d59';
+  try {
+    await client.patch("103752643371367336491")
+      .insert("after", `messagedUsers[_key=="${firstKey}"].datedMessages[_key=="${secondKey}"].texts[-1]`, [{
+        _type: 'message',
+        _key: uuidv4(),
+        text: "test text message",
+        postedBy: {
+          _type: 'postedBy',
+          _ref: "103752643371367336491"
+        }
+      }]).commit();
+
+    console.log("done testing");
+  } catch (error) {
+    console.log("Error in test: ", error);
   }
 }

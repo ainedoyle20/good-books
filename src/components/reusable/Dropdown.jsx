@@ -1,5 +1,5 @@
-import React, {useState} from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
+import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Stack, Typography, Divider } from '@mui/material';
 import { googleLogout } from '@react-oauth/google';
 
@@ -7,10 +7,8 @@ import useGlobalStore from '../../store/globalStore';
 
 const Dropdown = ({ setShowDropdown }) => {
   console.log("open");
-  const { updateNavSection, removeUser, user } = useGlobalStore();
-  const [dropDownTitles] = useState(["Profile", "Friends", "Groups", "Discussions", "Messages", "Reading Challange"]);
+  const { removeUser, user } = useGlobalStore();
   const navigate = useNavigate();
-  const { pathname } = useLocation();
 
   const handleClick = (e) => {
     navigate(`/profile/${user._id}`);

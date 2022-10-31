@@ -9,10 +9,10 @@ export default {
       type: 'string',
     },
     {
-      name: 'messages',
-      title: 'Messages',
+      name: 'texts',
+      title: 'Texts',
       type: 'array',
-      of: [{ type: 'message'}],
+      of: [{ type: 'message' }]
     }
   ]
 }

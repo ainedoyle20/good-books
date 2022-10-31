@@ -11,6 +11,16 @@ export const userDetailsQuery = (id) => {
       userName,
       image
     },
+    requestedFriends[]->{
+      _id,
+      userName,
+      image
+    },
+    friendRequests[]->{
+      _id,
+      userName,
+      image
+    },
     groups[]->{
       _id,
       groupName,
@@ -44,17 +54,17 @@ export const userDetailsQuery = (id) => {
         }
       },
     },
-    messages[]{
+    messagedUsers[]{
       _key,
       messageFriend->{
         _id,
         userName,
         image,
       },
-      textMessages[]{
+      datedMessages[]{
         _key,
         messageDate,
-        messages[]{
+        texts[]{
           postedBy->{
             _id,
             userName,

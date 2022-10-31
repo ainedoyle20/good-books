@@ -2,14 +2,18 @@ import React, {useState, useEffect} from 'react';
 import { Box } from '@mui/material';
 
 const MessageItem = ({ message, handleClickedMessagedFriend }) => {
+  console.log("message", message);
   const [textMessage, setTextMessage] = useState("");
+
+  const { datedMessages } = message;
 
   useEffect(() => {
     
-    const lastDatedMessageObject = message.textMessages[message.textMessages.length -1];
-    const {messages} = lastDatedMessageObject;
-    if (messages?.length) {
-      setTextMessage(messages[messages.length-1]?.text);
+    if (datedMessages?.length) {
+      const last = datedMessages[datedMessages.length -1];
+
+      setTextMessage(last.texts[last.texts.length-1]?.text || "");
+      // console.log("last text: ", last.texts[last.texts.length-1]?.text);
     } else {
       setTextMessage("");
     }

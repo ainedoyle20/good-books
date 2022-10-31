@@ -2,16 +2,16 @@ import React from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Box, Typography } from '@mui/material';
 
-import { befriendMember, unfriendMember } from "../../utils";
+import { requestFriendship, unfriendMember } from "../../utils";
 
 const FriendItem = ({ member, showFriends, user, userDetails, inMessages, handleClickedFriend }) => {
   const {id} = useParams();
   const navigate = useNavigate();
 
-  const handleBefriendMember = async (memberId) => {
+  const handleRequestFriendship = async (memberId) => {
     if (user?._id !== id) return;
 
-    const success = await befriendMember(id, memberId);
+    const success = await requestFriendship(id, memberId);
     if (success) {
       window.location.reload();
     }
@@ -87,7 +87,7 @@ const FriendItem = ({ member, showFriends, user, userDetails, inMessages, handle
                   if (showFriends) {
                     handleUnfriendMember(member?._id);
                   } else {
-                    handleBefriendMember(member?._id);
+                    handleRequestFriendship(member?._id);
                   }
                 }
               }}
@@ -102,7 +102,12 @@ const FriendItem = ({ member, showFriends, user, userDetails, inMessages, handle
                 backgroundColor: userDetails?.friends?.map(friend => friend._id).includes(member._id) ? "#efebe9" : "#3e2723",
               }}
             >
-              {userDetails?.friends?.map(friend => friend._id).includes(member._id) ? "unfriend" : "befriend"}
+              {userDetails?.friends?.map(friend => friend._id).includes(member._id) 
+                ? "unfriend" 
+                : userDetails?.requestedFriends?.map(requested => requested._id).includes(member._id)
+                ? "requested"
+                : "befriend"
+              }
             </Typography>
           )}
         </Box>
