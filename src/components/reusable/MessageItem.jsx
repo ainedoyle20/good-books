@@ -2,7 +2,7 @@ import React, {useState, useEffect} from 'react';
 import { Box } from '@mui/material';
 
 const MessageItem = ({ message, handleClickedMessagedFriend }) => {
-  console.log("message", message);
+  // console.log("message", message);
   const [textMessage, setTextMessage] = useState("");
 
   const { datedMessages } = message;

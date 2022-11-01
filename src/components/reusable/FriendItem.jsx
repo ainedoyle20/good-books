@@ -4,7 +4,7 @@ import { Box, Typography } from '@mui/material';
 
 import { requestFriendship, unfriendMember } from "../../utils";
 
-const FriendItem = ({ member, showFriends, user, userDetails, inMessages, handleClickedFriend }) => {
+const FriendItem = ({ member, showFriends, inGroup, user, userDetails, inMessages, handleClickedFriend }) => {
   const {id} = useParams();
   const navigate = useNavigate();
 
@@ -60,7 +60,7 @@ const FriendItem = ({ member, showFriends, user, userDetails, inMessages, handle
         {member?.userName}
       </Box>
 
-      {user._id === id ? (
+      {user._id === id && !inGroup && userDetails ? (
         <Box sx={{ width: '90%', display: 'flex', justifyContent: 'flex-end', paddingRight: '15px'}}>
           {inMessages ? (
             <Typography

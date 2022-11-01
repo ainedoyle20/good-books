@@ -60,10 +60,16 @@ const ProfileSection = () => {
           <img 
             alt="profile picture"
             src={picture}
+            // src="https://lh3.googleusercontent.com/a/ALm5wu2g7D_W-xamQhRHTYuxvRT9eb54HZ72ORWxfkhx=s96-c"
             style={{
               borderRadius: '100%',
               height: '140px',
               width: '140px'
+            }}
+            onError={(e) => {
+              console.log("error")
+              e.target.src="https://s.gr-assets.com/assets/nophoto/user/u_60x60-267f0ca0ea48fd3acfd44b95afa64f01.png"
+              e.onerror = null;
             }}
           />
         ) : (
@@ -98,6 +104,11 @@ const ProfileSection = () => {
             style={{
               borderRadius: '100%',
               cursor: 'pointer',
+            }}
+            onError={(e) => {
+              console.log("error")
+              e.target.src="https://s.gr-assets.com/assets/nophoto/user/u_60x60-267f0ca0ea48fd3acfd44b95afa64f01.png"
+              e.onerror = null;
             }}
           />
 

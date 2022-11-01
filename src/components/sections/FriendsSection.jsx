@@ -1,11 +1,9 @@
-import React, {useEffect, useRef, useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import { Stack, Box, Typography } from '@mui/material';
-import { BsChevronBarUp, BsChevronBarDown } from 'react-icons/bs';
 import { useParams } from 'react-router-dom';
 
 import useGlobalStore from '../../store/globalStore';
-import { FriendItem, ReqFriendItem } from '../reusable'
-import { test } from '../../utils';
+import { FriendItem, ReqFriendItem, ScrollingContainer } from '../reusable'
 
 const FriendsSection = () => {
   const { allUsers, userDetails, user } = useGlobalStore();
@@ -31,17 +29,6 @@ const FriendsSection = () => {
     }
 
   }, [searchTerm]);
-
-  // useEffect(() => {
-  //   console.log('testing')
-  //   test();
-  // }, [])
-
-  const scrollRef = useRef(null);
-
-  const scroll = (scrollOffset) => {
-    scrollRef.current.scrollTop += scrollOffset;
-  };
 
   return (
     <Stack
@@ -154,138 +141,106 @@ const FriendsSection = () => {
         }
         
       </Stack>
-
-      <Box component="span" fontSize={40} sx={{ cursor: 'pointer', marginBottom: 2}}
-        onClick={() => scroll(-390)}
-      >
-        <BsChevronBarUp />
-      </Box>
-
-      <Stack
-        ref={scrollRef}
-        sx={{
-          borderRight: '1px solid #382110',
-          borderLeft: '1px solid #382110',
-          padding: '15px 0',
-          width: '50%',
-          height: '400px',
-          overflowY: 'scroll',
-          '&::-webkit-scrollbar':{
-            width:0,
-          }
-        }}
-        
-      >
-        {showFriends && !showFriendReqs ? 
-          filteredFriends.length ?
-            filteredFriends.map((friend) => (
-              <FriendItem 
-                key={friend._id}
-                user={user}
-                userDetails={userDetails}
-                showFriends={showFriends}
-                member={friend}
-              />
-            )) 
-          : userDetails?.friends && userDetails?.friends?.length ? (
-              <Typography
-                width="100%"
-                height="100%"
-                sx={{
-                  display: 'flex',
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                  fontSize: 20,
-                  color: '#382110'
-                }}
-              >
-                No friends matching &#8220;{searchTerm}&#8221;
-              </Typography> 
-            ) : (
-              <Stack
-                width="100%"
-                height="100%"
-                sx={{
-                  display: 'flex',
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                }}
-              >
-                <Typography
-                 sx={{
-                  fontSize: 20,
-                  color: '#382110'
-                 }}
-                >
-                  {user?._id === id ? "You have no friends" : "This user has no friends"} 
-                </Typography>
-                {user?._id === id && (
-                  <Typography
-                    sx={{
-                      fontSize: 20,
-                      color: '#382110'
-                    }}
-                  >
-                    Search users and befriend some!
-                  </Typography>
-                )}
-              </Stack>
-            )      
-          : null   
-        }
-
-        {!showFriends && !showFriendReqs ? (
-          filteredMembers.length ? (
-            filteredMembers.map((member) => (
-              <FriendItem 
-                key={member._id}
-                user={user}
-                userDetails={userDetails}
-                showFriends={showFriends}
-                member={member}
-              />
-            ))
-          ) : allUsers.length ? (
-            <Typography
-              width="100%"
-              height="100%"
-              sx={{
-                display: 'flex',
-                justifyContent: 'center',
-                alignItems: 'center',
-                fontSize: 20,
-                color: '#382110'
-              }}
-            >No users matching &#8220;{searchTerm}&#8221;</Typography> 
-          ) : (
-            <Typography
-              width="100%"
-              height="100%"
-              sx={{
-                display: 'flex',
-                justifyContent: 'center',
-                alignItems: 'center',
-                fontSize: 20,
-                color: '#382110'
-              }}
-            >This application has no other members</Typography>
-          )
-          ) : null
-        }
-
-        {showFriendReqs 
-          ? userDetails.friendRequests?.map((friendReq) => (
-            <ReqFriendItem key={friendReq._id} member={friendReq} user={user} />
-          ))
-          : null
-        }
-      </Stack>  
       
-      <Box component="span" fontSize={40} sx={{ cursor: 'pointer', marginTop: 2}}
-        onClick={() => scroll(390)}
-      >
-        <BsChevronBarDown />
-      </Box>
+      {showFriends && !showFriendReqs ? (
+        <ScrollingContainer>
+          {filteredFriends.length
+            ? filteredFriends.map((friend) => (
+                <FriendItem 
+                  key={friend._id}
+                  user={user}
+                  userDetails={userDetails}
+                  showFriends={showFriends}
+                  member={friend}
+                />
+              ))
+            : null
+          }
+
+          {/* If no search results */}
+          {!filteredFriends.length && searchTerm.length 
+            ? <Typography 
+                width="100%" height="100%" display="flex" justifyContent="center" 
+                alignItems="center" fontSize={20} color="#382110"
+              >
+                No Results
+              </Typography>
+            : null
+          }
+
+          {/* If no friends */}
+          {!filteredFriends.length && !searchTerm.length 
+            ? <Typography 
+                width="100%" height="100%" display="flex" justifyContent="center" 
+                alignItems="center" fontSize={20} color="#382110"
+              >
+                You have no friends
+              </Typography>
+            : null
+          }
+        </ScrollingContainer>
+      ) : null}
+
+      {!showFriends && !showFriendReqs ? (
+        <ScrollingContainer>
+          {filteredMembers.length 
+            ? filteredMembers.map((member) => (
+                <FriendItem 
+                  key={member._id}
+                  user={user}
+                  userDetails={userDetails}
+                  showFriends={showFriends}
+                  member={member}
+                />
+              ))
+            : null
+          }
+
+          {/* If no search results */}
+          {!filteredMembers.length && searchTerm.length 
+            ? <Typography 
+                width="100%" height="100%" display="flex" justifyContent="center" 
+                alignItems="center" fontSize={20} color="#382110"
+              >
+                No Results
+              </Typography>
+            : null
+          }
+
+          {/* If no users */}
+          {!filteredMembers.length && !searchTerm.length
+            ? <Typography 
+                width="100%" height="100%" display="flex" justifyContent="center" 
+                alignItems="center" fontSize={20} color="#382110"
+              >
+                This application has no other members
+              </Typography>
+            : null
+          }
+        </ScrollingContainer>
+      ): null}
+
+      {showFriendReqs ? (
+        <ScrollingContainer>
+          {userDetails?.friendRequests?.length
+            ?  userDetails.friendRequests?.map((friendReq) => (
+                <ReqFriendItem key={friendReq._id} member={friendReq} user={user} />
+              ))
+            : null
+          }
+
+          {!userDetails?.friendRequests?.length
+            ? <Typography 
+                width="100%" height="100%" display="flex" justifyContent="center" 
+                alignItems="center" fontSize={20} color="#382110"
+              >
+                No Requests
+              </Typography>
+            : null
+          }
+        </ScrollingContainer>
+      ): null}
+
     </Stack>
   );
 }

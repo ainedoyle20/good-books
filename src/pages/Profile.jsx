@@ -9,7 +9,6 @@ import {
   GroupsSection,
   DiscussionsSection,
   MessagesSection,
-  ReadingChallangeSection,
 } from '../components/sections';
 import { Loader, Sidebar } from '../components/reusable';
 import { fetchUserDetails, fetchAllUsers } from '../utils';
@@ -57,9 +56,9 @@ const Profile = () => {
       getUserDetails();
     }
 
-    return () => {
-      removeUserDetails();
-    }
+    // return () => {
+    //   removeUserDetails();
+    // }
   }, [id]);
 
   useEffect(() => {

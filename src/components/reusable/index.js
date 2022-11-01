@@ -11,3 +11,7 @@ export { default as ReqFriendItem } from './ReqFriendItem';
 export { default as DiscussionItem } from './DiscussionItem';
 export { default as MessageItem } from './MessageItem';
 export { default as MessageModal } from './MessageModal';
+export { default as ScrollingContainer } from './ScrollingContainer';
+export { default as DiscussionModal } from './DiscussionModal';
+export { default as Discussion } from './Discussion';
+export { default as CreateMessage } from './CreateMessage';

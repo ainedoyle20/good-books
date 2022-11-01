@@ -9,8 +9,13 @@ export default {
       type: 'string',
     },
     {
-      name: 'creatorId',
-      title: 'Creator Id',
+      name: 'creator',
+      title: 'Creator',
+      type: 'postedBy',
+    },
+    {
+      name: 'groupId',
+      title: 'Group Id',
       type: 'string',
     },
     {
@@ -31,7 +36,7 @@ export default {
       name: 'contributions',
       title: 'Contributions',
       type: 'array',
-      of: [{ type: 'message' }],
+      of: [{ type: 'datedMessages' }],
     },
   ]
 }

@@ -35,7 +35,7 @@ export default {
       name: 'discussions',
       title: 'Discussions',
       type: 'array',
-      of: [{
+      of: [{ 
         type: 'reference',
         to: [{ type: 'discussion'}]
       }],

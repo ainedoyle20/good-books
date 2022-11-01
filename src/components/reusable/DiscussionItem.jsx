@@ -1,11 +1,13 @@
 import React from 'react';
 import { Box, Typography } from '@mui/material';
+import { useNavigate } from 'react-router-dom';
 
 const DiscussionItem = ({ discussion }) => {
+  const navigate = useNavigate();
   return (
     <Box
       key={discussion?._id}
-      onClick={() => console.log(`/discussion/${discussion._id}`)}
+      onClick={() => navigate(`/discussion/${discussion._id}`)}
       sx={{
         display: "flex",
         alignItems: 'center',

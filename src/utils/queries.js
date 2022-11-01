@@ -36,7 +36,11 @@ export const userDetailsQuery = (id) => {
       },
       discussions[]->{
         _id,
-        creatorId,
+        creator->{
+          _id,
+          userName,
+          image
+        },
         discussionName,
         groupName,
         participants[]->{
@@ -53,6 +57,7 @@ export const userDetailsQuery = (id) => {
           }
         }
       },
+      public,
     },
     messagedUsers[]{
       _key,
@@ -149,6 +154,82 @@ export const myGroupsQuery = (groupIdArray) => {
       userName,
       image
     },
+  }`;
+
+  return query;
+}
+
+export const specificGroupQuery = (groupId) => {
+  const query = `*[_type=="group" && _id=="${groupId}"]{
+    _id,
+    groupName,
+    discussions[]->{
+      _id,
+      discussionName,
+      groupName,
+      creator->{
+        _id, 
+        userName,
+        image
+      },
+      participants[]->{
+        _id,
+        userName,
+        image
+      },
+      contributions[]{
+        text,
+        postedBy->{
+          _id, 
+          userName,
+          image
+        }
+      }
+    },
+    members[]->{
+      _id,
+      userName,
+      image
+    },
+    postedBy->{
+      _id, 
+      userName,
+      image
+    },
+    public,
+  }`;
+
+  return query;
+}
+
+export const specificDiscussionQuery = (discussionId) => {
+  const query = `*[_type=="discussion" && _id=="${discussionId}"]{
+    _id,
+    discussionName,
+    groupId,
+    groupName,
+    creator->{
+      _id,
+      userName,
+      image
+    },
+    participants[]->{
+      _id,
+      userName,
+      image
+    },
+    contributions[]{
+      _key,
+      messageDate,
+      texts[]{
+        _key,
+        text,
+        postedBy->{
+          _id,
+          userName,
+        }
+      }
+    }
   }`;
 
   return query;

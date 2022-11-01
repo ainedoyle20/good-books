@@ -1,14 +1,15 @@
 import React from 'react';
 import { Box, Typography } from '@mui/material';
 import { BsCheck2 } from 'react-icons/bs';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 
 const GroupItem = ({ group, selectedGroups, setSelectedGroups, user, showMyGroups }) => {
   const {id} = useParams();
+  const navigate = useNavigate();
   return (
     <Box
       key={group?._id}
-      onClick={() => console.log(`/group/${group._id}`)}
+      onClick={() => navigate(`/group/${group._id}`)}
       sx={{
         display: "flex",
         alignItems: 'center',

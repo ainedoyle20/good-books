@@ -2,7 +2,14 @@ import jwt_decode from "jwt-decode";
 import { v4 as uuidv4 } from 'uuid';
 
 import { client } from './client';
-import { userDetailsQuery, allUsersQuery, publicGroupsQuery, allGroupsQuery, myGroupsQuery } from './queries';
+import { userDetailsQuery, 
+  allUsersQuery, 
+  publicGroupsQuery, 
+  allGroupsQuery, 
+  myGroupsQuery, 
+  specificGroupQuery,
+  specificDiscussionQuery
+} from './queries';
 
 export const createOrGetUser = async (googleRes, addUserFunc, removeUserFunc) => {
   const decoded = jwt_decode(googleRes.credential);
@@ -167,6 +174,7 @@ export const createGroup = async (userId, groupName, groupMembers, isPublic) => 
   const groupDoc = {
     _type: 'group',
     groupName,
+    discussions: [],
     members,
     postedBy: {
       _type: 'postedBy',
@@ -235,6 +243,17 @@ export const fetchMyGroups = async (idArray) => {
   }
 }
 
+export const fetchSpecificGroup = async (groupId) => {
+  const query = specificGroupQuery(groupId);
+
+  try {
+    const data = await client.fetch(query);
+    return data[0];
+  } catch (error) {
+    console.log("Error fetching specific group: ", error);
+  }
+}
+
 export const deleteGroups = async (selectedGroupsArray) => {
   try {
     await Promise.all(selectedGroupsArray.map(async (group, idx) => {
@@ -265,19 +284,120 @@ export const deleteGroups = async (selectedGroupsArray) => {
   // }
 }
 
+export const createDiscussion = async (userId, discussionName, groupId, groupName) => {
+  // Create discussion document
+  const discussionDoc = {
+    _type: "discussion",
+    _key: uuidv4(),
+    groupId,
+    groupName,
+    discussionName,
+    creator: {
+      _type: 'postedBy',
+      _ref: userId
+    },
+    participants: [],
+    contributions: [],
+  }
+
+  try {
+    // Create discussion document
+    const {_id} = await client.create(discussionDoc);
+
+    // Add reference to discussin document in group document
+    await client.patch(groupId)
+      .setIfMissing({ discussions: [] })
+      .insert("after", "discussions[-1]", [{
+        _key: uuidv4(),
+        _type: "reference",
+        _ref: _id
+      }])
+      .commit();
+
+    return true;
+  } catch (error) {
+    console.log("Error creating discussion: ", error);
+  }
+
+}
+
+export const fetchSpecificDiscussion = async (discussionId) => {
+  const query = specificDiscussionQuery(discussionId);
+
+  try {
+    const data = await client.fetch(query);
+    return data[0];
+  } catch (error) {
+    console.log("Error fetching specific discussion: ", error);
+  }
+}
+
+export const addDiscussionContribution = async (userId, discussionId, isParticipant, isNewDate, text, datedMessagesKey) => {
+  console.log("isParticipant: ", isParticipant, "isNewDate: ", isNewDate, "datedMessagesKey: ", datedMessagesKey);
+
+  try {
+    if (isNewDate) {
+      console.log("IS NEW DATE");
+      // creating new datedMessage object with new contribution
+      await client.patch(discussionId)
+        .setIfMissing({ contributions: [] })
+        .insert("after", `contributions[-1]`, [{
+          _type: "datedMessages",
+          _key: uuidv4(),
+          messageDate: new Date().toDateString(),
+          texts: [{
+            _type: "message",
+            _key: uuidv4(),
+            text,
+            postedBy: {
+              _type: 'reference',
+              _ref: userId
+            }
+          }]
+        }])
+        .commit();
+
+    } else {
+      console.log("NOT NEW DATE");
+      // adding new contribution (text) to existing datedMessage object
+      await client.patch(discussionId)
+        .setIfMissing({ contributions: [] })
+        .insert("after", `contributions[_key=="${datedMessagesKey}"].texts[-1]`, [{
+          _type: "message",
+          _key: uuidv4(),
+          text,
+          postedBy: {
+            _type: 'reference',
+            _ref: userId
+          }
+        }])
+        .commit();
+
+    }
+
+    // Adding current user as participant if not already
+    if (!isParticipant) {
+      await client.patch(discussionId)
+        .setIfMissing({ participants: [] })
+        .insert("after", "participants[-1]", [{
+          _type: "reference",
+          _ref: userId,
+          _key: uuidv4()
+        }])
+        .commit();
+    }
+
+    return true;
+
+  } catch (error) {
+    console.log("Error adding contribution: ", error);
+  }
+}
+
 export const createMessageObject = async (userId, friendId) => {
   const ids = [`${userId}`, `${friendId}`];
   const uniqueKey = uuidv4();
   const datedMessagesKey = uuidv4();
-  // const messageObj = {
-  //   _key: uuidv4(),
-  //   _type: 'messagedUser',
-  //   messageFriend: {
-  //     _ref: friendId,
-  //     _type: 'savedFriends',
-  //   },
-  //   textMessages: [],
-  // }
 
   try {
     const data = await Promise.all(ids.map(async (id, idx) => (
@@ -366,23 +486,17 @@ export const sendMessage = async (userId, friendId, messagedUserKey, datedMessag
   }
 }
 
-export const test = async (userId, friendId, messagedUserKey, datedMessageKey, text) => {
-  const firstKey = 'ff8b3516ccf0';
-  const secondKey = '77f51a034d59';
-  try {
-    await client.patch("103752643371367336491")
-      .insert("after", `messagedUsers[_key=="${firstKey}"].datedMessages[_key=="${secondKey}"].texts[-1]`, [{
-        _type: 'message',
-        _key: uuidv4(),
-        text: "test text message",
-        postedBy: {
-          _type: 'postedBy',
-          _ref: "103752643371367336491"
-        }
-      }]).commit();
+export const formatDateString = (str) => {
+  let strArr = str.split(" ").slice(0, 3);
 
-    console.log("done testing");
-  } catch (error) {
-    console.log("Error in test: ", error);
+  const swap = (arr, idx1, idx2) => {
+    return [arr[idx1], arr[idx2]] = [arr[idx2], arr[idx1]];
   }
+  swap(strArr, 1, 2);
+
+  strArr[0] = strArr[0] + ",";
+
+  let formattedStr = strArr.join(" ");
+
+  return formattedStr;
 }
