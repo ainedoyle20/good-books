@@ -56,75 +56,20 @@ const ProfileSection = () => {
       justifyContent="center"
     >
       <Box>
-        {user?._id === id ? (
           <img 
-            alt="profile picture"
-            src={picture}
-            // src="https://lh3.googleusercontent.com/a/ALm5wu2g7D_W-xamQhRHTYuxvRT9eb54HZ72ORWxfkhx=s96-c"
+            alt="profile"
+            src={userDetails?.image ? userDetails.image : "https://s.gr-assets.com/assets/nophoto/user/u_60x60-267f0ca0ea48fd3acfd44b95afa64f01.png"}
             style={{
               borderRadius: '100%',
               height: '140px',
               width: '140px'
             }}
-            onError={(e) => {
-              console.log("error")
-              e.target.src="https://s.gr-assets.com/assets/nophoto/user/u_60x60-267f0ca0ea48fd3acfd44b95afa64f01.png"
-              e.onerror = null;
+            onError={({ currentTarget }) => {
+              currentTarget.onerror = null; // to prevent looping
+              currentTarget.src="https://s.gr-assets.com/assets/nophoto/user/u_60x60-267f0ca0ea48fd3acfd44b95afa64f01.png"
             }}
           />
-        ) : (
-          <img 
-            alt="profile picture"
-            src="https://s.gr-assets.com/assets/nophoto/user/u_60x60-267f0ca0ea48fd3acfd44b95afa64f01.png"
-            style={{
-              borderRadius: '100%',
-              height: '140px',
-              width: '140px'
-            }}
-          />
-        )}
       </Box>
-
-      {user?._id === id ? (
-        <Box
-          sx={{
-            display: 'flex',
-            justifyContent: 'space-between',
-            margin: '20px 0',
-            width: '100px',
-            padding: '5px 0'
-          }}
-        >
-          <img 
-            onClick={() => setPicture(user?.image)}
-            alt="user picture"
-            src={user?.image}
-            height="30px"
-            width="30px"
-            style={{
-              borderRadius: '100%',
-              cursor: 'pointer',
-            }}
-            onError={(e) => {
-              console.log("error")
-              e.target.src="https://s.gr-assets.com/assets/nophoto/user/u_60x60-267f0ca0ea48fd3acfd44b95afa64f01.png"
-              e.onerror = null;
-            }}
-          />
-
-          <img 
-            onClick={() => setPicture("https://s.gr-assets.com/assets/nophoto/user/u_60x60-267f0ca0ea48fd3acfd44b95afa64f01.png")}
-            alt="default picture"
-            src="https://s.gr-assets.com/assets/nophoto/user/u_60x60-267f0ca0ea48fd3acfd44b95afa64f01.png"
-            height="30px"
-            width="30px"
-            style={{
-              borderRadius: '100%',
-              cursor: 'pointer',
-            }}
-          />
-        </Box>
-      ) : null}
 
       <Typography fontSize={20} >
         {userDetails?.userName}

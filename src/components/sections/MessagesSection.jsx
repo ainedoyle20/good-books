@@ -1,98 +1,54 @@
-import React, {useRef, useState, useEffect} from 'react';
+import React, { useState, useEffect } from 'react';
 import { Box, Stack, Typography } from '@mui/material';
-import { BsChevronBarUp, BsChevronBarDown } from 'react-icons/bs';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 
 import useGlobalStore from '../../store/globalStore';
-import { FriendItem, MessageItem, MessageModal } from '../reusable';
+import { FriendItem, MessageItem, ScrollingContainer } from '../reusable';
 import { createMessageObject, fetchUserDetails } from '../../utils';
 
 const MessagesSection = () => {
   const { user, userDetails, addUserDetails } = useGlobalStore();
-  // console.log(userDetails.messagedUsers);
-  const {id} = useParams();
-  const ref = useRef();
+  const navigate = useNavigate();
 
-  const [showMessageModal, setShowMessageModal] = useState(false);
-  const [messageObject, setMessageObject] = useState(null);
   const [showMessages, setShowMessages] = useState(true);
-  const [filteredMessageFriends, setFilteredMessageFriends] = useState(userDetails?.messagedUsers || [])
-  const [filteredFriends, setFilteredFriends] = useState(userDetails?.friends || []);
+  const [messageObjects, setMessageObjects] = useState([])
+  const [filteredFriends, setFilteredFriends] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
 
   useEffect(() => {
-    if (showMessages && userDetails?.messages) {
-      setFilteredMessageFriends(
-        userDetails?.messages?.filter((messageObj) => (
-          messageObj.messageFriend.userName.toLowerCase().trim().includes(searchTerm.toLowerCase().trim())
-        ))
-      );
-    } else {
-      if (!userDetails?.friends) {
-        setFilteredFriends([]);
-      } else {
-        setFilteredFriends(
-          userDetails?.friends.filter((friend) => (
-            friend.userName.toLowerCase().trim().includes(searchTerm.toLowerCase().trim())
-          ))
-        );
-      }
-    }
-    
-  }, [searchTerm])
+    if (!userDetails) return;
 
-  const scroll = (scrollOffset) => {
-    ref.current.scrollTop += scrollOffset;
-  };
+    const { messagedUsers, friends } = userDetails;
 
-  const checkIfMessaged = (friendId) => {
-    let returnObj = {messaged: false, messageObj: null};
+    if (messagedUsers?.length) setMessageObjects(messagedUsers);
+    if (friends?.length) setFilteredFriends(friends);
 
-    const messageObjects = userDetails?.messages;
+  }, [userDetails, showMessages]);
 
-    if (!messageObjects || !messageObjects?.length) {
-      return returnObj;
+  useEffect(() => {
+    if (!userDetails || !searchTerm.length) return;
+
+    const { messagedUsers, friends } = userDetails;
+
+    if (showMessages && messagedUsers?.length) { // filtering messagedUsers
+
+      const filteredMessagedUsers = messagedUsers.filter(messageObj => (
+        messageObj.messageFriend.userName.toLowerCase().trim().includes(searchTerm.toLowerCase().trim())
+      ));
+      setMessageObjects(filteredMessagedUsers);
+
+    } else if (!showMessages && friends?.length) { // filtering friends
+
+      const filtered = friends.filter((friend) => (
+        friend.userName.toLowerCase().trim().includes(searchTerm.toLowerCase().trim())
+      ));
+      setFilteredFriends(filtered);
+
     }
 
-    messageObjects.map((messageObj) => {
-      if (messageObj?.messageFriend?._id === friendId) {
-        returnObj = {messaged: true, messageObj };;
-      }
-      return messageObj;
-    });
+  }, [searchTerm, userDetails]);
 
-    return returnObj;
-  }
-
-  const handleClickedFriend = async (friendId) => {
-    const { messaged, messageObj } = checkIfMessaged(friendId);
-    console.log("messaged: ", messaged, "messageObj: ", messageObj);
-
-    if (messaged) {
-      setMessageObject(messageObj)
-      
-    } else {
-      const messageKey = await createMessageObject(user._id, friendId);
-      
-      if (messageKey) {
-        const updatedUserDetails = await fetchUserDetails(user._id, addUserDetails);
-        console.log("updatedUserDetails: ", updatedUserDetails?.messagedUsers);
-        const message = updatedUserDetails?.messagedUsers?.filter((obj) => (
-          obj._key === messageKey
-        ));
-        console.log("message[0]: ", message[0]);
-
-        setMessageObject(message[0] || null);
-      }
-    }
-
-    setShowMessageModal(true);
-  } 
-
-  const handleClickedMessagedFriend = async (messageObj) => {
-    setMessageObject(messageObj);
-    setShowMessageModal(true);
-  }
+  const openMessagePage = (friendId) => navigate(`/messages/${friendId}`);
 
   return (
     <Stack
@@ -104,194 +60,135 @@ const MessagesSection = () => {
       justifyContent="center"
       position="relative"
     >
-      <Typography
-        position="absolute"
-        top="90px"
-        right="70px"
-        color="black"
-        fontSize="20px"
-        onClick={() => setShowMessageModal(false)}
-        sx={{
-          cursor: "pointer",
-          display: showMessageModal ? "block" : "none",
-        }}
+
+      <Stack 
+        width="50%" display="flex" justifyContent="center" alignItems="center" marginBottom="30px"
       >
-        Back
-      </Typography>
+        <Box sx={{ display: 'flex', marginBottom: "30px"}}>
+          <Typography
+            margin="0 20px" color="#382110" fontWeight="300" fontSize="25px"
+            sx={{ textDecoration: showMessages ? 'underline' : 'none', cursor: 'pointer' }}
+            onClick={() => {
+              setShowMessages(true);
+              setSearchTerm("");
+            }}
+          >
+            messages
+          </Typography>
+          <Typography
+            margin="0 20px" color="#382110" fontWeight="300" fontSize="25px"
+            sx={{ textDecoration: !showMessages ? 'underline' : 'none', cursor: 'pointer' }}
+            onClick={() => {
+              setShowMessages(false);
+              setSearchTerm("");
+            }}
+          >
+            friends
+          </Typography>
+        </Box>
+
+        <Stack direction="row" width="100%" sx={{ display: 'flex', alignItems: 'center'}}>
+          <Box sx={{ position: 'relative', backgroundColor: 'white', width: "40%"}}>
+            <input
+              type="text"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              placeholder="Search..."
+              style={{
+                position: "relative",
+                width: "80%",
+                height: '100%',
+                padding: "10px 5px",
+                fontSize: '18px',
+                outline: 'none',
+                border: 'none',
+              }}
+            />
+
+            <img
+              src="https://s.gr-assets.com/assets/layout/header/icn_nav_search.svg"
+              alt="search"
+              height="20px"
+              width="20px"
+              style={{ 
+                position: 'absolute',
+                right: 10,
+                top: "10px",
+              }}
+            />
+          </Box>
+        </Stack>
+      </Stack>
       
-      {!showMessageModal ? (
-        <>
-          <Stack width="50%" 
-            sx={{ 
-              display: 'flex', 
-              justifyContent: 'center', 
-              alignItems: 'center',
-              marginBottom: '30px'
-            }}
-          >
-            <Box sx={{ display: 'flex', marginBottom: "30px"}}>
-              <Typography
-                onClick={() => {
-                  setShowMessages(true);
-                  setSearchTerm("");
-                  setFilteredMessageFriends(userDetails?.messagedUsers || []);
-                }}
-                sx={{
-                  fontSize: 25,
-                  textDecoration: showMessages ? 'underline' : 'none',
-                  margin: '0 20px',
-                  color: '#382110',
-                  fontWeight: '300',
-                  cursor: 'pointer',
-                }}
-              >
-                messages
-              </Typography>
-              <Typography
-                onClick={() => {
-                  setShowMessages(false);
-                  setSearchTerm("");
-                  setFilteredFriends(userDetails?.friends || []);
-                }}
-                sx={{
-                  fontSize: 25,
-                  textDecoration: !showMessages ? 'underline' : 'none',
-                  margin: '0 20px',
-                  color: '#382110',
-                  fontWeight: '300',
-                  cursor: 'pointer',
-                }}
-              >
-                friends
-              </Typography>
-            </Box>
+      {/* Listing friends user has messaged */}
+      {showMessages ? (
+        <ScrollingContainer>
+          {messageObjects.length 
+            ? messageObjects.map((messageObject) => (
+              <MessageItem
+                key={messageObject._key}
+                message={messageObject}
+                openMessagePage={openMessagePage}
+              />
+            ))
+            : null
+          }
 
-            <Stack direction="row" width="100%" sx={{ display: 'flex', alignItems: 'center'}}>
-              <Box sx={{ position: 'relative', backgroundColor: 'white', width: "40%"}}>
-                <input
-                  type="text"
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  placeholder="Search..."
-                  style={{
-                    position: "relative",
-                    width: "80%",
-                    height: '100%',
-                    padding: "10px 5px",
-                    fontSize: '18px',
-                    outline: 'none',
-                    border: 'none',
-                  }}
-                />
+          {!messageObjects.length && !searchTerm.length
+            ? <Typography 
+                width="100%" height="100%" display="flex" 
+                justifyContent="center" alignItems="center"
+              >
+                You have not messaged any of your friends 
+              </Typography>
 
-                <img
-                  src="https://s.gr-assets.com/assets/layout/header/icn_nav_search.svg"
-                  alt="search"
-                  height="20px"
-                  width="20px"
-                  style={{ 
-                    position: 'absolute',
-                    right: 10,
-                    top: "10px",
-                  }}
-                />
+            : <Typography 
+                width="100%" height="100%" display="flex" 
+                justifyContent="center" alignItems="center"
+              >
+                No Results
+              </Typography>
+          }
+        </ScrollingContainer>
+      ) : null}
+
+      {/* Listing Friends (both messaged and not) */}
+      {!showMessages ? (
+        <ScrollingContainer>
+          {filteredFriends.length 
+            ? filteredFriends.map((friend) => (
+              <FriendItem
+                key={friend._id}
+                member={friend}
+                user={user}
+                userDetails={userDetails}
+                inMessages={true}
+                openMessagePage={openMessagePage}
+              />
+            ))
+            : null
+          }
+
+          {!filteredFriends.length && !searchTerm.length
+            ? <Box 
+                width="100%" height="100%" display="flex" flexDirection="column"
+                justifyContent="center" alignItems="center"
+              >
+                <Typography>You have no Friends </Typography>
+                <Typography>Search Users in Friends Section and befriend some!</Typography>
               </Box>
-            </Stack>
-          </Stack>
 
-          <Box component="span" fontSize={40} sx={{ cursor: 'pointer', marginBottom: 2}}
-            onClick={() => scroll(-390)}
-          >
-            <BsChevronBarUp />
-          </Box>
+            : <Typography 
+                width="100%" height="100%" display="flex" 
+                justifyContent="center" alignItems="center"
+              >
+                No Results
+              </Typography>
+          }
+        </ScrollingContainer>
+      ) : null}
 
-          <Stack
-            ref={ref}
-            sx={{
-              borderRight: '1px solid #382110',
-              borderLeft: '1px solid #382110',
-              padding: '15px 0',
-              width: '50%',
-              height: '400px',
-              overflowY: 'scroll',
-              '&::-webkit-scrollbar':{
-                width:0,
-              }
-            }}
-            
-          >
-            {showMessages ? (
-              filteredMessageFriends?.length ?
-                filteredMessageFriends.map((messagedFriend) => (
-                  <MessageItem
-                    key={messagedFriend._key}
-                    message={messagedFriend}
-                    handleClickedMessagedFriend={handleClickedMessagedFriend}
-                  />
-                )) 
-              : <Typography
-                  width="100%"
-                  height="100%"
-                  sx={{
-                    display: 'flex',
-                    justifyContent: 'center',
-                    alignItems: 'center',
-                    fontSize: 20,
-                    color: '#382110'
-                  }}
-                >
-                  No Results
-                </Typography>       
-              ) : null   
-            }
-
-            {!showMessages ? (
-              filteredFriends.length ? (
-                filteredFriends.map((friend) => (
-                  <FriendItem 
-                    key={friend._id}
-                    member={friend}
-                    user={user}
-                    userDetails={userDetails}
-                    inMessages={true}
-                    handleClickedFriend={handleClickedFriend}
-                  />
-                ))
-              ) :  (
-                <Typography
-                  width="100%"
-                  height="100%"
-                  sx={{
-                    display: 'flex',
-                    justifyContent: 'center',
-                    alignItems: 'center',
-                    fontSize: 20,
-                    color: '#382110'
-                  }}
-                >No Results</Typography> 
-              ) 
-              ) : null
-            }
-          </Stack> 
-          
-          
-          <Box component="span" fontSize={40} sx={{ cursor: 'pointer', marginTop: 2}}
-            onClick={() => scroll(390)}
-          >
-            <BsChevronBarDown />
-          </Box>
-        </>
-      ) : (
-        messageObject ? (
-          <MessageModal 
-            user={user}
-            messageObj={messageObject}
-            setShowMessageModal={setShowMessageModal}
-          />
-        ): null
-      )}
-
-  </Stack>
+    </Stack>
   );
 }
 

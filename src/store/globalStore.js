@@ -44,7 +44,7 @@ const globalStore = (set) => ({
 
   updateSidebarActiveOption: (option) => {
     set({ sidebarActiveOption: option });
-  }
+  },
 });
 
 const useGlobalStore = create(

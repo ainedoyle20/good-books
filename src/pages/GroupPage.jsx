@@ -23,7 +23,7 @@ const GroupPage = () => {
     if (!user) {
       navigate("/");
     }
-  }, []);
+  }, [user]);
 
   useEffect(() => {
     const getGroupById = async (groupId) => {
@@ -36,7 +36,7 @@ const GroupPage = () => {
     
   }, []);
 
-  if (!group) {
+  if (!group || !user) {
     return <Loader />;
   }
 
@@ -49,7 +49,7 @@ const GroupPage = () => {
         position="absolute" top="90px" left="50px"
         fontSize={20} fontWeight="600" 
         sx={{ cursor: "pointer" }}
-        onClick={() => navigate(`/profile/${user._id}`)}
+        onClick={() => navigate(`/profile/${user?._id}`)}
       >
         Back
       </Typography>

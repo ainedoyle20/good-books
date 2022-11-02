@@ -4,7 +4,7 @@ import { Box, Typography } from '@mui/material';
 
 import { requestFriendship, unfriendMember } from "../../utils";
 
-const FriendItem = ({ member, showFriends, inGroup, user, userDetails, inMessages, handleClickedFriend }) => {
+const FriendItem = ({ member, showFriends, inGroup, user, userDetails, inMessages, openMessagePage }) => {
   const {id} = useParams();
   const navigate = useNavigate();
 
@@ -66,8 +66,7 @@ const FriendItem = ({ member, showFriends, inGroup, user, userDetails, inMessage
             <Typography
               onClick={(e) => {
                 e.stopPropagation();
-                console.log("open message modal")
-                handleClickedFriend(member._id);
+                openMessagePage(member._id);
               }}
               sx={{
                 padding: '5px 10px',

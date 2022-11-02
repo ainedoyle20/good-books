@@ -49,16 +49,13 @@ const Profile = () => {
 
   useEffect(() => {
     const getUserDetails = async () => {
-      fetchUserDetails(id, addUserDetails);
+      await fetchUserDetails(id, addUserDetails);
+      // console.log("details", details);
     }
 
     if (user) {
       getUserDetails();
     }
-
-    // return () => {
-    //   removeUserDetails();
-    // }
   }, [id]);
 
   useEffect(() => {

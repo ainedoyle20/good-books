@@ -1,4 +1,4 @@
-import React, {useState, useRef} from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 import { Stack, Box, Typography } from '@mui/material';
 import { BsChevronBarUp, BsChevronBarDown } from 'react-icons/bs';
 
@@ -6,10 +6,20 @@ import CreateMessage from './CreateMessage';
 import { sendMessage } from '../../utils';
 
 const MessageModal = ({ messageObj, setShowMessageModal, user }) => {
-  const [isCurrentDate, setIsCurrentDate] = useState(false);
   const ref = useRef();
 
   const {_key, messageFriend, datedMessages } = messageObj;
+
+  useEffect(() => {
+    // scrolls to most recent message
+    const scrollToBottom = () => {
+      console.log("scrolling");
+      const el = document.getElementById("message_modal_scrolling_container");
+      el.scrollTop = el.scrollHeight;
+    }
+
+    scrollToBottom();
+  }, [])
 
   const scroll = (scrollOffset) => {
     ref.current.scrollTop += scrollOffset;
@@ -31,6 +41,8 @@ const MessageModal = ({ messageObj, setShowMessageModal, user }) => {
   }
 
   const checkIfNewDate = () => {
+    if (!datedMessages.length) return true;
+
     const currentDateString = new Date().toDateString();
     const dateString = datedMessages[datedMessages.length-1]?.messageDate;
     if (currentDateString === dateString) {
@@ -47,11 +59,15 @@ const MessageModal = ({ messageObj, setShowMessageModal, user }) => {
 
     if (isNewDate) {
       await sendMessage(user._id, messageFriend._id, _key, false, isNewDate, message);
-      window.location.reload();
+      setTimeout(() => {
+        window.location.reload();
+      }, 2000);
     } else {
       const messageKey = datedMessages[datedMessages.length - 1]._key;
       await sendMessage(user._id, messageFriend._id, _key, messageKey, isNewDate, message);
-      window.location.reload();
+      setTimeout(() => {
+        window.location.reload();
+      }, 2000);
     }
     
   }
@@ -108,7 +124,9 @@ const MessageModal = ({ messageObj, setShowMessageModal, user }) => {
         <BsChevronBarUp />
       </Box>
 
+    
       <Stack
+        id="message_modal_scrolling_container"
         ref={ref}
         sx={{
           position: "relative",
@@ -121,9 +139,8 @@ const MessageModal = ({ messageObj, setShowMessageModal, user }) => {
           overflowY: 'scroll',
           '&::-webkit-scrollbar':{
             width:0,
-          }
+          },
         }}
-        
       >
         {datedMessages.map(({ _key, messageDate, texts }) => {
           const dateString = formatDateString(messageDate);
@@ -132,9 +149,10 @@ const MessageModal = ({ messageObj, setShowMessageModal, user }) => {
               key={_key}
               sx={{
                 width: "100%",
-                height: "100%",
+                height: "auto",
                 display: "flex",
-                alignItems: "center"
+                alignItems: "center",
+                paddingBottom: "20px"
               }}
             >
               <Typography

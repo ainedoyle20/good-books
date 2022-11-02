@@ -98,7 +98,7 @@ const FriendsSection = () => {
                 cursor: 'pointer',
               }}
             >
-              requested
+              requests
             </Typography>
           ) : (
             null

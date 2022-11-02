@@ -1,6 +1,6 @@
-import jwt_decode from "jwt-decode";
 import { v4 as uuidv4 } from 'uuid';
 
+import { loginWithGoogle, login, createUser, logout } from './firebase';
 import { client } from './client';
 import { userDetailsQuery, 
   allUsersQuery, 
@@ -11,29 +11,63 @@ import { userDetailsQuery,
   specificDiscussionQuery
 } from './queries';
 
-export const createOrGetUser = async (googleRes, addUserFunc, removeUserFunc) => {
-  const decoded = jwt_decode(googleRes.credential);
-
-  const { name, picture, sub } = decoded;
-
-  const user = {
-    _id: sub,
-    _type: 'user',
-    userName: name,
-    image: picture,
+export const handleLoginWithGoogle = async (storeUser) => {
+  const userObject = await loginWithGoogle();
+  if (!userObject.displayName) {
+    userObject.displayName="User"
   }
 
-  addUserFunc(user);
+  if (!userObject.photoURL) {
+    console.log("google photo", userObject.photoURL);
+    userObject.photoURL = "https://s.gr-assets.com/assets/nophoto/user/u_60x60-267f0ca0ea48fd3acfd44b95afa64f01.png"
+  }
+
+  await createOrGetUser(userObject, storeUser);
+  return true;
+}
+
+export const handleLoginWithEmailAndPassword = async (email, password, storeUser) => {
+  const userObject = await login(email, password);
+  await createOrGetUser(userObject, storeUser);
+  return true;
+}
+
+export const handleSignUpWithEmailAndPassword = async (email, password, userName, storeUser) => {
+  const userObject = await createUser(email, password);
+  userObject.displayName = userName;
+  userObject.photoURL="https://s.gr-assets.com/assets/nophoto/user/u_60x60-267f0ca0ea48fd3acfd44b95afa64f01.png";
+
+  await createOrGetUser(userObject, storeUser);
+  return true;
+}
+
+export const createOrGetUser = async (firebaseUser, storeUserFunc) => {
+  const { displayName, uid, photoURL } = firebaseUser;
+
+  const userDoc = {
+    _id: uid,
+    _type: 'user',
+    userName: displayName,
+    image: photoURL,
+  }
 
   // add user to sanity
   try {
-    await client.createIfNotExists(user);
-    console.log("success logging in");
+    const data = await client.createIfNotExists(userDoc);
+    // console.log("success logging in: ", data);
+    
+    // storing sanity user _id in object in zustand
+    storeUserFunc({ _id: data._id, image: data.image });
   } catch (error) {
-    console.log("Error logging in");
-    removeUserFunc();
+    console.log("Error logging in: ", error);
   }
   
+}
+
+export const handleLogout = async (removeUserFunc, removeUserDetailsFunc, ) => {
+  await logout();
+  removeUserFunc();
+  removeUserDetailsFunc();
 }
 
 export const fetchAllUsers = async (setAllUsers) => {
@@ -391,6 +425,51 @@ export const addDiscussionContribution = async (userId, discussionId, isParticip
 
   } catch (error) {
     console.log("Error adding contribution: ", error);
+  }
+}
+
+export const checkIfMessaged = (messagedUsers, friendId) => {
+  const filtered = messagedUsers.filter((obj) => (
+    obj.messageFriend._id === friendId
+  ));
+
+  return filtered.length 
+    ? {isMessageFriend: true, messageObj: filtered[0]} 
+    : {isMessageFriend: false, messageObj: null}
+}
+
+export const createSanityMessageObj = async (userId, friendId) => {
+  const ids = [`${userId}`, `${friendId}`];
+  const uniqueKey = uuidv4();
+  const datedMessagesKey = uuidv4();
+
+  try {
+    const data = await Promise.all(ids.map(async (id, idx) => (
+      await client.patch(id)
+        .setIfMissing({ messagedUsers: []})
+        .insert("after", "messagedUsers[-1]", [{
+          _key: uniqueKey,
+          _type: 'messagedUser',
+          messageFriend: {
+            _ref: idx === 0 ? ids[1] : ids[0],
+            _type: 'reference',
+          },
+          datedMessages: [
+            {
+              _type: 'datedMessages',
+              _key: datedMessagesKey,
+              messageDate: new Date().toDateString(),
+              texts: [],
+            }
+          ],
+        }])
+        .commit()
+    )));
+
+    const messageObj = data[0]?.messagedUsers?.filter((obj) => obj._key === uniqueKey);
+    return messageObj;
+  } catch (error) {
+    console.log("Error creating sanity message object: ", error);
   }
 }
 

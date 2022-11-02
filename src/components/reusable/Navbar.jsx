@@ -1,24 +1,17 @@
 import React, {useState} from 'react';
-import { useLocation, Link, useNavigate } from 'react-router-dom';
+import { useLocation, Link } from 'react-router-dom';
 import { Stack, Typography, Box } from '@mui/material';
-import { GoogleLogin, googleLogout } from '@react-oauth/google';
 
 import useGlobalStore from '../../store/globalStore';
-import { SearchBar, Dropdown } from './';
-import { createOrGetUser } from '../../utils'
+import { SearchBar, Dropdown, LoginButton } from './';
 
 const Navbar = () => {
-  const { user, addUser, removeUser } = useGlobalStore();
+  const { user } = useGlobalStore();
   const [showSearchBar, setShowSearchBar] = useState(false);
   const [showDropdown, setShowDropdown] = useState(false);
   const {pathname} = useLocation();
 
-  const navigate = useNavigate();
-
-  // const login = useGoogleLogin({
-  //   onSuccess: (response) => createOrGetUser(response, addUser, removeUser),
-  //   onError: () => console.log('Error logging in'),
-  // });
+  // console.log("storedUser: ", user);
 
   return (
     <>
@@ -103,10 +96,7 @@ const Navbar = () => {
 
         {user ? (
           <Box  
-            onClick={() => {
-              console.log(showDropdown);
-              setShowDropdown((prev) => !prev)
-            }}
+            onClick={() => setShowDropdown((prev) => !prev)}
             padding="0 10px"
             sx={{ 
               ":hover": { backgroundColor: "#382110", color: "white" },
@@ -121,21 +111,15 @@ const Navbar = () => {
               alt="profile"
               height="38px"
               width="38px"
-              style={{ borderRadius: "100%", border: `${user?.image ? "none" : "1px solid #9e795d"}`}}
-              onError={(e) => {
-                console.log("error")
-                e.target.src="https://s.gr-assets.com/assets/nophoto/user/u_60x60-267f0ca0ea48fd3acfd44b95afa64f01.png"
-                e.onerror = null;
+              style={{ borderRadius: "100%", border: user?.image ? "none" : "1px solid #9e795d" }}
+              onError={({ currentTarget }) => {
+                currentTarget.onerror = null; // to prevent looping
+                currentTarget.src="https://s.gr-assets.com/assets/nophoto/user/u_60x60-267f0ca0ea48fd3acfd44b95afa64f01.png"
               }}
             />            
           </Box>
         ) : (
-          <GoogleLogin 
-            onSuccess={(response) => createOrGetUser(response, addUser, removeUser)}
-            onError={(error) => {
-              console.log('Error logging in: ', error);
-            }}
-          />
+          <LoginButton />
         )}
         
       </Stack>

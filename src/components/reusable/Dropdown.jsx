@@ -1,25 +1,13 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Stack, Typography, Divider } from '@mui/material';
-import { googleLogout } from '@react-oauth/google';
 
 import useGlobalStore from '../../store/globalStore';
+import { handleLogout } from '../../utils';
 
 const Dropdown = ({ setShowDropdown }) => {
-  console.log("open");
-  const { removeUser, user } = useGlobalStore();
+  const { removeUser, user, removeUserDetails } = useGlobalStore();
   const navigate = useNavigate();
-
-  const handleClick = (e) => {
-    navigate(`/profile/${user._id}`);
-    window.location.reload();
-  }
-
-  const handleLogout = () => {
-    googleLogout();
-    removeUser();
-    setShowDropdown(false);
-  }
 
   return (
     <Stack
@@ -36,14 +24,23 @@ const Dropdown = ({ setShowDropdown }) => {
         backgroundColor: "#FFFFFF",
       }}
     >
-      <Typography onClick={(e) => handleClick(e)} padding="0 15px" width="100%" variant="h6" color="#382110" sx={{ ":hover": { textDecoration: "underline", cursor: "pointer"}}}>
+      <Typography padding="0 15px" width="100%" variant="h6" color="#382110"
+        sx={{ ":hover": { textDecoration: "underline", cursor: "pointer"}}}
+        onClick={() => {
+          navigate(`/profile/${user?._id}`);
+          setShowDropdown(false);
+        }}   
+      >
         Profile
       </Typography>
 
       <Divider component="li" style={{ listStyle: "none", borderColor: "#382110", marginLeft: "10px", marginRight: "10px"}} />
 
       <Typography padding="0 15px" width="100%" variant="h6" color="#382110" sx={{ ":hover": { textDecoration: "underline", cursor: "pointer" }}}
-        onClick={handleLogout}
+        onClick={() => {
+          handleLogout(removeUser, removeUserDetails);
+          setShowDropdown(false);
+        }}
       >
         Logout
       </Typography>

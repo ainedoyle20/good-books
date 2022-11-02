@@ -1,11 +1,11 @@
 import React, {useState, useEffect} from 'react';
 import { Box } from '@mui/material';
 
-const MessageItem = ({ message, handleClickedMessagedFriend }) => {
+const MessageItem = ({ message, openMessagePage }) => {
   // console.log("message", message);
   const [textMessage, setTextMessage] = useState("");
 
-  const { datedMessages } = message;
+  const { datedMessages, messageFriend } = message;
 
   useEffect(() => {
     
@@ -22,10 +22,7 @@ const MessageItem = ({ message, handleClickedMessagedFriend }) => {
 
   return (
     <Box
-      onClick={() => {
-        console.log("open message modal: ", message);
-        handleClickedMessagedFriend(message);
-      }}
+      onClick={() => openMessagePage(messageFriend._id)}
       sx={{
         display: "flex",
         alignItems: 'center',

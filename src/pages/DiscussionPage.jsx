@@ -35,7 +35,7 @@ const DiscussionPage = () => {
     if (!user) {
       navigate("/");
     }
-  }, []);
+  }, [user]);
 
   // fetching discussin document by id
   useEffect(() => {
@@ -179,7 +179,7 @@ const DiscussionPage = () => {
     }
   }
 
-  if (!discussion) {
+  if (!discussion || !user) {
     return <Loader />;
   }
 
@@ -192,7 +192,7 @@ const DiscussionPage = () => {
         position="absolute" top="90px" left="50px"
         fontSize={20} fontWeight="600" 
         sx={{ cursor: "pointer" }}
-        onClick={() => navigate(`/profile/${user._id}`)}
+        onClick={() => navigate(`/profile/${user?._id}`)}
       >
         Back
       </Typography>
@@ -270,7 +270,7 @@ const DiscussionPage = () => {
                             padding: "15px",  
                             borderRadius: "15px",
                             fontSize: "18px",
-                            backgroundColor: postedBy._id === user._id ? "#e3f2fd" : "#e0e0e0"
+                            backgroundColor: postedBy._id === user?._id ? "#e3f2fd" : "#e0e0e0"
                           }}
                         >
                           {text}

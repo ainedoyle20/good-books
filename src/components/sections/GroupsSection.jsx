@@ -11,9 +11,11 @@ const GroupsSection = () => {
 
   const [showMyGroups, setShowMyGroups] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
-  const [filteredGroups, setFilteredGroups] = useState(userDetails?.groups || []);
-  const [filteredPublicGroups, setFilteredPublicGroups] = useState(publicGroups);
+  const [filteredGroups, setFilteredGroups] = useState(userDetails?.groups ? userDetails.groups : []);
+  const [filteredPublicGroups, setFilteredPublicGroups] = useState(publicGroups ? publicGroups : []);
   const [selectedGroups, setSelectedGroups] = useState([]);
+  // console.log("filteredGroups: ", filteredGroups);
+  // console.log("filteredPublicGroups: ", filteredPublicGroups);
 
   const [showGroupModal, setShowGroupModal] = useState(false);
 
@@ -24,12 +26,13 @@ const GroupsSection = () => {
   }, []);
 
   useEffect(() => {
-    if (showMyGroups) {
+    if (showMyGroups && userDetails?.groups) { // checking if groups exist on userDetails
       setFilteredGroups(userDetails?.groups?.filter((group) => (
         group.groupName.toLowerCase().trim().includes(searchTerm.toLowerCase().trim())
         )
       ));
-    } else {
+
+    } else if (!showMyGroups && publicGroups) { // checking if publicGroups are not null
       setFilteredPublicGroups(publicGroups.filter((group) => (
         group.groupName.toLowerCase().trim().includes(searchTerm.toLowerCase().trim())
         )
