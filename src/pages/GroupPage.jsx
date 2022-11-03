@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { Stack, Box, Typography } from '@mui/material';
+import { BiArrowBack } from "react-icons/bi"
 
 import useGlobalStore from '../store/globalStore';
 import { 
@@ -11,7 +12,7 @@ import {
 import { fetchSpecificGroup } from '../utils';
 
 const GroupPage = () => {
-  const { user } = useGlobalStore();
+  const { user, updateNavSection } = useGlobalStore();
   const [showDiscussions, setShowDiscussions] = useState(true);
   const [showDiscussionModal, setShowDiscussionModal] = useState(false);
   const [group, setGroup] = useState(null);
@@ -28,13 +29,21 @@ const GroupPage = () => {
   useEffect(() => {
     const getGroupById = async (groupId) => {
       const specificGroup = await fetchSpecificGroup(groupId);
-      console.log("specificGroup: ", specificGroup);
+      // console.log("specificGroup: ", specificGroup);
       setGroup(specificGroup);
     }
 
     getGroupById(id);
     
   }, []);
+
+  const handleDeleteGroup = async () => {
+    console.log("deleting group");
+    // const success = await deleteGroups(selectedGroups);
+    // if (success) {
+    //   window.location.reload();
+    // }
+  }
 
   if (!group || !user) {
     return <Loader />;
@@ -46,20 +55,23 @@ const GroupPage = () => {
       alignItems="center" justifyContent="center" paddingTop="30px"
     >
       <Typography 
-        position="absolute" top="90px" left="50px"
-        fontSize={20} fontWeight="600" 
-        sx={{ cursor: "pointer" }}
-        onClick={() => navigate(`/profile/${user?._id}`)}
+        position="absolute" top="90px" left="50px" display="flex" alignItems="center" gap={1} fontSize="18px"
+        sx={{ cursor: "pointer", ":hover": { fontSize: "18.5px"} }}
+        onClick={() => {
+          if (!user) return;
+          updateNavSection("groups_section");
+          navigate(`/profile/${user?._id}`);
+        }}
       >
-        Back
+        <BiArrowBack />
+        Groups
       </Typography>
 
       <Stack 
-        sx={{ display: showDiscussionModal ? "none" : "flex"}}
-        width="50%" justifyContent="center" 
-        alignItems="center" marginBottom="30px"
+        sx={{ display: showDiscussionModal || !group ? "none" : "flex"}}
+        width="50%" justifyContent="center" alignItems="center" marginBottom="20px"
       >
-        <Box sx={{ display: 'flex', marginBottom: "30px"}}>
+        <Box sx={{ display: 'flex'}}>
           <Typography
             onClick={() => setShowDiscussions(true)}
             sx={{ 
@@ -81,12 +93,35 @@ const GroupPage = () => {
             group members
           </Typography>
         </Box>
+      </Stack>
 
-        <Box width="100%" display="flex" justifyContent="flex-start">
-          <Typography fontSize="18px" sx={{ cursor: "pointer"}}
+      <Stack
+        sx={{ display: showDiscussionModal || !group ? "none" : "flex"}}
+        direction="row" width="70%" justifyContent="center" alignItems="center" 
+        marginBottom="20px" paddingX="50px"
+      >
+        <Box width="50%" display="flex" justifyContent="flex-start" gap={5}>
+          <Typography sx={{ cursor: "pointer"}}
             onClick={() => setShowDiscussionModal(true)}
           >
             Start Discussion
+          </Typography>
+
+          <Typography sx={{ cursor: "pointer", display: user?._id === group?.postedBy._id ? "none" : "block"}}
+            onClick={() => {
+              if (user?._id === group?.postedBy._id) return;
+              // join group function
+            }}
+          >
+            Join Group
+          </Typography>
+        </Box>
+
+        <Box width="50%" display={user?._id === group?.postedBy._id ? "flex" : "none"} justifyContent="flex-end">
+          <Typography sx={{ cursor: "pointer"}}
+            onClick={handleDeleteGroup}
+          >
+            Delete Group
           </Typography>
         </Box>
       </Stack>

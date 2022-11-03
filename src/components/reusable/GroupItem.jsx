@@ -74,32 +74,6 @@ const GroupItem = ({ group, selectedGroups, setSelectedGroups, user, showMyGroup
       ): null
       }
       
-      {user._id === id ? (
-        <Box sx={{ width: '100px', display: user._id === group?.postedBy?._id ? 'flex': 'none', justifyContent: 'flex-end', paddingRight: '15px'}}>
-          <Box
-            onClick={(e) => {
-              e.stopPropagation();
-              if (selectedGroups.map(obj => obj._id === group._id ? `${group._id}` : null).includes(`${group._id}`) && user._id === group?.postedBy?._id) {
-                const newSelectedGroups = selectedGroups.filter((groupObj) => groupObj._id !== group._id);
-                setSelectedGroups([ ...newSelectedGroups ]);
-              } else if (user._id === group?.postedBy?._id) {
-                setSelectedGroups([ ...selectedGroups, {_id: group._id, members: group.members}])
-              }
-            }}
-            sx={{
-              width: '20px',
-              height: '20px',
-              border: '1px solid black',
-              cursor: 'pointer'
-            }}
-          >
-            {selectedGroups.map(obj => obj._id === group._id ? `${group._id}` : null).includes(`${group._id}`) ? <BsCheck2 /> : null}
-          </Box>
-        </Box>
-      ) : (
-        null
-      )}
-      
     </Box>
   );
 }

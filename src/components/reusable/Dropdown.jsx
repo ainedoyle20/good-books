@@ -6,7 +6,7 @@ import useGlobalStore from '../../store/globalStore';
 import { handleLogout } from '../../utils';
 
 const Dropdown = ({ setShowDropdown }) => {
-  const { removeUser, user, removeUserDetails } = useGlobalStore();
+  const { removeUser, user, removeUserDetails, updateNavSection } = useGlobalStore();
   const navigate = useNavigate();
 
   return (
@@ -27,6 +27,7 @@ const Dropdown = ({ setShowDropdown }) => {
       <Typography padding="0 15px" width="100%" variant="h6" color="#382110"
         sx={{ ":hover": { textDecoration: "underline", cursor: "pointer"}}}
         onClick={() => {
+          updateNavSection("profile_section");
           navigate(`/profile/${user?._id}`);
           setShowDropdown(false);
         }}   

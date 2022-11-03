@@ -2,20 +2,20 @@ import React, { useRef, useEffect } from 'react';
 import { Stack, Box } from '@mui/material';
 import { BsChevronBarUp, BsChevronBarDown } from 'react-icons/bs';
 
-const ScrollingContainer = ({ children, isLarge, inDiscussion, messageObject }) => {
-  const scrollRef = useRef();
+const ScrollingContainer = ({ children, isLarge, inDiscussion, messageObject, discussion }) => {
+  const scrollRef = useRef(); 
 
   useEffect(() => {
-    if (messageObject === null) return;
+    if ((messageObject === null || messageObject === undefined) && !discussion) return;
     // scrolls to most recent message
     const scrollToBottom = () => {
-      console.log("scrolling");
+      console.log("scrolling: ", messageObject, inDiscussion);
       const el = document.getElementById("scrolling_container");
       el.scrollTop = el.scrollHeight;
     }
 
     scrollToBottom();
-  }, [messageObject]);
+  }, [messageObject, discussion]);
 
   const scroll = (scrollOffset) => {
     scrollRef.current.scrollTop += scrollOffset;

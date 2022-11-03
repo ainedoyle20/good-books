@@ -1,39 +1,54 @@
 import React, {useState} from 'react';
-import { Stack, Typography } from '@mui/material';
+import { Box, Stack, Typography } from '@mui/material';
+import { MdOutlineCancel, MdMenu } from "react-icons/md";
 
 import useGlobalStore from '../../store/globalStore';
 
-const Sidebar = () => {
-  const {updateSidebarActiveOption, sidebarActiveOption} = useGlobalStore();
+const Sidebar = ({ setShowSidebar, showSidebar }) => {
+  const {updateNavSection, sidebarActiveOption} = useGlobalStore();
   const [sidebarOptions] = useState(['profile', 'bookshelves', 'friends', 'groups', 'discussions', 'messages']);
 
   return (
-    <Stack
-      sx={{
-        position: 'fixed',
-        left: '0',
-        top: {xs: '120px', md: '60px'},
-        height: '100%',
-        padding: '10px',
-        backgroundColor: '#f4f1ea',
-        zIndex: 1000
-      }}
-    >
-      {sidebarOptions.map((option, idx) => (
-        <a href={`#${option}_section`} onClick={() => updateSidebarActiveOption(`${option}_section`)} key={`${idx}${option}`}>
-          <Typography 
-            color="#382110"
-            sx={{
-              padding: '10px 8px',
-              fontSize: '18px',
-              textDecoration: sidebarActiveOption === `${option}_section` ? 'underline' : 'none',
-            }}
-          >
-            {option}
-          </Typography>
-        </a>
-      ))}
-    </Stack>
+    <>
+      {!showSidebar ? (
+        // Menu
+        <Typography position="fixed" sx={{ top: { xs: "130px", md: "70px" }, cursor: "pointer"}} 
+          left="20px" fontSize="40px" zIndex={1000}
+          onClick={() => setShowSidebar(true)}
+        >
+          <MdMenu/>
+        </Typography>
+      ) : (
+        // Sidebar
+        <Stack
+          position="fixed" left='0' height='100%' width='250px'  paddingLeft="20px"
+          backgroundColor='#f4f1ea'
+          sx={{top: { xs: "120px", md: "60px"}, zIndex: 1000 }}
+        >
+          <Box width="100%" display="flex" justifyContent="flex-end" paddingRight="20px" paddingTop="30px">
+            <Typography 
+              fontSize="30px" sx={{ cursor: "pointer", ":hover": { fontSize: "31px" }}}
+              display="flex" justifyContent="center" alignItems="center" height="50px" width="50px"
+              onClick={() => setShowSidebar(false)}
+            >
+              <MdOutlineCancel  />
+            </Typography>
+          </Box>
+
+          <Stack height="80%" width="100%" padding='0 10px' display="flex" justifyContent="center">
+            {sidebarOptions.map((option, idx) => (
+              <Typography 
+                onClick={() => updateNavSection(`${option}_section`)} key={`${idx}${option}`}
+                color="#382110" marginBottom="50px" fontSize="28px"
+                sx={{ fontWeight: sidebarActiveOption === `${option}_section` ? '600' : '400', cursor: "pointer" }}
+              >
+                {option}
+              </Typography>
+            ))}
+          </Stack>
+        </Stack>
+      )}
+    </>
   );
 }
 

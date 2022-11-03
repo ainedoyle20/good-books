@@ -1,42 +1,67 @@
-import React, {useRef, useState, useEffect} from 'react';
+import React, { useState, useEffect } from 'react';
 import { Box, Stack, Typography } from '@mui/material';
-import { BsChevronBarUp, BsChevronBarDown } from 'react-icons/bs';
 import { useParams } from 'react-router-dom';
 
 import useGlobalStore from '../../store/globalStore';
-import { DiscussionItem } from '../reusable';
+import { DiscussionItem, ScrollingContainer } from '../reusable';
+import { fetchMyDiscussions, fetchPublicDiscussions } from '../../utils';
 
 const DiscussionsSection = () => {
-  const { user, userDetails, publicGroups } = useGlobalStore();
-
+  const { user, userDetails } = useGlobalStore();
   const [showMyDiscussions, setShowMyDiscussions] = useState(true);
-  const [filteredDiscussions, setFilteredDiscussions] = useState(userDetails?.groups?.discussions || []);
-  const [filteredPublicDiscussions, setFilteredPublicDiscussions] = useState(publicGroups?.discussions || []);
+  const [myDiscussions, setMyDiscussions] = useState([]);
+  const [publicDiscussions, setPublicDiscussions] = useState([]);
+
+  const [myFilteredDiscussions, setMyFilteredDiscussions] = useState([]);
+  const [filteredPublicDiscussions, setFilteredPublicDiscussions] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
 
   const {id} = useParams();
-  const ref = useRef();
 
   useEffect(() => {
-    if (showMyDiscussions && userDetails?.groups?.discussions) {
-      setFilteredDiscussions(
-        userDetails?.groups?.discussions?.filter((discussion) => (
-          discussion.discussionName.toLowerCase().trim().includes(searchTerm.toLowerCase().trim())
-        ))
-      );
-    } else {
-      setFilteredPublicDiscussions(
-        publicGroups?.discussions?.filter((discussion) => (
-          discussion.discussionName.toLowerCase().trim().includes(searchTerm.toLowerCase().trim())
-        ))
-      )
-    }
-    
-  }, [searchTerm])
+    if (!user) return;
 
-  const scroll = (scrollOffset) => {
-    ref.current.scrollTop += scrollOffset;
-  };
+    const sortAndSetDiscussions = async () => {
+      // my discussions
+      const myDiscussionsList = await fetchMyDiscussions(user._id);
+      // console.log("myDiscussionsList: ", myDiscussionsList);
+      setMyDiscussions(myDiscussionsList);
+      setMyFilteredDiscussions(myDiscussionsList);
+
+      // public discussions
+      const publicDiscussionsList = await fetchPublicDiscussions();
+      // console.log("publicDiscussionsList: ", publicDiscussionsList);
+      setPublicDiscussions(publicDiscussionsList);
+      setFilteredPublicDiscussions(publicDiscussionsList);
+    }
+
+    sortAndSetDiscussions();
+  }, [user]);
+
+  useEffect(() => {
+    if (!searchTerm.length) return;
+
+    // search my discussions
+    if (showMyDiscussions) {
+      if (!myDiscussions.length) return;
+
+      const filtered = myDiscussions.filter((discussion) => (
+        discussion.discussionName.toLowerCase().trim().includes(searchTerm.toLowerCase().trim())
+      ));
+      setMyFilteredDiscussions(filtered);
+    }
+
+    // search public discussions
+    if (!showMyDiscussions) {
+      if (!publicDiscussions.length) return;
+
+      const filtered = publicDiscussions.filter((discussion) => (
+        discussion.discussionName.toLowerCase().trim().includes(searchTerm.toLowerCase().trim())
+      ));
+      setFilteredPublicDiscussions(filtered);
+    }
+
+  }, [searchTerm]);
 
   return (
     <Stack
@@ -47,20 +72,13 @@ const DiscussionsSection = () => {
       alignItems="center"
       justifyContent="center"
     >
-      <Stack width="50%" 
-        sx={{ 
-          display: 'flex', 
-          justifyContent: 'center', 
-          alignItems: 'center',
-          marginBottom: '30px'
-        }}
-      >
+      <Stack width="50%" display="flex" justifyContent="center" alignItems="center" marginBottom="30px">
         <Box sx={{ display: 'flex', marginBottom: "30px"}}>
           <Typography
             onClick={() => {
+              setMyFilteredDiscussions(myDiscussions);
               setShowMyDiscussions(true);
               setSearchTerm("");
-              setFilteredDiscussions(userDetails?.groups?.discussions || []);
             }}
             sx={{
               fontSize: 25,
@@ -75,9 +93,9 @@ const DiscussionsSection = () => {
           </Typography>
           <Typography
             onClick={() => {
+              setFilteredPublicDiscussions(publicDiscussions);
               setShowMyDiscussions(false);
               setSearchTerm("");
-              setFilteredPublicDiscussions(publicGroups?.discussions || []);
             }}
             sx={{
               fontSize: 25,
@@ -125,113 +143,55 @@ const DiscussionsSection = () => {
         </Stack>
       </Stack>
 
-      <Box component="span" fontSize={40} sx={{ cursor: 'pointer', marginBottom: 2}}
-        onClick={() => scroll(-390)}
-      >
-        <BsChevronBarUp />
-      </Box>
-
-      <Stack
-        ref={ref}
-        sx={{
-          borderRight: '1px solid #382110',
-          borderLeft: '1px solid #382110',
-          padding: '15px 0',
-          width: '50%',
-          height: '400px',
-          overflowY: 'scroll',
-          '&::-webkit-scrollbar':{
-            width:0,
-          }
-        }}
-        
-      >
-        {showMyDiscussions ? 
-          filteredDiscussions?.length ?
-            filteredDiscussions.map((discussion) => (
-              <DiscussionItem 
-                key={discussion._id}
-                discussion={discussion}
-              />
-            )) 
-          : userDetails?.groups?.discussions && userDetails?.groups?.discussions?.length ? (
-              <Typography
-                width="100%"
-                height="100%"
-                sx={{
-                  display: 'flex',
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                  fontSize: 20,
-                  color: '#382110'
-                }}
-              >
-                No discussions matching &#8220;{searchTerm}&#8221; were found
-              </Typography> 
-            ) : (
-              <Stack
-                width="100%"
-                height="100%"
-                sx={{
-                  display: 'flex',
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                }}
-              >
-                <Typography
-                sx={{
-                  fontSize: 20,
-                  color: '#382110'
-                }}
-                >
-                  No Discussions 
-                </Typography>
-                {user?._id === id && (
-                  <Typography
-                    sx={{
-                      fontSize: 20,
-                      color: '#382110'
-                    }}
-                  >
-                    Join a group to participate in a discussion
-                  </Typography>
-                )}
-              </Stack>
-            )      
-          : null   
-        }
-
-        {!showMyDiscussions ? (
-          filteredPublicDiscussions.length ? (
-            filteredPublicDiscussions.map((discussion) => (
-              <DiscussionItem 
-                key={discussion._id}
-                discussion={discussion}
-              />
+      {showMyDiscussions ? (
+        <ScrollingContainer>
+          {myFilteredDiscussions.length ? (
+            myFilteredDiscussions.map((discussion, idx) => (
+              <DiscussionItem key={`${discussion._id}-${idx}`} discussion={discussion} />
             ))
-          ) :  (
-            <Typography
-              width="100%"
-              height="100%"
-              sx={{
-                display: 'flex',
-                justifyContent: 'center',
-                alignItems: 'center',
-                fontSize: 20,
-                color: '#382110'
-              }}
-            >No Results</Typography> 
-          ) 
-          ) : null
-        }
-      </Stack> 
-      
-      
-      <Box component="span" fontSize={40} sx={{ cursor: 'pointer', marginTop: 2}}
-        onClick={() => scroll(390)}
-      >
-        <BsChevronBarDown />
-      </Box>
+          ) : null}
+
+          {!myFilteredDiscussions.length && searchTerm.length ? (
+            <Typography width="100%" height="100%" fontSize="20px"
+              display="flex" justifyContent="center" alignItems="center"
+            >
+              No discussions found
+            </Typography>
+          ) : null}
+
+          {!myDiscussions.length ? (
+            <Box width="100%" height="100%" display="flex" justifyContent="center" alignItems="center">
+              <Typography fontSize="20px">You are not a participant in any discussion</Typography>
+              <Typography fontSize="20px">Contribute to a discussion to become a participant</Typography>
+            </Box>
+          ) : null}
+        </ScrollingContainer>
+      ) : null}
+
+      {!showMyDiscussions ? (
+        <ScrollingContainer>
+          {filteredPublicDiscussions.length ? (
+            filteredPublicDiscussions.map((discussion, idx) => (
+              <DiscussionItem key={`${discussion._id}-${idx}`} discussion={discussion} />
+            ))
+          ) : null}
+
+          {!filteredPublicDiscussions.length && searchTerm.length ? (
+            <Typography width="100%" height="100%" fontSize="20px"
+              display="flex" justifyContent="center" alignItems="center"
+            >
+              No discussions found
+            </Typography>
+          ) : null}
+
+          {!publicDiscussions.length ? (
+            <Box width="100%" height="100%" display="flex" justifyContent="center" alignItems="center">
+              <Typography fontSize="20px">There are no public discussions</Typography>
+              <Typography fontSize="20px">Join a group and contribute to a discussion to become a participant</Typography>
+            </Box>
+          ) : null}
+        </ScrollingContainer>
+      ) : null}
     </Stack>
   );
 }

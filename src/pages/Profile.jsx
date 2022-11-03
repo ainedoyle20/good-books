@@ -1,11 +1,13 @@
 import React, {useEffect, useState} from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { Stack } from '@mui/material';
+import { Stack, Typography } from '@mui/material';
+import { MdMenu } from "react-icons/md";
 
 import useGlobalStore from '../store/globalStore';
 import { 
   ProfileSection,
   FriendsSection,
+  MyBooksSection,
   GroupsSection,
   DiscussionsSection,
   MessagesSection,
@@ -15,16 +17,11 @@ import { fetchUserDetails, fetchAllUsers } from '../utils';
 
 const Profile = () => {
   const { 
-    navSection,
-    updateNavSection,
-    user,
-    userDetails,
-    addUserDetails,
-    removeUserDetails,
-    updateSidebarActiveOption,
-    updateAllUsers, 
+    navSection, user, userDetails, addUserDetails,
+    updateSidebarActiveOption, updateAllUsers, 
   } = useGlobalStore();
 
+  const [showSidebar, setShowSidebar] = useState(false);
   const navigate = useNavigate();
   const {id} = useParams();
 
@@ -35,17 +32,14 @@ const Profile = () => {
   }, [user]);
 
   useEffect(() => {
-    if (navSection?.length && userDetails !== null) {
+    if (navSection?.length && userDetails && user) {
       document.getElementById(navSection).scrollIntoView({
         behavior: 'smooth'
       });
 
       updateSidebarActiveOption(navSection);
-      updateNavSection("");
-    } else {
-      return;
     }
-  }, []); 
+  }, [navSection, userDetails]); 
 
   useEffect(() => {
     const getUserDetails = async () => {
@@ -67,13 +61,10 @@ const Profile = () => {
   }
 
   return (
-    <Stack
-      sx={{
-        paddingTop: { xs: "120px", md: "60px"}
-      }}
-    >
-      <Sidebar />
+    <Stack sx={{ paddingTop: { xs: "120px", md: "60px"} }}>
+      <Sidebar setShowSidebar={setShowSidebar} showSidebar={showSidebar} />
       <ProfileSection />
+      <MyBooksSection />
       <FriendsSection />
       <GroupsSection />
       <DiscussionsSection />

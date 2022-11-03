@@ -1,12 +1,26 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Box, Typography } from '@mui/material';
 
 import { requestFriendship, unfriendMember } from "../../utils";
 
 const FriendItem = ({ member, showFriends, inGroup, user, userDetails, inMessages, openMessagePage }) => {
+  const [requestedFriend, setRequestedFriend] = useState(false);
+  const [isFriend, setIsFriend] = useState(false);
   const {id} = useParams();
   const navigate = useNavigate();
+
+  useEffect(() => {
+    if (!userDetails || !member) return;
+
+    if (userDetails?.requestedFriends?.map(requested => requested._id).includes(member._id)) {
+      setRequestedFriend(true);
+    }
+
+    if (userDetails?.friends?.map(friend => friend._id).includes(member._id)) {
+      setIsFriend(true);
+    }
+  }, [])
 
   const handleRequestFriendship = async (memberId) => {
     if (user?._id !== id) return;
@@ -23,6 +37,18 @@ const FriendItem = ({ member, showFriends, inGroup, user, userDetails, inMessage
     const success = await unfriendMember(id, friendId);
     if (success) {
       window.location.reload();
+    }
+  }
+
+  const manageFriendshipStatus = () => {
+    if (requestedFriend) return;
+
+    if (user?._id === id) {
+      if (isFriend) {
+        handleUnfriendMember(member?._id);
+      } else {
+        handleRequestFriendship(member?._id);
+      }
     }
   }
 
@@ -48,10 +74,14 @@ const FriendItem = ({ member, showFriends, inGroup, user, userDetails, inMessage
     >
       <img 
         alt="user profile picture"
-        src={member.image}
+        src={member.image ? member.image : "https://s.gr-assets.com/assets/nophoto/user/u_60x60-267f0ca0ea48fd3acfd44b95afa64f01.png"}
         height="40px"
         width="40px"
         style={{ borderRadius: "100%", margin: '0 15px 0 10px'}}
+        onError={({ currentTarget }) => {
+          currentTarget.onerror = null; // to prevent looping
+          currentTarget.src="https://s.gr-assets.com/assets/nophoto/user/u_60x60-267f0ca0ea48fd3acfd44b95afa64f01.png"
+        }}
       />
 
       <Box component="span" 
@@ -82,28 +112,24 @@ const FriendItem = ({ member, showFriends, inGroup, user, userDetails, inMessage
             <Typography
               onClick={(e) => {
                 e.stopPropagation();
-                if (user?._id === id) {
-                  if (showFriends) {
-                    handleUnfriendMember(member?._id);
-                  } else {
-                    handleRequestFriendship(member?._id);
-                  }
-                }
+                if (requestedFriend) return;
+                manageFriendshipStatus();
               }}
+
               sx={{
                 padding: '5px 10px',
                 borderRadius: "10%",
-                cursor: user?._id === id ? 'pointer': 'default',
+                cursor: user?._id === id && !requestedFriend ? 'pointer': 'default',
                 opacity: '0.70',
-                ":hover": { opacity: user?._id === id ? '1' : '0.70'},
+                ":hover": { opacity: user?._id === id && !requestedFriend ? '1' : '0.70'},
                 fontSize: '18px',
-                color: userDetails?.friends?.map(friend => friend._id).includes(member._id) ? "black" : "white",
-                backgroundColor: userDetails?.friends?.map(friend => friend._id).includes(member._id) ? "#efebe9" : "#3e2723",
+                color: "black",
+                backgroundColor: "#efebe9",
               }}
             >
-              {userDetails?.friends?.map(friend => friend._id).includes(member._id) 
+              {isFriend 
                 ? "unfriend" 
-                : userDetails?.requestedFriends?.map(requested => requested._id).includes(member._id)
+                : requestedFriend
                 ? "requested"
                 : "befriend"
               }

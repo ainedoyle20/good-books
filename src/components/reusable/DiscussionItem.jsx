@@ -6,7 +6,6 @@ const DiscussionItem = ({ discussion }) => {
   const navigate = useNavigate();
   return (
     <Box
-      key={discussion?._id}
       onClick={() => navigate(`/discussion/${discussion._id}`)}
       sx={{
         display: "flex",

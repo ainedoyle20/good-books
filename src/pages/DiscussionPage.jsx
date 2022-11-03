@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { Stack, Box, Typography } from '@mui/material';
+import { BiArrowBack } from "react-icons/bi";
 
 import useGlobalStore from '../store/globalStore';
 import { 
@@ -11,12 +12,13 @@ import {
 import { 
   fetchSpecificDiscussion, 
   fetchSpecificGroup, 
-  addDiscussionContribution,
+  addContribution,
+  addContributionNewDate,
   formatDateString 
 } from '../utils';
 
 const DiscussionPage = () => {
-  const { user } = useGlobalStore();
+  const { user, updateNavSection } = useGlobalStore();
   const [loading, setLoading] = useState(false);
   const [showDiscussion, setShowDiscussion] = useState(true);
   const [discussion, setDiscussion] = useState(null);
@@ -25,7 +27,7 @@ const DiscussionPage = () => {
   const [isPublic, setIsPublic] = useState(false);
   const [isParticipant, setIsParticipant] = useState(false);
   const [isNewDate, setIsNewDate] = useState(false);
-  const [datedMessagesKey, setDatedMessagesKey] = useState("");
+  const [objectKey, setObjectKey] = useState("");
 
   const navigate = useNavigate();
   const { id } = useParams();
@@ -55,53 +57,54 @@ const DiscussionPage = () => {
 
     const { participants } = discussion;
 
+    if (!participants.length) {
+      setIsParticipant(false);
+      return;
+    }
+
     const filteredParticipants = participants?.filter((participant) => (
       participant._id === user._id
     ))
 
-    // IS a participant
-    if (filteredParticipants?.length) setIsParticipant(true);
-    
+   
+    if (filteredParticipants?.length) { // IS a participant
+      setIsParticipant(true);
+    } else {                 // NOT a participant
+      setIsParticipant(false);
+    }
   }, [discussion]);
 
-  // checking date for contributions
+  // checking if today's date is recorded
   useEffect(() => {
     if (!discussion) return;
 
     const { contributions } = discussion;
 
-    if (!contributions?.length) {
+    if (!contributions.length) {
       // There are no recorded dates (today's date has to be new)
       setIsNewDate(true);
 
     } else {
+      // getting the LAST RECORDED DATE and comparing to TODAYS DATE
+      const lastDatedObject = contributions[contributions.length -1];
+      const lastDateString = lastDatedObject.messageDate;
+      const todaysDateString = new Date().toDateString();
 
-      // getting the date of the most recent contributions
-      const { messageDate } = contributions[contributions.length -1] ? contributions[contributions.length -1] : null;
-
-      // checking if the most recent recorded date is equal to today's date
-      if (messageDate === new Date().toDateString()) {
+      if (lastDateString === todaysDateString) {
+        // Todays date is recorded already (NOT new date)
         setIsNewDate(false);
+
+        // getting dated object _key (for adding contributions into correct dated object in sanity)
+        const datedContributionKey = lastDatedObject._key;
+        setObjectKey(datedContributionKey);
+
       } else {
+        // Todays date isn't recorded (IS new date)
         setIsNewDate(true);
       }
     }
 
   }, [discussion]);
-
-  // getting key 
-  useEffect(() => {
-    if (isNewDate || !discussion || !discussion.contributions?.length) {
-      return;
-    } else {
-      // need to get key of most recent contributions object
-      // needed for adding a contribution/message
-
-      const { contributions } = discussion;
-      const { _key } = contributions[contributions.length -1];
-      setDatedMessagesKey(_key);
-    }
-  }, [isNewDate, discussion]);
 
   // fetching group by id
   useEffect(() => {
@@ -119,8 +122,7 @@ const DiscussionPage = () => {
     
   }, [discussion]);
 
-  // checking if discussion in public
-  // and checking if current user is a member of discussion's group
+  // checking if discussion is PUBLIC and if current user is a MEMBER of discussion's group
   useEffect(() => {
     if (!group) return;
 
@@ -163,24 +165,15 @@ const DiscussionPage = () => {
       return;
     }
 
-    const success = await addDiscussionContribution(
-      user._id, 
-      discussion._id, 
-      isParticipant,
-      isNewDate,
-      contribution,
-      datedMessagesKey
-    )
-
-    if (success) {
-      setTimeout(() => {
-        window.location.reload();
-      }, 2000);
+    if (isNewDate) {
+      await addContributionNewDate(user._id, id, isParticipant, contribution);
+    } else {
+      await addContribution(user._id, id, objectKey, isParticipant, contribution);
     }
-  }
 
-  if (!discussion || !user) {
-    return <Loader />;
+    setTimeout(() => {
+      window.location.reload();
+    }, 3000)
   }
 
   return (
@@ -189,12 +182,16 @@ const DiscussionPage = () => {
       alignItems="center" justifyContent="center" paddingTop="30px"
     >
       <Typography 
-        position="absolute" top="90px" left="50px"
-        fontSize={20} fontWeight="600" 
-        sx={{ cursor: "pointer" }}
-        onClick={() => navigate(`/profile/${user?._id}`)}
+        position="absolute" top="90px" left="50px" display="flex" alignItems="center" gap={1} fontSize="18px"
+        sx={{ cursor: "pointer", ":hover": { fontSize: "18.5px"} }}
+        onClick={() => {
+          if (!user) return;
+          updateNavSection("discussions_section");
+          navigate(`/profile/${user?._id}`);
+        }}
       >
-        Back
+        <BiArrowBack />
+        Discussions
       </Typography>
 
       <Stack 
@@ -226,63 +223,72 @@ const DiscussionPage = () => {
       </Stack>
 
       {showDiscussion ? (
-        <ScrollingContainer isLarge={true} inDiscussion={true}>
-          {loading ? (
+        <ScrollingContainer isLarge={true} inDiscussion={true} discussion={discussion}>
+          {loading || !discussion ? (
             <Loader inScrollingContainer={true} />
           ) : (
             <>
-              {discussion?.contributions?.map(({ _key, messageDate, texts }) => {
-                const dateString = formatDateString(messageDate);
-                return (
-                  <Stack
-                    key={_key}
-                    sx={{
-                      width: "100%",
-                      height: "100%",
-                      display: "flex",
-                      alignItems: "center"
-                    }}
-                  >
-                    <Typography color="#757575">
-                      {dateString}
-                    </Typography>
+              <Stack width="100%" height="100%" paddingBottom="20px">
+                {discussion?.contributions?.map(({ _key, messageDate, texts }) => {
+                  const dateString = formatDateString(messageDate);
+                  return (
+                    <Stack
+                      key={_key}
+                      sx={{
+                        width: "100%",
+                        height: "100%",
+                        display: "flex",
+                        alignItems: "center"
+                      }}
+                    >
+                      <Typography color="#757575">
+                        {dateString}
+                      </Typography>
 
-                    {texts.map(({text, postedBy}, idx) => (
-                      <Box
-                        key={`${text}-${idx}`}
-                        sx={{
-                          width: "100%",
-                          display: "flex",
-                          flexDirection: "column",
-                          alignItems: postedBy._id === user?._id ? "flex-end" : "flex-start",
-                          margin: "10px 0",
-                          padding: "0 10px"
-                        }}
-                      >
-                        <Typography width="40%" color="#bdbdbd" fontSize="14px" fontWeight="light"
-                          paddingLeft="5px"
-                        >
-                          {postedBy?.userName}
-                        </Typography>
-                        <p
-                          style={{ 
-                            width: "40%", 
-                            padding: "15px",  
-                            borderRadius: "15px",
-                            fontSize: "18px",
-                            backgroundColor: postedBy._id === user?._id ? "#e3f2fd" : "#e0e0e0"
+                      {texts.map(({text, postedBy}, idx) => (
+                        <Box
+                          key={`${text}-${idx}`}
+                          sx={{
+                            width: "100%",
+                            display: "flex",
+                            flexDirection: "column",
+                            alignItems: postedBy._id === user?._id ? "flex-end" : "flex-start",
+                            margin: "10px 0",
+                            padding: "0 10px"
                           }}
                         >
-                          {text}
-                        </p>
-                      </Box>
-                    ))}
-                  </Stack>
-                );
-              })}
+                          <Typography width="40%" color="#bdbdbd" fontSize="14px" fontWeight="light"
+                            paddingLeft="5px"
+                          >
+                            {postedBy?.userName}
+                          </Typography>
+                          <p
+                            style={{ 
+                              width: "40%", 
+                              padding: "15px",  
+                              borderRadius: "15px",
+                              fontSize: "18px",
+                              backgroundColor: postedBy._id === user?._id ? "#e3f2fd" : "#e0e0e0"
+                            }}
+                          >
+                            {text}
+                          </p>
+                        </Box>
+                      ))}
+                    </Stack>
+                  );
+                })}
+
+                {discussion && !discussion.contributions.length ? (
+                  <Typography width="100%" height="100%" display="flex" alignItems="center" justifyContent="center" fontSize="20px">
+                    Be the first to contribute
+                  </Typography>
+                ) : null}
+              </Stack>
 
               <CreateMessage 
                 handleCreateMessage={handleContribute}
+                isLoading={loading}
               />
             </> 
           )}
@@ -291,19 +297,20 @@ const DiscussionPage = () => {
 
       {!showDiscussion ? (
         <ScrollingContainer isLarge={true}>
-          {
-            discussion?.participants?.map((participant) => (
-              <FriendItem
-                key={participant._id}
-                member={participant}
-                inMessages={false}
-                inGroup={true}
-                user={user}
-              />
-            ))
+          {discussion && discussion?.participants?.length 
+            ? discussion.participants?.map((participant) => (
+                <FriendItem
+                  key={participant._id}
+                  member={participant}
+                  inMessages={false}
+                  inGroup={true}
+                  user={user}
+                />
+              ))
+            : null
           }
 
-          {!discussion?.participants?.length 
+          {discussion && !discussion?.participants?.length 
             ? <Box 
                 width="100%" height="100%" display="flex" flexDirection="column"  
                 justifyContent="center" alignItems="center" color="#382110"
@@ -311,6 +318,11 @@ const DiscussionPage = () => {
                 <Typography fontSize={30}>No one has participated in this discussion yet</Typography>
                 <Typography fontSize={30}>Be the first to contribute!</Typography>
               </Box>
+            : null
+          }
+
+          {!discussion
+            ? <Loader inScrollingContainer={true} />
             : null
           }
         </ScrollingContainer>

@@ -58,8 +58,8 @@ const ReqFriendItem = ({ member, user }) => {
             borderRadius: "10%",
             opacity: '0.70',
             fontSize: '18px',
-            color: "white",
-            backgroundColor: "#3e2723",
+            color: "black",
+            backgroundColor: "#efebe9",
             cursor: 'pointer'
           }}
         >

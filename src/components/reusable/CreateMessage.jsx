@@ -2,20 +2,13 @@ import React, {useState} from 'react';
 import { Box } from '@mui/material';
 import { HiArrowUp } from 'react-icons/hi'
 
-const CreateMessage = ({ handleCreateMessage }) => {
+const CreateMessage = ({ handleCreateMessage, isLoading }) => {
   const [createdMessage, setCreatedMessage] = useState("");
 
   return (
-    <Box
-      width="100%"
-      position="sticky"
-      bottom="0"
-      display="flex"
-      alignItems="center"
-      justifyContent="center"
-      sx={{
-        backgroundColor: "#f4f1ea"
-      }}
+    <Box width="100%" position="sticky" bottom="0"
+      display="flex" alignItems="center" justifyContent="center"
+      sx={{  backgroundColor: "#f4f1ea" }}
     >
       <textarea
         type="text"
@@ -38,9 +31,10 @@ const CreateMessage = ({ handleCreateMessage }) => {
       />
 
       <button
+        disabled={isLoading || !createdMessage.trim().length}
         type="button"
         onClick={() => {
-          if (createdMessage.length) {
+          if (createdMessage.length && createdMessage.trim().length) {
             console.log("Sending message...");
             handleCreateMessage(createdMessage);
             setCreatedMessage("");
@@ -54,11 +48,11 @@ const CreateMessage = ({ handleCreateMessage }) => {
           display: "flex",
           justifyContent: "center",
           alignItems: "center",
-          color: createdMessage.length ? "white" : "#382110",
-          backgroundColor: createdMessage.length ? "#382110" : "#f4f1ea",
-          opacity: createdMessage.length ? "1" : "0.2",
-          border: createdMessage.length ? "none" : '1px solid #382110',
-          cursor: createdMessage.length ? "pointer" : "default"
+          color: createdMessage.length && createdMessage.trim().length ? "white" : "#382110",
+          backgroundColor: createdMessage.length && createdMessage.trim().length ? "#382110" : "#f4f1ea",
+          opacity: createdMessage.length && createdMessage.trim().length ? "1" : "0.2",
+          border: createdMessage.length && createdMessage.trim().length ? "none" : '1px solid #382110',
+          cursor: createdMessage.length && createdMessage.trim().length ? "pointer" : "default"
         }}
       >
         <HiArrowUp />

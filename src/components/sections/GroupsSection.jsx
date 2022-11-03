@@ -3,7 +3,7 @@ import { Box, Stack, Typography } from '@mui/material';
 import { useParams } from 'react-router-dom';
 
 import useGlobalStore from '../../store/globalStore';
-import { deleteGroups,fetchPublicGroups } from '../../utils';
+import { fetchPublicGroups } from '../../utils';
 import { GroupItem, CreateGroupModal, ScrollingContainer } from '../reusable'
 
 const GroupsSection = () => {
@@ -40,13 +40,6 @@ const GroupsSection = () => {
     }
     
   }, [searchTerm])
-
-  const handleDeleteGroups = async () => {
-    const success = await deleteGroups(selectedGroups);
-    if (success) {
-      window.location.reload();
-    }
-  }
 
   return (
     <>
@@ -133,33 +126,15 @@ const GroupsSection = () => {
               </Box>
               
               {user._id === id ? (
-                <Box sx={{ width: "40%", display: 'flex'}}>
+                <Box paddingRight="25px">
                   <Typography
                     onClick={() => setShowGroupModal(true)}
-                    sx={{
-                      fontSize: "18px",
-                      cursor: 'pointer',
-                    }}
+                    sx={{ fontSize: "18px", cursor: 'pointer' }}
                   >
                     Create Group
                   </Typography>
-
-                  <Typography
-                    onClick={handleDeleteGroups}
-                    sx={{
-                      fontSize: "18px",
-                      cursor: 'pointer',
-                      display: selectedGroups.length ? "block" : 'none',
-                      marginLeft: '40px'
-                    }}
-                  >
-                    Delete
-                  </Typography>
                 </Box>
-              ) : (
-                null
-              )}
-              
+              ) : null}
             </Stack>
           </Stack>
 

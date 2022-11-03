@@ -36,10 +36,14 @@ const MessageItem = ({ message, openMessagePage }) => {
     >
       <img 
         alt="user profile picture"
-        src={message?.messageFriend?.image}
+        src={message?.messageFriend?.image ? message.messageFriend.image : "https://s.gr-assets.com/assets/nophoto/user/u_60x60-267f0ca0ea48fd3acfd44b95afa64f01.png"}
         height="40px"
         width="40px"
         style={{ borderRadius: "100%", margin: '0 15px 0 10px'}}
+        onError={({ currentTarget }) => {
+          currentTarget.onerror = null; // to prevent looping
+          currentTarget.src="https://s.gr-assets.com/assets/nophoto/user/u_60x60-267f0ca0ea48fd3acfd44b95afa64f01.png"
+        }}
       />
 
       <Box component="span" 

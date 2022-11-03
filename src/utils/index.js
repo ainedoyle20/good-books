@@ -366,49 +366,81 @@ export const fetchSpecificDiscussion = async (discussionId) => {
   }
 }
 
-export const addDiscussionContribution = async (userId, discussionId, isParticipant, isNewDate, text, datedMessagesKey) => {
-  console.log("isParticipant: ", isParticipant, "isNewDate: ", isNewDate, "datedMessagesKey: ", datedMessagesKey);
+const findMyDiscussions = (discussionsList, userId) => {
+  const myDiscussionsList = discussionsList.filter((discussion) => {
+    let isParticipant;
+    discussion.participants.map((participant) => {
+      if (participant._ref === userId) {
+        isParticipant = true;
+      }
+      return participant;
+    });
 
+    if (isParticipant) {
+      return discussion;
+    }
+  });
+
+  return myDiscussionsList;
+}
+
+const getPublicDiscussionsList = (publicGroupsList) => {
+  const discussionsList = [];
+
+  publicGroupsList.forEach((publicGroup) => {
+    publicGroup.discussions.forEach((discussion) => discussionsList.push(discussion));
+  });
+
+  return discussionsList;
+} 
+
+export const fetchMyDiscussions = async (userId) => {
   try {
-    if (isNewDate) {
-      console.log("IS NEW DATE");
-      // creating new datedMessage object with new contribution
-      await client.patch(discussionId)
-        .setIfMissing({ contributions: [] })
-        .insert("after", `contributions[-1]`, [{
-          _type: "datedMessages",
-          _key: uuidv4(),
-          messageDate: new Date().toDateString(),
-          texts: [{
-            _type: "message",
-            _key: uuidv4(),
-            text,
-            postedBy: {
-              _type: 'reference',
-              _ref: userId
-            }
-          }]
-        }])
-        .commit();
+    const allDiscussions = await client.fetch('*[_type=="discussion"]');
+    const myDiscussions = findMyDiscussions(allDiscussions, userId);
+    return myDiscussions;
+  } catch (error) {
+    console.log("Error getting user's discussions: ", error);
+  }
+}
 
-    } else {
-      console.log("NOT NEW DATE");
-      // adding new contribution (text) to existing datedMessage object
-      await client.patch(discussionId)
-        .setIfMissing({ contributions: [] })
-        .insert("after", `contributions[_key=="${datedMessagesKey}"].texts[-1]`, [{
-          _type: "message",
+export const fetchPublicDiscussions = async () => {
+  try {
+    const publicGroupsList =  await client.fetch(`*[_type == "group" && public==true]{
+      discussions[]->{
+        _id,
+        discussionName,
+        groupName,
+        participants
+      }
+    }`);
+    const publicDiscussionsList = getPublicDiscussionsList(publicGroupsList);
+    return publicDiscussionsList;
+  } catch (error) {
+    console.log("Error fetching public discussions: ", error);
+  }
+}
+
+export const addContributionNewDate = async (userId, discussionId, isParticipant, text) => {
+  try {
+    await client.patch(discussionId)
+      .setIfMissing({ contributions: [] })
+      .insert("after", "contributions[-1]", [{
+        _type: "datedMessages",
+        _key: uuidv4(),
+        messageDate: new Date().toDateString(),
+        texts: [{
+          _type: 'message',
           _key: uuidv4(),
           text,
           postedBy: {
-            _type: 'reference',
+            _type: 'postedBy',
             _ref: userId
           }
-        }])
-        .commit();
-
-    }
-
+        }],
+      }])
+      .commit();
+    
     // Adding current user as participant if not already
     if (!isParticipant) {
       await client.patch(discussionId)
@@ -420,13 +452,103 @@ export const addDiscussionContribution = async (userId, discussionId, isParticip
         }])
         .commit();
     }
+  } catch (error) {
+    console.log("Error adding contribution with date: ", error);
+  }
+}
 
-    return true;
-
+export const addContribution = async (userId, discussionId, contributionKey, isParticipant, text) => {
+  try {
+    await client.patch(discussionId)
+      .setIfMissing({ contributions: [] })
+      .insert("after", `contributions[_key=="${contributionKey}"].texts[-1]`, [{
+        _type: 'message',
+        _key: uuidv4(),
+        text,
+        postedBy: {
+          _type: 'postedBy',
+          _ref: userId
+        }
+      }])
+      .commit();
+    
+    // Adding current user as participant if not already
+    if (!isParticipant) {
+      await client.patch(discussionId)
+        .setIfMissing({ participants: [] })
+        .insert("after", "participants[-1]", [{
+          _type: "reference",
+          _ref: userId,
+          _key: uuidv4()
+        }])
+        .commit();
+    }
   } catch (error) {
     console.log("Error adding contribution: ", error);
   }
 }
+
+// export const addDiscussionContribution = async (userId, discussionId, isParticipant, isNewDate, text, datedMessagesKey) => {
+//   console.log("isParticipant: ", isParticipant, "isNewDate: ", isNewDate, "datedMessagesKey: ", datedMessagesKey);
+
+//   try {
+//     if (isNewDate) {
+//       console.log("IS NEW DATE");
+//       // creating new datedMessage object with new contribution
+//       await client.patch(discussionId)
+//         .setIfMissing({ contributions: [] })
+//         .insert("after", `contributions[-1]`, [{
+//           _type: "datedMessages",
+//           _key: uuidv4(),
+//           messageDate: new Date().toDateString(),
+//           texts: [{
+//             _type: "message",
+//             _key: uuidv4(),
+//             text,
+//             postedBy: {
+//               _type: 'reference',
+//               _ref: userId
+//             }
+//           }]
+//         }])
+//         .commit();
+
+//     } else {
+//       console.log("NOT NEW DATE");
+//       // adding new contribution (text) to existing datedMessage object
+//       await client.patch(discussionId)
+//         .setIfMissing({ contributions: [] })
+//         .insert("after", `contributions[_key=="${datedMessagesKey}"].texts[-1]`, [{
+//           _type: "message",
+//           _key: uuidv4(),
+//           text,
+//           postedBy: {
+//             _type: 'reference',
+//             _ref: userId
+//           }
+//         }])
+//         .commit();
+
+//     }
+
+//     // Adding current user as participant if not already
+//     if (!isParticipant) {
+//       await client.patch(discussionId)
+//         .setIfMissing({ participants: [] })
+//         .insert("after", "participants[-1]", [{
+//           _type: "reference",
+//           _ref: userId,
+//           _key: uuidv4()
+//         }])
+//         .commit();
+//     }
+
+//     return true;
+
+//   } catch (error) {
+//     console.log("Error adding contribution: ", error);
+//   }
+// }
 
 export const checkIfMessaged = (messagedUsers, friendId) => {
   const filtered = messagedUsers.filter((obj) => (
@@ -473,95 +595,93 @@ export const createSanityMessageObj = async (userId, friendId) => {
   }
 }
 
-export const createMessageObject = async (userId, friendId) => {
-  const ids = [`${userId}`, `${friendId}`];
-  const uniqueKey = uuidv4();
-  const datedMessagesKey = uuidv4();
+// export const createMessageObject = async (userId, friendId) => {
+//   const ids = [`${userId}`, `${friendId}`];
+//   const uniqueKey = uuidv4();
+//   const datedMessagesKey = uuidv4();
+
+//   try {
+//     const data = await Promise.all(ids.map(async (id, idx) => (
+//       await client.patch(id)
+//         .setIfMissing({ messagedUsers: []})
+//         .insert("after", "messagedUsers[-1]", [{
+//           _key: uniqueKey,
+//           _type: 'messagedUser',
+//           messageFriend: {
+//             _ref: idx === 0 ? ids[1] : ids[0],
+//             _type: 'reference',
+//           },
+//           datedMessages: [
+//             {
+//               _type: 'datedMessages',
+//               _key: datedMessagesKey,
+//               messageDate: new Date().toDateString(),
+//               texts: [],
+//             }
+//           ],
+//         }])
+//         .commit()
+//     )));
+
+//     const messageKey = data[0]?.messagedUsers?.filter((obj) => obj._key === uniqueKey);
+//     console.log("messageKey: ", messageKey[0]?._key);
+//     console.log("uniqueKey: ", uniqueKey);
+//     // return messageKey[0]?._key;
+
+//     return uniqueKey;
+//   } catch (error) {
+//     console.log("Error creating messageObject: ", error);
+//   }
+// }
+
+export const sendMessageNewDate = async (userId, friendId, messageFriendKey, text) => {
+  const ids = [userId, friendId];
+  const datedMessageKey = uuidv4();
+  const textKey = uuidv4();
 
   try {
-    const data = await Promise.all(ids.map(async (id, idx) => (
+    await Promise.all(ids.map( async (id) => (
       await client.patch(id)
-        .setIfMissing({ messagedUsers: []})
-        .insert("after", "messagedUsers[-1]", [{
-          _key: uniqueKey,
-          _type: 'messagedUser',
-          messageFriend: {
-            _ref: idx === 0 ? ids[1] : ids[0],
-            _type: 'reference',
-          },
-          datedMessages: [
-            {
-              _type: 'datedMessages',
-              _key: datedMessagesKey,
-              messageDate: new Date().toDateString(),
-              texts: [],
-            }
-          ],
-        }])
-        .commit()
-    )));
-
-    const messageKey = data[0]?.messagedUsers?.filter((obj) => obj._key === uniqueKey);
-    console.log("messageKey: ", messageKey[0]?._key);
-    console.log("uniqueKey: ", uniqueKey);
-    // return messageKey[0]?._key;
-
-    return uniqueKey;
-  } catch (error) {
-    console.log("Error creating messageObject: ", error);
-  }
-}
-
-export const sendMessage = async (userId, friendId, messagedUserKey, datedMessageKey, isNewDate, text) => {
-  const ids = [userId, friendId];
-  const newMessageKey = uuidv4();
-  const newDatedMessageKey = uuidv4();
-
-  if (isNewDate) {
-    try {
-      await Promise.all(ids.map(async (id) => (
-        await client.patch(id)
-          .insert("after", `[_key=="${messagedUserKey}"].datedMessages[-1]`, [{
-            _type: 'datedMessages',
-            _key: newDatedMessageKey,
-            messageDate: new Date().toDateString(),
-            texts: [{
-              _type: 'message',
-              _key: newMessageKey,
-              text: text,
-              postedBy: {
-                _type: 'postedBy',
-                _ref: userId
-              }
-            }],
-          }])
-          .commit()
-      )));
-
-      console.log('added text with new date');
-
-    } catch (error) {
-      console.log("Error sending message with new Date: ", error);
-    }
-  } else {
-    try {
-      await Promise.all(ids.map(async (id) => (
-        await client.patch(id)
-          .insert("after", `messagedUsers[_key=="${messagedUserKey}"].datedMessages[_key=="${datedMessageKey}"].texts[-1]`, [{
-            _type: 'message',
-            _key: newMessageKey,
-            text: text,
+        .insert("after", `messagedUsers[_key=="${messageFriendKey}"].datedMessages[-1]`, [{
+          _key: datedMessageKey,
+          _type: 'datedMessages',
+          messageDate: new Date().toDateString(),
+          texts: [{
+            _key: textKey,
+            _type: "message",
             postedBy: {
               _type: 'postedBy',
               _ref: userId
-            }
-          }]).commit()
-      )))
-  
-      console.log("added text");
-    } catch (error) {
-      console.log("Error adding text: ", error);
-    }
+            },
+            text
+          }]
+        }])
+        .commit()
+    )));
+  } catch (error) {
+    console.log("Error adding message with new date: ", error);
+  }
+}
+
+export const sendMessage = async (userId, friendId, messageFriendKey, datedMessageKey, text) => {
+  const ids = [userId, friendId];
+  const textKey = uuidv4();
+  try {
+    await Promise.all(ids.map(async (id) => (
+      await client.patch(id)
+        .insert("after", `messagedUsers[_key=="${messageFriendKey}"].datedMessages[_key=="${datedMessageKey}"].texts[-1]`, [{
+          _key: textKey,
+          _type: "message",
+          postedBy: {
+            _type: "postedBy",
+            _ref: userId
+          },
+          text
+        }])
+        .commit()
+    )));
+  } catch (error) {
+    console.log("Error sending message: ", error);
   }
 }
 

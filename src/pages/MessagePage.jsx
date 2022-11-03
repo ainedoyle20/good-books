@@ -1,14 +1,18 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Stack, Typography, Box } from '@mui/material';
+import { BiArrowBack } from "react-icons/bi";
 
 import useGlobalStore from '../store/globalStore';
 import { ScrollingContainer, CreateMessage, Loader } from '../components/reusable';
-import { checkIfMessaged, createSanityMessageObj } from '../utils';
+import { checkIfMessaged, createSanityMessageObj, sendMessage, sendMessageNewDate } from '../utils';
 
 const MessagePage = () => {
-  const { user, userDetails} = useGlobalStore();
+  const { user, userDetails, updateNavSection } = useGlobalStore();
+  const [isLoading, setIsLoading] = useState(false);
   const [messageObject, setMessageObject] = useState(null);
+  const [isNewDate, setIsNewDate] = useState(false);
+  const [objectKey, setObjectKey] = useState("");
 
   const { id } = useParams();
   const navigate = useNavigate();
@@ -51,6 +55,39 @@ const MessagePage = () => {
     }
   }, [userDetails, user]);
 
+  useEffect(() => {
+    if (messageObject === null || !user) return;
+
+    const { datedMessages } = messageObject;
+    // console.log("datedMessages: ", datedMessages);
+
+    // Check if todays date matches the most recent dated messages
+    const todaysDateString = new Date().toDateString();
+
+    if (!datedMessages?.length) {
+      // IS new date
+      setIsNewDate(true);
+      
+    } else {
+      // check date string of most recent dated message object in datedMessages
+      const lastDatedMessageObject = datedMessages[datedMessages.length -1];
+      const messageDateString = lastDatedMessageObject.messageDate;
+
+      if (messageDateString === todaysDateString) {
+        // NOT new date
+        setIsNewDate(false);
+        // Get dated message object _key for adding text to sanity
+        const datedMessageObjKey = lastDatedMessageObject._key;
+        setObjectKey(datedMessageObjKey);
+      } else {
+        // IS new date
+        setIsNewDate(true);
+        console.log("IS NEW DATE");
+      }
+    }
+
+  }, [messageObject]);
+
   const formatDateString = (str) => {
     let strArr = str.split(" ").slice(0, 3);
 
@@ -66,9 +103,45 @@ const MessagePage = () => {
     return formattedStr;
   }
 
+  const handleCreateMessage = async (text) => {
+    if (!text || !user || messageObject === null) return;
+
+    if (!text.trim().length) {
+      alert("Your message must have content");
+      return;
+    }
+
+    setIsLoading(true);
+
+    if (isNewDate) {
+      await sendMessageNewDate(user._id, id, messageObject._key, text);
+      setTimeout(() => {
+        window.location.reload();
+      }, 4000)
+    } else {
+      await sendMessage(user._id, id, messageObject._key, objectKey, text);
+      setTimeout(() => {
+        window.location.reload();
+      }, 4000)
+    }
+  }
+
   return (
     <Stack width="100vw" height="100vh" display="flex" justifyContent="center" alignItems="center">
-      <Stack width="50%" display="flex" justifyContent="center" alignItems="center" marginTop="30px">
+      <Typography 
+        position="absolute" top="90px" left="50px" display="flex" alignItems="center" gap={1} fontSize="18px"
+        sx={{ cursor: "pointer", ":hover": { fontSize: "18.5px"} }}
+        onClick={() => {
+          if (!user) return;
+          updateNavSection("messages_section");
+          navigate(`/profile/${user?._id}`);
+        }}
+      >
+        <BiArrowBack />
+        Messages
+      </Typography>
+
+      <Stack width="50%" display="flex" justifyContent="center" alignItems="center" marginTop="70px">
         <img
           alt="profile"
           src={messageObject?.messageFriend?.image 
@@ -106,7 +179,7 @@ const MessagePage = () => {
       </Stack>
 
       <ScrollingContainer isLarge={true} inDiscussion={true} messageObject={messageObject}>
-        {messageObject !== null && user ? (
+        {messageObject !== null && user && !isLoading ? (
           <Stack width="100%" height="auto" paddingBottom="20px">
             {messageObject.datedMessages.map(({ _key, messageDate, texts }) => {
               const dateString = formatDateString(messageDate);
@@ -159,10 +232,10 @@ const MessagePage = () => {
           <Loader inScrollingContainer={true} />
         )}
         
-        <CreateMessage />
+        <CreateMessage handleCreateMessage={handleCreateMessage} isLoading={isLoading} />
       </ScrollingContainer>
     </Stack>
-  )
+  );
 }
 
 export default MessagePage;
