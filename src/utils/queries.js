@@ -191,6 +191,7 @@ export const specificGroupQuery = (groupId) => {
       userName,
       image
     },
+    blockedUsers,
     postedBy->{
       _id, 
       userName,
@@ -218,6 +219,7 @@ export const specificDiscussionQuery = (discussionId) => {
       userName,
       image
     },
+    blockedUsers,
     contributions[]{
       _key,
       messageDate,

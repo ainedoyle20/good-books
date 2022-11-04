@@ -3,7 +3,8 @@ import { Stack, Box, Typography } from '@mui/material';
 import { useParams } from 'react-router-dom';
 
 import useGlobalStore from '../../store/globalStore';
-import { FriendItem, ReqFriendItem, ScrollingContainer } from '../reusable'
+import { ScrollingContainer } from '../reusable';
+import { UserItem, RequestedFriendItem } from "../reusable/list-items";
 
 const FriendsSection = () => {
   const { allUsers, userDetails, user } = useGlobalStore();
@@ -146,7 +147,7 @@ const FriendsSection = () => {
         <ScrollingContainer>
           {filteredFriends.length
             ? filteredFriends.map((friend) => (
-                <FriendItem 
+                <UserItem 
                   key={friend._id}
                   user={user}
                   userDetails={userDetails}
@@ -185,7 +186,7 @@ const FriendsSection = () => {
         <ScrollingContainer>
           {filteredMembers.length 
             ? filteredMembers.map((member) => (
-                <FriendItem 
+                <UserItem 
                   key={member._id}
                   user={user}
                   userDetails={userDetails}
@@ -224,7 +225,7 @@ const FriendsSection = () => {
         <ScrollingContainer>
           {userDetails?.friendRequests?.length
             ?  userDetails.friendRequests?.map((friendReq) => (
-                <ReqFriendItem key={friendReq._id} member={friendReq} user={user} />
+                <RequestedFriendItem key={friendReq._id} member={friendReq} user={user} />
               ))
             : null
           }

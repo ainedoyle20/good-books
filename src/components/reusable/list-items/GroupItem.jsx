@@ -1,14 +1,11 @@
 import React from 'react';
 import { Box, Typography } from '@mui/material';
-import { BsCheck2 } from 'react-icons/bs';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
-const GroupItem = ({ group, selectedGroups, setSelectedGroups, user, showMyGroups }) => {
-  const {id} = useParams();
+const GroupItem = ({ group, user, showMyGroups }) => {
   const navigate = useNavigate();
   return (
     <Box
-      key={group?._id}
       onClick={() => navigate(`/group/${group._id}`)}
       sx={{
         display: "flex",
@@ -18,7 +15,7 @@ const GroupItem = ({ group, selectedGroups, setSelectedGroups, user, showMyGroup
         margin: '15px 0',
         borderTop: '1px solid #382110',
         borderBottom: '1px solid #382110',
-        ':hover': {borderTop: '3px solid #382110', borderBottom: '3px solid #382110'},
+        ':hover': { padding: "11px 1px 11px 1px" },
         cursor: 'pointer',
       }}
     >

@@ -15,7 +15,7 @@ const DiscussionItem = ({ discussion }) => {
         margin: '15px 0',
         borderTop: '1px solid #382110',
         borderBottom: '1px solid #382110',
-        ':hover': {borderTop: '3px solid #382110', borderBottom: '3px solid #382110'},
+        ':hover': { padding: "11px 1px 11px 1px" },
         cursor: 'pointer',
       }}
     >

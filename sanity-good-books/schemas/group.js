@@ -23,8 +23,8 @@ export default {
       }],
     },
     {
-      name: 'removedMembers',
-      title: 'Removed Members',
+      name: 'blockedUsers',
+      title: 'Blocked Users',
       type: 'array',
       of: [{
         type: 'reference',

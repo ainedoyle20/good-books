@@ -4,17 +4,16 @@ import { Stack, Box, Typography } from '@mui/material';
 import { BiArrowBack } from "react-icons/bi";
 
 import useGlobalStore from '../store/globalStore';
-import { 
-  ScrollingContainer, 
-  FriendItem, Loader,
-  CreateMessage
-} from '../components/reusable';
+import { ScrollingContainer, Loader, CreateMessage } from '../components/reusable';
+import { MemberItem } from "../components/reusable/list-items";
 import { 
   fetchSpecificDiscussion, 
   fetchSpecificGroup, 
   addContribution,
   addContributionNewDate,
-  formatDateString 
+  formatDateString,
+  blockUserInDiscussion,
+  unBlockUserInDiscussion
 } from '../utils';
 
 const DiscussionPage = () => {
@@ -23,6 +22,7 @@ const DiscussionPage = () => {
   const [showDiscussion, setShowDiscussion] = useState(true);
   const [discussion, setDiscussion] = useState(null);
   const [group, setGroup] = useState(null);
+  const [isBlockedUser, setIsBlockedUser] = useState(false);
   const [isMember, setIsMember] = useState(false);
   const [isPublic, setIsPublic] = useState(false);
   const [isParticipant, setIsParticipant] = useState(false);
@@ -39,16 +39,15 @@ const DiscussionPage = () => {
     }
   }, [user]);
 
+  const getDiscussionById = async (discussionId) => {
+    const specificDiscussion = await fetchSpecificDiscussion(discussionId);
+    setDiscussion(specificDiscussion);
+    setLoading(false);
+  }
+
   // fetching discussin document by id
   useEffect(() => {
-    const getDiscussionById = async (discussionId) => {
-      const specificDiscussion = await fetchSpecificDiscussion(discussionId);
-      // console.log("specificDiscussion: ", specificDiscussion);
-      setDiscussion(specificDiscussion);
-    }
-
     getDiscussionById(id);
-    
   }, []);
 
   // checking if user is participant
@@ -151,19 +150,40 @@ const DiscussionPage = () => {
       }
     }
 
+    const checkIfBlocked = (userId, specificGroup, specificDiscussion) => {
+      if (specificGroup.blockedUsers?.length) {
+        const filtered = specificGroup.blockedUsers.filter((blockedUser) => (
+          blockedUser._ref === userId
+        ));
+        if (filtered.length) setIsBlockedUser(true);
+      }
+
+      if (specificDiscussion.blockedUsers?.length) {
+        const filteredList = specificDiscussion.blockedUsers.filter((blockedUser) => (
+          blockedUser._ref === userId
+        ));
+        if (filteredList.length) setIsBlockedUser(true);
+      }
+    }
+
     checkIfMember(user._id, group);
     checkIfPublic(group);
+    checkIfBlocked(user?._id, group, discussion);
     
   }, [group]);
 
   const handleContribute = async (contribution) => {
-    setLoading(true);
-
     if (!isPublic && !isMember) {
-      setLoading(false);
       alert("Sorry, this group is private. You must be a member to contribute.");
       return;
     }
+
+    if (isBlockedUser) {
+      alert("Sorry, it seems you are blocked from either this discussion or it's group. You cannot contribute.");
+      return;
+    }
+  
+    setLoading(true);
 
     if (isNewDate) {
       await addContributionNewDate(user._id, id, isParticipant, contribution);
@@ -172,14 +192,49 @@ const DiscussionPage = () => {
     }
 
     setTimeout(() => {
-      window.location.reload();
-    }, 3000)
+      getDiscussionById(id);
+    }, 1000)
+  }
+
+  const handleBlockUser = async (toBlockId) => {
+    if (user?._id === toBlockId) {
+      alert("You cannot block yourself");
+      return;
+    }
+
+    if (user?._id !== discussion?.creator?._id && user?._id !== group?.postedBy?._id) {
+      alert(`Sorry, only the creator of this discussion 
+        or the creator of this group can block a participant`
+      );
+      return;
+    }
+
+    await blockUserInDiscussion(discussion?._id, toBlockId);
+    getDiscussionById(discussion?._id);
+  }
+
+  const handleUnBlockUser = async (toUnblockId) => {
+    if (user?._id === toUnblockId) {
+      alert("You cannot unblock yourself");
+      return;
+    }
+
+    if (user?._id !== discussion?.creator?._id && user?._id !== group?.postedBy?._id) {
+      alert(`Sorry, only the creator of this discussion 
+        or the creator of this group can unblock a blocked participant`
+      );
+      return;
+    }
+
+    await unBlockUserInDiscussion(discussion?._id, toUnblockId);
+    getDiscussionById(discussion?._id);
   }
 
   return (
     <Stack
       width="100vw" height="100vh" display="flex"
-      alignItems="center" justifyContent="center" paddingTop="30px"
+      alignItems="center" justifyContent="center" 
+      sx={{ paddingTop: { xs: "140px", md: "80px" }}}
     >
       <Typography 
         position="absolute" top="90px" left="50px" display="flex" alignItems="center" gap={1} fontSize="18px"
@@ -228,63 +283,62 @@ const DiscussionPage = () => {
             <Loader inScrollingContainer={true} />
           ) : (
             <>
-              <Stack width="100%" height="100%" paddingBottom="20px">
-                {discussion?.contributions?.map(({ _key, messageDate, texts }) => {
-                  const dateString = formatDateString(messageDate);
-                  return (
-                    <Stack
-                      key={_key}
-                      sx={{
-                        width: "100%",
-                        height: "100%",
-                        display: "flex",
-                        alignItems: "center"
-                      }}
-                    >
-                      <Typography color="#757575">
-                        {dateString}
-                      </Typography>
+              {discussion?.contributions?.map(({ _key, messageDate, texts }) => {
+                const dateString = formatDateString(messageDate);
+                return (
+                  <Stack
+                    key={_key}
+                    sx={{
+                      width: "100%",
+                      height: "100%",
+                      display: "flex",
+                      alignItems: "center",
+                      marginBottom: "20px"
+                    }}
+                  >
+                    <Typography color="#757575">
+                      {dateString}
+                    </Typography>
 
-                      {texts.map(({text, postedBy}, idx) => (
-                        <Box
-                          key={`${text}-${idx}`}
-                          sx={{
-                            width: "100%",
-                            display: "flex",
-                            flexDirection: "column",
-                            alignItems: postedBy._id === user?._id ? "flex-end" : "flex-start",
-                            margin: "10px 0",
-                            padding: "0 10px"
+                    {texts.map(({text, postedBy}, idx) => (
+                      <Box
+                        key={`${text}-${idx}`}
+                        sx={{
+                          width: "100%",
+                          display: "flex",
+                          flexDirection: "column",
+                          alignItems: postedBy._id === user?._id ? "flex-end" : "flex-start",
+                          margin: "10px 0",
+                          padding: "0 10px"
+                        }}
+                      >
+                        <Typography width="40%" color="#bdbdbd" fontSize="14px" fontWeight="light"
+                          paddingLeft="5px"
+                        >
+                          {postedBy?.userName}
+                        </Typography>
+                        <p
+                          style={{ 
+                            width: "40%", 
+                            padding: "15px",  
+                            borderRadius: "15px",
+                            fontSize: "18px",
+                            backgroundColor: postedBy._id === user?._id ? "#e3f2fd" : "#e0e0e0"
                           }}
                         >
-                          <Typography width="40%" color="#bdbdbd" fontSize="14px" fontWeight="light"
-                            paddingLeft="5px"
-                          >
-                            {postedBy?.userName}
-                          </Typography>
-                          <p
-                            style={{ 
-                              width: "40%", 
-                              padding: "15px",  
-                              borderRadius: "15px",
-                              fontSize: "18px",
-                              backgroundColor: postedBy._id === user?._id ? "#e3f2fd" : "#e0e0e0"
-                            }}
-                          >
-                            {text}
-                          </p>
-                        </Box>
-                      ))}
-                    </Stack>
-                  );
-                })}
+                          {text}
+                        </p>
+                      </Box>
+                    ))}
+                  </Stack>
+                );
+              })}
 
-                {discussion && !discussion.contributions.length ? (
-                  <Typography width="100%" height="100%" display="flex" alignItems="center" justifyContent="center" fontSize="20px">
-                    Be the first to contribute
-                  </Typography>
-                ) : null}
-              </Stack>
+              {discussion && !discussion.contributions.length ? (
+                <Typography width="100%" height="100%" display="flex" alignItems="center" justifyContent="center" fontSize="20px">
+                  Be the first to contribute
+                </Typography>
+              ) : null}
 
               <CreateMessage 
                 handleCreateMessage={handleContribute}
@@ -299,12 +353,12 @@ const DiscussionPage = () => {
         <ScrollingContainer isLarge={true}>
           {discussion && discussion?.participants?.length 
             ? discussion.participants?.map((participant) => (
-                <FriendItem
+                <MemberItem
                   key={participant._id}
                   member={participant}
-                  inMessages={false}
-                  inGroup={true}
-                  user={user}
+                  handleBlockUser={handleBlockUser}
+                  handleUnBlockUser={handleUnBlockUser}
+                  groupOrDiscussion={discussion}
                 />
               ))
             : null

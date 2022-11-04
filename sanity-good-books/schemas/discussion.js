@@ -33,6 +33,15 @@ export default {
       }],
     },
     {
+      name: 'blockedUsers',
+      title: 'Blocked Users',
+      type: 'array',
+      of: [{
+        type: 'reference',
+        to: [{ type: 'user' }]
+      }],
+    },
+    {
       name: 'contributions',
       title: 'Contributions',
       type: 'array',

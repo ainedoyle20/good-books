@@ -82,6 +82,7 @@ export const fetchAllUsers = async (setAllUsers) => {
 }
 
 export const fetchUserDetails = async (id, setUserDetails) => {
+  console.log("fetching user details");
   const query = userDetailsQuery(id);
 
   try {
@@ -288,6 +289,75 @@ export const fetchSpecificGroup = async (groupId) => {
   }
 }
 
+export const addUserToGroup = async (groupId, userId) => {
+  if (!groupId || !userId) return;
+  try {
+    await client.patch(groupId)
+      .setIfMissing({ members: [] })
+      .insert("after", "members[-1]", [{
+        _key: uuidv4(),
+        _type: "reference",
+        _ref: userId
+      }])
+      .commit();
+
+    await client.patch(userId)
+      .setIfMissing({ groups: [] })
+      .insert("after", "groups[-1]", [{
+        _key: uuidv4(),
+        _type: "reference",
+        _ref: groupId
+      }])
+      .commit();
+  } catch (error) {
+    console.log("Error adding user to group: ", error);
+  }
+}
+
+export const blockUserInGroup = async (groupId, toBlockId) => {
+  console.log("blocking user...");
+  try {
+    await client.patch(groupId)
+      .setIfMissing({ blockedUsers: [] })
+      .insert("after", "blockedUsers[-1]", [{
+        _key: uuidv4(),
+        _type: "reference",
+        _ref: toBlockId
+      }])
+      .commit();
+  } catch (error) {
+    console.log("Error blocking user in group: ", error);
+  }
+}
+
+export const unBlockUserInGroup = async (groupId, toUnBlockId) => {
+  console.log("unblocking user...");
+  try {
+    await client.patch(groupId)
+      .unset([`blockedUsers[_ref=="${toUnBlockId}"]`])
+      .commit();
+  } catch (error) {
+    console.log("Error unblocking user in group: ", error);
+  }
+}
+
+export const deleteGroup = async (groupId, members, discussions) => {
+  // console.log("discussions: ", discussions);
+  try {
+    await Promise.all(members.map(async (member) => (
+      await client.patch(member._id).unset([`groups[_ref=="${groupId}"]`]).commit()
+    )));
+
+    await client.delete(groupId);
+
+    await Promise.all(discussions.map(async (discussion) => (
+      await client.delete(discussion._id)
+    )));
+  } catch (error) {
+    console.log("Error deleting group: ", error);
+  }
+}
+
 export const deleteGroups = async (selectedGroupsArray) => {
   try {
     await Promise.all(selectedGroupsArray.map(async (group, idx) => {
@@ -488,67 +558,32 @@ export const addContribution = async (userId, discussionId, contributionKey, isP
   }
 }
 
-// export const addDiscussionContribution = async (userId, discussionId, isParticipant, isNewDate, text, datedMessagesKey) => {
-//   console.log("isParticipant: ", isParticipant, "isNewDate: ", isNewDate, "datedMessagesKey: ", datedMessagesKey);
+export const blockUserInDiscussion = async (discussionId, toBlockId) => {
+  console.log("blocking user...");
+  try {
+    await client.patch(discussionId)
+      .setIfMissing({ blockedUsers: [] })
+      .insert("after", "blockedUsers[-1]", [{
+        _key: uuidv4(),
+        _type: "reference",
+        _ref: toBlockId
+      }])
+      .commit();
+  } catch (error) {
+    console.log("Error blocking user in discussion: ", error);
+  }
+}
 
-//   try {
-//     if (isNewDate) {
-//       console.log("IS NEW DATE");
-//       // creating new datedMessage object with new contribution
-//       await client.patch(discussionId)
-//         .setIfMissing({ contributions: [] })
-//         .insert("after", `contributions[-1]`, [{
-//           _type: "datedMessages",
-//           _key: uuidv4(),
-//           messageDate: new Date().toDateString(),
-//           texts: [{
-//             _type: "message",
-//             _key: uuidv4(),
-//             text,
-//             postedBy: {
-//               _type: 'reference',
-//               _ref: userId
-//             }
-//           }]
-//         }])
-//         .commit();
-
-//     } else {
-//       console.log("NOT NEW DATE");
-//       // adding new contribution (text) to existing datedMessage object
-//       await client.patch(discussionId)
-//         .setIfMissing({ contributions: [] })
-//         .insert("after", `contributions[_key=="${datedMessagesKey}"].texts[-1]`, [{
-//           _type: "message",
-//           _key: uuidv4(),
-//           text,
-//           postedBy: {
-//             _type: 'reference',
-//             _ref: userId
-//           }
-//         }])
-//         .commit();
-
-//     }
-
-//     // Adding current user as participant if not already
-//     if (!isParticipant) {
-//       await client.patch(discussionId)
-//         .setIfMissing({ participants: [] })
-//         .insert("after", "participants[-1]", [{
-//           _type: "reference",
-//           _ref: userId,
-//           _key: uuidv4()
-//         }])
-//         .commit();
-//     }
-
-//     return true;
-
-//   } catch (error) {
-//     console.log("Error adding contribution: ", error);
-//   }
-// }
+export const unBlockUserInDiscussion = async (discussionId, toUnBlockId) => {
+  console.log("unblocking user...");
+  try {
+    await client.patch(discussionId)
+      .unset([`blockedUsers[_ref=="${toUnBlockId}"]`])
+      .commit();
+  } catch (error) {
+    console.log("Error unblocking user in discussion: ", error);
+  }
+}
 
 export const checkIfMessaged = (messagedUsers, friendId) => {
   const filtered = messagedUsers.filter((obj) => (
@@ -560,7 +595,7 @@ export const checkIfMessaged = (messagedUsers, friendId) => {
     : {isMessageFriend: false, messageObj: null}
 }
 
-export const createSanityMessageObj = async (userId, friendId) => {
+export const createSanityMessageObj = async (userId, friendId, addUserDetailsFunc) => {
   const ids = [`${userId}`, `${friendId}`];
   const uniqueKey = uuidv4();
   const datedMessagesKey = uuidv4();
@@ -588,51 +623,14 @@ export const createSanityMessageObj = async (userId, friendId) => {
         .commit()
     )));
 
+    await fetchUserDetails(userId, addUserDetailsFunc);
+
     const messageObj = data[0]?.messagedUsers?.filter((obj) => obj._key === uniqueKey);
-    return messageObj;
+    return messageObj[0];
   } catch (error) {
     console.log("Error creating sanity message object: ", error);
   }
 }
-
-// export const createMessageObject = async (userId, friendId) => {
-//   const ids = [`${userId}`, `${friendId}`];
-//   const uniqueKey = uuidv4();
-//   const datedMessagesKey = uuidv4();
-
-//   try {
-//     const data = await Promise.all(ids.map(async (id, idx) => (
-//       await client.patch(id)
-//         .setIfMissing({ messagedUsers: []})
-//         .insert("after", "messagedUsers[-1]", [{
-//           _key: uniqueKey,
-//           _type: 'messagedUser',
-//           messageFriend: {
-//             _ref: idx === 0 ? ids[1] : ids[0],
-//             _type: 'reference',
-//           },
-//           datedMessages: [
-//             {
-//               _type: 'datedMessages',
-//               _key: datedMessagesKey,
-//               messageDate: new Date().toDateString(),
-//               texts: [],
-//             }
-//           ],
-//         }])
-//         .commit()
-//     )));
-
-//     const messageKey = data[0]?.messagedUsers?.filter((obj) => obj._key === uniqueKey);
-//     console.log("messageKey: ", messageKey[0]?._key);
-//     console.log("uniqueKey: ", uniqueKey);
-//     // return messageKey[0]?._key;
-
-//     return uniqueKey;
-//   } catch (error) {
-//     console.log("Error creating messageObject: ", error);
-//   }
-// }
 
 export const sendMessageNewDate = async (userId, friendId, messageFriendKey, text) => {
   const ids = [userId, friendId];

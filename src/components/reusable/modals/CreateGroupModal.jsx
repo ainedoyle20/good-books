@@ -3,7 +3,7 @@ import { Box, Stack, Typography, Switch } from '@mui/material';
 import { BsChevronBarUp, BsChevronBarDown, BsCheck2 } from 'react-icons/bs';
 import { useParams } from 'react-router-dom';
 
-import { createGroup } from '../../utils';
+import { createGroup } from '../../../utils';
 
 const CreateGroupModal = ({ user, userDetails, setShowGroupModal }) => {
   const [inputGroupName, setInputGroupName] = useState("");

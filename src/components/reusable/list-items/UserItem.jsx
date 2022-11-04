@@ -2,9 +2,9 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Box, Typography } from '@mui/material';
 
-import { requestFriendship, unfriendMember } from "../../utils";
+import { requestFriendship, unfriendMember } from "../../../utils";
 
-const FriendItem = ({ member, showFriends, inGroup, user, userDetails, inMessages, openMessagePage }) => {
+const UserItem = ({ member, showFriends, inGroup, user, userDetails, inMessages, openMessagePage }) => {
   const [requestedFriend, setRequestedFriend] = useState(false);
   const [isFriend, setIsFriend] = useState(false);
   const {id} = useParams();
@@ -20,7 +20,7 @@ const FriendItem = ({ member, showFriends, inGroup, user, userDetails, inMessage
     if (userDetails?.friends?.map(friend => friend._id).includes(member._id)) {
       setIsFriend(true);
     }
-  }, [])
+  }, []);
 
   const handleRequestFriendship = async (memberId) => {
     if (user?._id !== id) return;
@@ -54,7 +54,6 @@ const FriendItem = ({ member, showFriends, inGroup, user, userDetails, inMessage
 
   return (
     <Box
-      key={member?._id}
       onClick={() => {
         if (!inMessages) {
           navigate(`/profile/${member?._id}`);
@@ -68,7 +67,7 @@ const FriendItem = ({ member, showFriends, inGroup, user, userDetails, inMessage
         margin: '15px 0',
         borderTop: '1px solid #382110',
         borderBottom: '1px solid #382110',
-        ':hover': { borderTop: '3px solid #382110', borderBottom: '3px solid #382110'},
+        ':hover': { padding: "11px" },
         cursor: inMessages ? "default" : 'pointer',
       }}
     >
@@ -144,4 +143,4 @@ const FriendItem = ({ member, showFriends, inGroup, user, userDetails, inMessage
   );
 }
 
-export default FriendItem;
+export default UserItem;

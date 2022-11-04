@@ -3,7 +3,8 @@ import { Box, Stack, Typography } from '@mui/material';
 import { useParams } from 'react-router-dom';
 
 import useGlobalStore from '../../store/globalStore';
-import { DiscussionItem, ScrollingContainer } from '../reusable';
+import { ScrollingContainer } from '../reusable';
+import { DiscussionItem } from '../reusable/list-items';
 import { fetchMyDiscussions, fetchPublicDiscussions } from '../../utils';
 
 const DiscussionsSection = () => {

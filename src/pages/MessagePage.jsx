@@ -5,10 +5,10 @@ import { BiArrowBack } from "react-icons/bi";
 
 import useGlobalStore from '../store/globalStore';
 import { ScrollingContainer, CreateMessage, Loader } from '../components/reusable';
-import { checkIfMessaged, createSanityMessageObj, sendMessage, sendMessageNewDate } from '../utils';
+import { checkIfMessaged, createSanityMessageObj, sendMessage, sendMessageNewDate, fetchUserDetails } from '../utils';
 
 const MessagePage = () => {
-  const { user, userDetails, updateNavSection } = useGlobalStore();
+  const { user, userDetails, updateNavSection, addUserDetails } = useGlobalStore();
   const [isLoading, setIsLoading] = useState(false);
   const [messageObject, setMessageObject] = useState(null);
   const [isNewDate, setIsNewDate] = useState(false);
@@ -23,20 +23,20 @@ const MessagePage = () => {
 
   useEffect(() => {
     if (!userDetails || !user) return;
-    // console.log("userDetails: ", userDetails);
+    setIsLoading(false);
+
     const { messagedUsers } = userDetails;
 
     // function for creating sanity message object
     const createAndGetMessageObject = async () => {
-      const messageObj = await createSanityMessageObj(user._id, id);
-      console.log("returned messageObj: ", messageObj)
+      const messageObj = await createSanityMessageObj(user._id, id, addUserDetails);
       setMessageObject(messageObj);
     }
 
     if (!messagedUsers?.length) {
       // NOT a messaged friend
       createAndGetMessageObject();
-      console.log("NOT MESSAGE FRIEND");
+      console.log("NOT MESSAGE FRIEND 1: ", messagedUsers);
     } else {
       // check if friend is in messaged users array 
       // result: { isMessageFriend: true || false, messageObj: {} || null}
@@ -44,12 +44,13 @@ const MessagePage = () => {
       
       if (result.isMessageFriend) { 
         // IS a messaged friend
+        console.log("IS MESSAGE FRIEND");
         setMessageObject(result.messageObj);
 
       } else { 
         // NOT a messaged friend
         createAndGetMessageObject();
-        console.log("NOT MESSAGE FRIEND");
+        console.log("NOT MESSAGE FRIEND 2");
       }
 
     }
@@ -116,13 +117,13 @@ const MessagePage = () => {
     if (isNewDate) {
       await sendMessageNewDate(user._id, id, messageObject._key, text);
       setTimeout(() => {
-        window.location.reload();
-      }, 4000)
+        fetchUserDetails(user?._id, addUserDetails);
+      }, 1000)
     } else {
       await sendMessage(user._id, id, messageObject._key, objectKey, text);
       setTimeout(() => {
-        window.location.reload();
-      }, 4000)
+        fetchUserDetails(user?._id, addUserDetails);
+      }, 1000)
     }
   }
 
@@ -180,7 +181,7 @@ const MessagePage = () => {
 
       <ScrollingContainer isLarge={true} inDiscussion={true} messageObject={messageObject}>
         {messageObject !== null && user && !isLoading ? (
-          <Stack width="100%" height="auto" paddingBottom="20px">
+          <>
             {messageObject.datedMessages.map(({ _key, messageDate, texts }) => {
               const dateString = formatDateString(messageDate);
               return (
@@ -191,7 +192,8 @@ const MessagePage = () => {
                     height: "100%",
                     display: "flex",
                     alignItems: "center",
-                    paddingTop: "10px"
+                    paddingTop: "10px",
+                    marginBottom: "20px"
                   }}
                 >
                   <Typography
@@ -227,7 +229,7 @@ const MessagePage = () => {
                 </Stack>
               );
             })}
-          </Stack>
+          </>
         ) : (
           <Loader inScrollingContainer={true} />
         )}

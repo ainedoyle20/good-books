@@ -4,4 +4,3 @@ export { default as FriendsSection } from './FriendsSection';
 export { default as GroupsSection } from './GroupsSection';
 export { default as DiscussionsSection } from './DiscussionsSection';
 export { default as MessagesSection } from './MessagesSection';
-export { default as ReadingChallangeSection } from './ReadingChallangeSection';

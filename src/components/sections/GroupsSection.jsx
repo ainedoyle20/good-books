@@ -4,7 +4,9 @@ import { useParams } from 'react-router-dom';
 
 import useGlobalStore from '../../store/globalStore';
 import { fetchPublicGroups } from '../../utils';
-import { GroupItem, CreateGroupModal, ScrollingContainer } from '../reusable'
+import { ScrollingContainer } from '../reusable';
+import { CreateGroupModal } from '../reusable/modals';
+import { GroupItem } from '../reusable/list-items';
 
 const GroupsSection = () => {
   const { user, userDetails, publicGroups, updatePublicGroups } = useGlobalStore();
@@ -13,9 +15,6 @@ const GroupsSection = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [filteredGroups, setFilteredGroups] = useState(userDetails?.groups ? userDetails.groups : []);
   const [filteredPublicGroups, setFilteredPublicGroups] = useState(publicGroups ? publicGroups : []);
-  const [selectedGroups, setSelectedGroups] = useState([]);
-  // console.log("filteredGroups: ", filteredGroups);
-  // console.log("filteredPublicGroups: ", filteredPublicGroups);
 
   const [showGroupModal, setShowGroupModal] = useState(false);
 
@@ -39,7 +38,7 @@ const GroupsSection = () => {
       ));
     }
     
-  }, [searchTerm])
+  }, [searchTerm, userDetails]);
 
   return (
     <>
@@ -145,8 +144,6 @@ const GroupsSection = () => {
                     <GroupItem 
                       key={group._id}
                       group={group}
-                      selectedGroups={selectedGroups}
-                      setSelectedGroups={setSelectedGroups}
                       user={user}
                       showMyGroups={showMyGroups}
                     />
@@ -188,8 +185,6 @@ const GroupsSection = () => {
                     <GroupItem 
                       key={group._id}
                       group={group}
-                      selectedGroups={selectedGroups}
-                      setSelectedGroups={setSelectedGroups}
                       user={user}
                       showMyGroups={showMyGroups}
                     />

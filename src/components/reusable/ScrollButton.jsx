@@ -5,7 +5,7 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import useGlobalStore from '../../store/globalStore';
 
 const ScrollButton = () => {
-  const { updateSidebarActiveOption } = useGlobalStore();
+  const { updateNavSection } = useGlobalStore();
   const [showScrollBtn, setShowScrollBtn] = useState(false);
   const { pathname } = useLocation();
   const navigate = useNavigate();
@@ -28,7 +28,7 @@ const ScrollButton = () => {
 
   const handleScrollTopTop = () => {
     navigate("#profile_section");
-    updateSidebarActiveOption("profile_section");
+    updateNavSection("profile_section");
     document.getElementById("profile_section").scrollIntoView({
       behavior: "smooth"
     });

@@ -1,13 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { Box, Stack, Typography } from '@mui/material';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
 import useGlobalStore from '../../store/globalStore';
-import { FriendItem, MessageItem, ScrollingContainer } from '../reusable';
-import { createMessageObject, fetchUserDetails } from '../../utils';
+import { ScrollingContainer } from '../reusable';
+import { MessageItem } from '../reusable/list-items';
+import { UserItem } from "../reusable/list-items";
 
 const MessagesSection = () => {
-  const { user, userDetails, addUserDetails } = useGlobalStore();
+  const { user, userDetails } = useGlobalStore();
   const navigate = useNavigate();
 
   const [showMessages, setShowMessages] = useState(true);
@@ -26,9 +27,11 @@ const MessagesSection = () => {
   }, [userDetails, showMessages]);
 
   useEffect(() => {
-    if (!userDetails || !searchTerm.length) return;
+    if (!userDetails) return;
 
     const { messagedUsers, friends } = userDetails;
+
+    if (!messagedUsers?.length || !friends?.length) return;
 
     if (showMessages && messagedUsers?.length) { // filtering messagedUsers
 
@@ -134,21 +137,24 @@ const MessagesSection = () => {
             : null
           }
 
-          {!messageObjects.length && !searchTerm.length
-            ? <Typography 
-                width="100%" height="100%" display="flex" 
-                justifyContent="center" alignItems="center"
-              >
-                You have not messaged any of your friends 
-              </Typography>
+          {!messageObjects.length && !searchTerm.length ? (
+            <Typography 
+              width="100%" height="100%" display="flex" 
+              justifyContent="center" alignItems="center"
+            >
+              You have not messaged any of your friends 
+            </Typography>
+          ): null}
 
-            : <Typography 
-                width="100%" height="100%" display="flex" 
-                justifyContent="center" alignItems="center"
-              >
-                No Results
-              </Typography>
-          }
+          {!messageObjects.length && searchTerm.length ? (
+            <Typography 
+              width="100%" height="100%" display="flex" 
+              justifyContent="center" alignItems="center"
+            >
+              No Results
+            </Typography>
+          ) : null}
+
         </ScrollingContainer>
       ) : null}
 
@@ -157,7 +163,7 @@ const MessagesSection = () => {
         <ScrollingContainer>
           {filteredFriends.length 
             ? filteredFriends.map((friend) => (
-              <FriendItem
+              <UserItem
                 key={friend._id}
                 member={friend}
                 user={user}
@@ -178,12 +184,14 @@ const MessagesSection = () => {
                 <Typography>Search Users in Friends Section and befriend some!</Typography>
               </Box>
 
-            : <Typography 
-                width="100%" height="100%" display="flex" 
-                justifyContent="center" alignItems="center"
-              >
-                No Results
-              </Typography>
+            : !filteredFriends.length && searchTerm.length 
+              ? <Typography 
+                  width="100%" height="100%" display="flex" 
+                  justifyContent="center" alignItems="center"
+                >
+                  No Results
+                </Typography>
+              : null
           }
         </ScrollingContainer>
       ) : null}

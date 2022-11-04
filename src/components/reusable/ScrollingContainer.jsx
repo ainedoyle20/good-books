@@ -9,13 +9,13 @@ const ScrollingContainer = ({ children, isLarge, inDiscussion, messageObject, di
     if ((messageObject === null || messageObject === undefined) && !discussion) return;
     // scrolls to most recent message
     const scrollToBottom = () => {
-      console.log("scrolling: ", messageObject, inDiscussion);
+      // console.log("scrolling: ", messageObject, inDiscussion);
       const el = document.getElementById("scrolling_container");
       el.scrollTop = el.scrollHeight;
     }
 
     scrollToBottom();
-  }, [messageObject, discussion]);
+  }, [messageObject, discussion]); 
 
   const scroll = (scrollOffset) => {
     scrollRef.current.scrollTop += scrollOffset;
@@ -30,27 +30,25 @@ const ScrollingContainer = ({ children, isLarge, inDiscussion, messageObject, di
       </Box>
 
       <Stack
-        id="scrolling_container"
-        ref={scrollRef}
         sx={{
           borderRight: '1px solid #382110',
           borderLeft: '1px solid #382110',
           paddingTop: "15px",
           paddingBottom: inDiscussion ? "0" : "15px",
-          width: isLarge ? "70%" : '50%',
-          height: isLarge ? "600px" : '400px',
+          width: isLarge ? "900px" : '50%',
+          height: isLarge ? "500px" : '400px',
           position: inDiscussion ? "relative" : "static",
-          overflowY: 'scroll',
-          '&::-webkit-scrollbar':{
-            width:0,
-          }
         }}
       >
-        {children}
+        <Stack id="scrolling_container" ref={scrollRef} height="100%" width="100%"
+          sx={{ overflowY: "scroll", "&::-webkit-scrollbar": { width: 0 } }}
+        >
+          {children}
+        </Stack>
       </Stack>  
       
       <Box component="span" fontSize={40} 
-        sx={{ cursor: 'pointer', marginTop: inDiscussion ? 4 : 2}}
+        sx={{ cursor: 'pointer', marginTop: 3}}
         onClick={() => scroll(390)}
       >
         <BsChevronBarDown />
