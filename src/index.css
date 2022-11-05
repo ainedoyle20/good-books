@@ -24,6 +24,17 @@ a {
   text-decoration: none;
 }
 
+.react-horizontal-scrolling-menu--wrapper {
+  width: 100%;
+  height: auto;
+  margin-top: 20px;
+}
+
+.react-horizontal-scrolling-menu--wrapper ::-webkit-scrollbar { 
+  width: 0 
+}
+
+
 /* ::-webkit-scrollbar {
   width: 0px;
 } */
