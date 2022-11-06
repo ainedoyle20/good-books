@@ -9,8 +9,8 @@ const globalStore = (set) => ({
   sidebarActiveOption: "",
   publicGroups: [],
   allGroups: [],
-  bookSearchResults: {
-    "Days Gone Bye": {
+  storedBookSearchResults: {
+    "days gone bye": {
       book_id:138398,
       name:"Days Gone Bye",
       cover:"https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1389233242i/138398._SY75_.jpg",
@@ -73,8 +73,8 @@ const globalStore = (set) => ({
     set({ sidebarActiveOption: option });
   },
 
-  updateBookSearchResults: (searchTitle, obj, oldSearchResults ) => {
-    set({ bookSearchResults: { ...oldSearchResults, [searchTitle]: obj } });
+  updateStoredBookSearchResults: (searchTitle, obj, oldSearchResults ) => {
+    set({ storedBookSearchResults: { ...oldSearchResults, [searchTitle]: obj } });
   },
 
   updateGetBookByIdResults: (newId, obj, oldGetBookByIdResults) => {

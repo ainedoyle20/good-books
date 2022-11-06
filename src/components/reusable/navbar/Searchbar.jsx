@@ -1,17 +1,21 @@
 import React, {useState} from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Box, Stack } from '@mui/material';
 
-const SearchBar = ({ showSearchBar, setShowSearchBar }) => {
+const Searchbar = ({ showSearchBar, setShowSearchBar }) => {
   const [searchTerm, setSearchTerm] = useState("");
+  
+  const navigate = useNavigate();
 
   const handleKeyDown = (e) => {
     if (e.key === "Enter") handleSearch();
   }
 
   const handleSearch = () => {
-    const searchValue = searchTerm.toLowerCase();
+    const searchValue = searchTerm.toLowerCase().trim();
     setSearchTerm("");
     setShowSearchBar(false);
+    navigate(`/search/${searchValue}`);
   }
 
   return (
@@ -111,4 +115,4 @@ const SearchBar = ({ showSearchBar, setShowSearchBar }) => {
   );
 }
 
-export default SearchBar;
+export default Searchbar;

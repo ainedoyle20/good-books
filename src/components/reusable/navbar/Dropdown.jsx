@@ -2,8 +2,8 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Stack, Typography, Divider } from '@mui/material';
 
-import useGlobalStore from '../../store/globalStore';
-import { handleLogout } from '../../utils';
+import useGlobalStore from '../../../store/globalStore';
+import { handleLogout } from '../../../utils';
 
 const Dropdown = ({ setShowDropdown }) => {
   const { removeUser, user, removeUserDetails, updateNavSection } = useGlobalStore();
@@ -26,7 +26,8 @@ const Dropdown = ({ setShowDropdown }) => {
     >
       <Typography padding="0 15px" width="100%" variant="h6" color="#382110"
         sx={{ ":hover": { textDecoration: "underline", cursor: "pointer"}}}
-        onClick={() => {
+        onClick={(e) => {
+          e.stopPropagation();
           updateNavSection("profile_section");
           navigate(`/profile/${user?._id}`);
           setShowDropdown(false);
