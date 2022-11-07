@@ -20,6 +20,8 @@ const UserItem = ({ member, showFriends, inGroup, user, userDetails, inMessages,
     if (userDetails?.friends?.map(friend => friend._id).includes(member._id)) {
       setIsFriend(true);
     }
+
+    // eslint-disable-next-line
   }, []);
 
   const handleRequestFriendship = async (memberId) => {
@@ -72,7 +74,7 @@ const UserItem = ({ member, showFriends, inGroup, user, userDetails, inMessages,
       }}
     >
       <img 
-        alt="user profile picture"
+        alt="user profile"
         src={member.image ? member.image : "https://s.gr-assets.com/assets/nophoto/user/u_60x60-267f0ca0ea48fd3acfd44b95afa64f01.png"}
         height="40px"
         width="40px"

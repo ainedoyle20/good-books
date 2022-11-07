@@ -1,24 +1,23 @@
-import React, {useState, useEffect} from 'react';
+import React, { useState } from 'react';
 import { Stack, Box, Typography } from '@mui/material';
 import { useParams } from 'react-router-dom';
 import { BsChevronDown, BsChevronUp } from 'react-icons/bs';
 
 import useGlobalStore from '../../store/globalStore';
-import { updateUserImage, incrementReadingChallange, decrementReadingChallange } from '../../utils';
+import { incrementReadingChallange, decrementReadingChallange } from '../../utils';
 
 const ProfileSection = () => {
   const { userDetails, user } = useGlobalStore();
-  const [picture, setPicture] = useState(userDetails?.image);
   const [currentYear] = useState(new Date().getFullYear());
   const [val, setVal] = useState(userDetails?.readingChallange || 0);
 
   const {id} = useParams();
 
-  useEffect(() => {
-    if (picture === userDetails?.image || user?._id !== id) return;
+  // useEffect(() => {
+  //   if (picture === userDetails?.image || user?._id !== id) return;
 
-    updateUserImage(picture, id);
-  }, [picture]);
+  //   updateUserImage(picture, id);
+  // }, [picture]);
 
   const handleIncrement = async () => {
     console.log("incrementing");

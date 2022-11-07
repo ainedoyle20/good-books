@@ -28,6 +28,11 @@ export default {
       name: 'bookRating',
       title: 'Book Rating',
       type: 'number',
-    }
+    },
+    {
+      name: 'dateAdded',
+      title: 'Date Added',
+      type: 'string',
+    },
   ]
 }

@@ -19,6 +19,8 @@ const MessagePage = () => {
 
   useEffect(() => {
     if (!user) navigate("/");
+
+    // eslint-disable-next-line
   }, [user]);
 
   useEffect(() => {
@@ -54,6 +56,8 @@ const MessagePage = () => {
       }
 
     }
+
+    // eslint-disable-next-line
   }, [userDetails, user]);
 
   useEffect(() => {
@@ -87,7 +91,7 @@ const MessagePage = () => {
       }
     }
 
-  }, [messageObject]);
+  }, [messageObject, user]);
 
   const formatDateString = (str) => {
     let strArr = str.split(" ").slice(0, 3);

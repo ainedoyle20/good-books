@@ -49,7 +49,7 @@ const MessagesSection = () => {
 
     }
 
-  }, [searchTerm, userDetails]);
+  }, [searchTerm, userDetails, showMessages]);
 
   const openMessagePage = (friendId) => navigate(`/messages/${friendId}`);
 

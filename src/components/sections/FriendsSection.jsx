@@ -18,7 +18,6 @@ const FriendsSection = () => {
   const [filteredMembers, setFilteredMembers] = useState(allUsers.filter((member) => member?._id !== id));
 
   useEffect(() => {
-
     if (showFriends) {
       if (!userDetails?.friends) {
         setFilteredFriends([]);
@@ -29,6 +28,7 @@ const FriendsSection = () => {
       setFilteredMembers(() => allUsers.filter((member) => member?._id !== id).filter((member) => member.userName.toLowerCase().trim().includes(searchTerm.toLowerCase().trim())));
     }
 
+    // eslint-disable-next-line
   }, [searchTerm]);
 
   return (

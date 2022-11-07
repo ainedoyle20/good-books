@@ -41,7 +41,7 @@ const MemberItem = ({ member, handleBlockUser, groupOrDiscussion, handleUnBlockU
       sx={{ ':hover': { padding: "11px" } }}
     >
       <img 
-        alt="user profile picture"
+        alt="user profile"
         src={member.image}
         height="40px"
         width="40px"

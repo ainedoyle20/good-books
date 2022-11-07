@@ -9,7 +9,7 @@ const Home = () => {
     <Stack width="100%" height="auto" display="flex" alignItems="center"
       marginTop="150px" paddingLeft="10px"
     >
-      <Stack sx={{ width: "100%", maxWidth: "1400px", margin: "auto", height: "auto"}}>
+      <Stack sx={{ width: "100%", maxWidth: "1740px", margin: "auto", height: "auto"}}>
         {BookLists.map((genre) => (
           <Stack key={genre.id} width="100%" marginBottom="50px" display="flex" alignItems="center">
             <Box display="flex" flexDirection="column" alignItems="flex-start" width="100%"

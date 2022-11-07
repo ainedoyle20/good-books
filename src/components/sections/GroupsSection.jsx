@@ -22,6 +22,8 @@ const GroupsSection = () => {
 
   useEffect(() => {
     fetchPublicGroups(updatePublicGroups);
+
+    // eslint-disable-next-line
   }, []);
 
   useEffect(() => {
@@ -38,7 +40,8 @@ const GroupsSection = () => {
       ));
     }
     
-  }, [searchTerm, userDetails]);
+
+  }, [searchTerm, userDetails, publicGroups, showMyGroups]);
 
   return (
     <>

@@ -14,31 +14,22 @@ export default {
       type: 'string',
     },
     {
-      name: 'readShelf',
+      name: 'read',
       title: 'Read Shelf',
       type: 'array',
-      of: [{
-        type: 'reference',
-        to: [{ type: 'bookDetails'}]
-      }],
+      of: [{ type: "bookDetails" }],
     },
     {
-      name: 'readingShelf',
+      name: 'currentlyReading',
       title: 'Currently Reading Shelf',
       type: 'array',
-      of: [{
-        type: 'reference',
-        to: [{ type: 'bookDetails'}]
-      }],
+      of: [{ type: "bookDetails" }],
     },
     {
-      name: 'wantToReadShelf',
+      name: 'wantToRead',
       title: 'Want To Read Shelf',
       type: 'array',
-      of: [{
-        type: 'reference',
-        to: [{ type: 'bookDetails'}]
-      }],
+      of: [{ type: "bookDetails" }],
     },
     {
       name: 'friends',

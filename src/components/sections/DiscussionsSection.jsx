@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { Box, Stack, Typography } from '@mui/material';
-import { useParams } from 'react-router-dom';
 
 import useGlobalStore from '../../store/globalStore';
 import { ScrollingContainer } from '../reusable';
@@ -8,7 +7,7 @@ import { DiscussionItem } from '../reusable/list-items';
 import { fetchMyDiscussions, fetchPublicDiscussions } from '../../utils';
 
 const DiscussionsSection = () => {
-  const { user, userDetails } = useGlobalStore();
+  const { user } = useGlobalStore();
   const [showMyDiscussions, setShowMyDiscussions] = useState(true);
   const [myDiscussions, setMyDiscussions] = useState([]);
   const [publicDiscussions, setPublicDiscussions] = useState([]);
@@ -16,8 +15,6 @@ const DiscussionsSection = () => {
   const [myFilteredDiscussions, setMyFilteredDiscussions] = useState([]);
   const [filteredPublicDiscussions, setFilteredPublicDiscussions] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
-
-  const {id} = useParams();
 
   useEffect(() => {
     if (!user) return;
@@ -37,6 +34,8 @@ const DiscussionsSection = () => {
     }
 
     sortAndSetDiscussions();
+
+    // eslint-disable-next-line
   }, [user]);
 
   useEffect(() => {
@@ -62,6 +61,7 @@ const DiscussionsSection = () => {
       setFilteredPublicDiscussions(filtered);
     }
 
+    // eslint-disable-next-line
   }, [searchTerm]);
 
   return (

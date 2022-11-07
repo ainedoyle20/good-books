@@ -1,7 +1,6 @@
 import React, {useState, useEffect, useRef} from 'react';
 import { Box, Stack, Typography, Switch } from '@mui/material';
 import { BsChevronBarUp, BsChevronBarDown, BsCheck2 } from 'react-icons/bs';
-import { useParams } from 'react-router-dom';
 
 import { createGroup } from '../../../utils';
 
@@ -13,12 +12,12 @@ const CreateGroupModal = ({ user, userDetails, setShowGroupModal }) => {
   const [searchFriends, setSearchFriends] = useState("");
 
   const ref = useRef();
-  const {id} = useParams();
 
   useEffect(() => {
     if (userDetails?.friends && userDetails?.friends.length) {
       setFilteredFriends(userDetails.friends.filter((friend) => friend.userName.toLowerCase().trim().includes(searchFriends.toLowerCase().trim())));
     }
+    // eslint-disable-next-line
   }, [searchFriends])
 
   const scroll = (scrollOffset) => {
@@ -152,7 +151,7 @@ const CreateGroupModal = ({ user, userDetails, setShowGroupModal }) => {
               }}
             >
               <img 
-                alt="user profile picture"
+                alt="user profile"
                 src={friend.image}
                 height="40px"
                 width="40px"

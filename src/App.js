@@ -1,14 +1,27 @@
 import React from 'react';
 import { Routes, Route } from 'react-router-dom';
-import { Box } from '@mui/material';
+import { createTheme, ThemeProvider } from '@mui/material';
 
 import { Home, Profile, GroupPage, DiscussionPage, MessagePage, BookDetailsPage, SearchResultsPage } from './pages';
 import { ScrollButton } from './components/reusable';
 import Navbar from "./components/reusable/navbar/Navbar";
 
+const theme = createTheme({
+  breakpoints: {
+    values: {
+      xs: 0,
+      sm: 600,
+      md: 900,
+      lg: 1200,
+      xl: 1536,
+      "2xl": 2000,
+    },
+  },
+});
+
 const App = () => {
   return (
-    <Box>
+    <ThemeProvider theme={theme}>
       <Navbar />
       <Routes>
         <Route path="/" element={<Home />} />
@@ -20,7 +33,7 @@ const App = () => {
         <Route path="/search/:searchTerm" element={<SearchResultsPage />} />
       </Routes>
       <ScrollButton />
-    </Box>
+    </ThemeProvider>
   );
 }
 

@@ -28,6 +28,7 @@ const GroupPage = () => {
     if (!user) {
       navigate("/");
     }
+    // eslint-disable-next-line
   }, [user]);
 
   const getGroupById = async (groupId) => {
@@ -37,7 +38,7 @@ const GroupPage = () => {
 
   useEffect(() => {
     getGroupById(id);
-  }, []);
+  }, [id]);
 
   useEffect(() => {
     if (!group) return;
@@ -67,6 +68,7 @@ const GroupPage = () => {
     // checking if user is group member
     checkAndRecordUserGroupStatus(removedMembers, setIsBlocked);
 
+    // eslint-disable-next-line
   }, [group]);
 
   const handleJoinGroup = async () => {

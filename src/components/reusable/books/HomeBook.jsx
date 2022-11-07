@@ -1,22 +1,29 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Stack } from '@mui/material';
 
 import { BookStatus, ChooseShelf } from "./"
 
 const HomeBook = ({ book }) => {
   const [showShelves, setShowShelves] = useState(false);
+
+  const navigate = useNavigate();
+
   return (
     <Stack
-      height="300px" marginTop="0" width="220px"
-      display="flex" alignItems="flex-end" marginX="20px"
+      marginTop="0"
+      display="flex" alignItems="flex-end" marginLeft="10px" marginRight="30px"
       position="relative"
     >
       <BookStatus setShowShelves={setShowShelves} />
       
-      <img src={book.imageURL} alt="book cover" style={{ height: "90%", width: "100%" }} />
+      <img src={book.imageURL} alt="book cover" width="290px" height="400px" 
+        style={{ cursor: "pointer" }}
+        onClick={() => navigate(`/bookdetails/${book?.book_id}`)}
+      />
 
       {showShelves ? (
-        <ChooseShelf setShowShelves={setShowShelves} title={book.title} />
+        <ChooseShelf setShowShelves={setShowShelves} bookDetails={book} />
       ) : null}
 
     </Stack>

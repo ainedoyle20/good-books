@@ -10,16 +10,61 @@ const globalStore = (set) => ({
   publicGroups: [],
   allGroups: [],
   storedBookSearchResults: {
-    "days gone bye": {
-      book_id:138398,
-      name:"Days Gone Bye",
-      cover:"https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1389233242i/138398._SY75_.jpg",
-      url:"https://www.goodreads.com/book/show/138398.Days_Gone_Bye?from_search=true&from_srp=true&qid=tUVsMiTs4R&rank=1",
-      authors: [],
-      rating:4.27,
-      created_editions: 47,
-      year: 2004,
-    },
+    "the walking dead": [
+      {
+        "book_id": 138398,
+        "name": "The Walking Dead, Vol. 1: Days Gone Bye",
+        "cover": "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1389233242i/138398._SY75_.jpg",
+        "url": "https://www.goodreads.com/book/show/138398.The_Walking_Dead_Vol_1?from_search=true&from_srp=true&qid=nK9YZcAHq9&rank=1",
+        "authors": [
+          "Robert Kirkman",
+          "Tony Moore",
+          "Andreas Mergenthaler",
+          "Frank Darabont",
+          "Charles Adlard",
+          "Sina Grace",
+          "Hardy Hellstern",
+          "Charlie Adlard",
+          "Rus Wooton",
+          "Rus Wooton",
+          "Stefano Gaudiano",
+          "Cliff Rathburn",
+          "Marc-Oliver Frisch",
+          "Dave    Stewart",
+          "Michael Schuster",
+          "Frank Neubauer"
+        ],
+        "rating": 4.27,
+        "created_editions": 48,
+        "year": 2004
+      },
+      {
+        "book_id": 6465707,
+        "name": "The Walking Dead Compendium One",
+        "cover": "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1449865699i/6465707._SY75_.jpg",
+        "url": "https://www.goodreads.com/book/show/6465707-the-walking-dead-compendium-one?from_search=true&from_srp=true&qid=nK9YZcAHq9&rank=2",
+        "authors": [
+          "Robert Kirkman"
+        ],
+        "rating": 4.44,
+        "created_editions": 13,
+        "year": 2009
+      },
+      {
+        "book_id": 30071,
+        "name": "The Walking Dead, Book One",
+        "cover": "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1464733555i/30071._SY75_.jpg",
+        "url": "https://www.goodreads.com/book/show/30071.The_Walking_Dead_Book_One?from_search=true&from_srp=true&qid=nK9YZcAHq9&rank=3",
+        "authors": [
+          "Robert Kirkman",
+          "Tony Moore",
+          "Charlie Adlard"
+        ],
+        "rating": 4.35,
+        "created_editions": 14,
+        "year": 2004
+      }
+    ]
   },
   getBookByIdResults: {
     56597885: {
@@ -73,8 +118,8 @@ const globalStore = (set) => ({
     set({ sidebarActiveOption: option });
   },
 
-  updateStoredBookSearchResults: (searchTitle, obj, oldSearchResults ) => {
-    set({ storedBookSearchResults: { ...oldSearchResults, [searchTitle]: obj } });
+  updateStoredBookSearchResults: (searchTitle, arr, oldSearchResults ) => {
+    set({ storedBookSearchResults: { ...oldSearchResults, [searchTitle]: arr } });
   },
 
   updateGetBookByIdResults: (newId, obj, oldGetBookByIdResults) => {

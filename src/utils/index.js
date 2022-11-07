@@ -437,7 +437,8 @@ export const fetchSpecificDiscussion = async (discussionId) => {
 }
 
 const findMyDiscussions = (discussionsList, userId) => {
-  const myDiscussionsList = discussionsList.filter((discussion) => {
+  const myDiscussionsList=[];
+  discussionsList.forEach((discussion) => {
     let isParticipant;
     discussion.participants.map((participant) => {
       if (participant._ref === userId) {
@@ -447,8 +448,10 @@ const findMyDiscussions = (discussionsList, userId) => {
     });
 
     if (isParticipant) {
-      return discussion;
+      myDiscussionsList.push(discussion);
     }
+
+    return discussion;
   });
 
   return myDiscussionsList;
@@ -696,4 +699,15 @@ export const formatDateString = (str) => {
   let formattedStr = strArr.join(" ");
 
   return formattedStr;
+}
+
+export const formatLargeImgUrl = (smallImgUrl) => {
+  if (!smallImgUrl) return;
+  const idsString = smallImgUrl.split("books/")[1]?.split(".")[0];
+  if (!idsString) return;
+  
+  const longId = idsString.split("/")[0];
+  const shortId = idsString.split("/")[1];
+  
+  return `https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/${longId}/${shortId}.jpg`;
 }

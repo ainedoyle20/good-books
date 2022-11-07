@@ -10,8 +10,8 @@ const BookStatus = ({ setShowShelves, inBookDetails }) => {
   }
   return (
     <Typography 
-      width={inBookDetails ? "100%" : "auto"} height={inBookDetails ? "auto" : "10%"} 
-      padding={inBookDetails ? "10px 20px" : "0 15px"} fontSize={inBookDetails ? "20px" : "14px"}
+      width={inBookDetails ? "100%" : "auto"} height={inBookDetails ? "auto" : "35px"} 
+      padding={inBookDetails ? "10px 20px" : "0 15px"} fontSize={inBookDetails ? "20px" : "16px"}
       borderBottom="none" color="#fff"
       display="flex" justifyContent="center" alignItems="center"
       sx={{ backgroundColor: "#3f8363", ":hover": { backgroundColor: "#409970" }, cursor: "pointer"}}

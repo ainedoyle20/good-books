@@ -8,9 +8,9 @@ const LeftArrow = () => {
 
   return (
     <Box onClick={() => {if (!isFirstItemVisible) { scrollPrev() }}}
-      height="320px" width="38px" display="flex" alignItems="center"
+      height="450px" width="38px" display="flex" alignItems="center" marginRight="20px"
     >
-      <Typography fontSize="35px" sx={{ display: { xs: "block", xl: "none"} }}>
+      <Typography fontSize="35px" sx={{ display: { xs: "block", "2xl": "none"} }}>
         <MdArrowBackIos style={{ cursor: "pointer" }} />
       </Typography>
     </Box>
@@ -22,9 +22,9 @@ const RightArrow = () => {
 
   return (
     <Box onClick={() => {if (!isLastItemVisible) { scrollNext() }}}
-      height="320px" width="38px" display="flex" alignItems="center"
+      height="450px" width="38px" display="flex" alignItems="center" marginLeft="20px"
     >
-      <Typography fontSize="35px" sx={{ display: { xs: "block", xl: "none"} }}>
+      <Typography fontSize="35px" sx={{ display: { xs: "block", "2xl": "none"} }}>
         <MdArrowForwardIos style={{ cursor: "pointer" }} />
       </Typography>
     </Box>

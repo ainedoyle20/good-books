@@ -11,7 +11,7 @@ const AmazonButton = ({ setShowAmazonChoices }) => {
       sx={{ cursor: "pointer", opacity: "0.85", ":hover": { opacity: "1" }}}
       onClick={() => setShowAmazonChoices((prev) => !prev)}
     >
-      Add to Shelf
+      Search on Amazon
     </Typography>
   );
 }

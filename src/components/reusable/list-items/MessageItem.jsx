@@ -18,7 +18,7 @@ const MessageItem = ({ message, openMessagePage }) => {
       setTextMessage("");
     }
 
-  }, []);
+  }, [datedMessages]);
 
   return (
     <Box
@@ -35,7 +35,7 @@ const MessageItem = ({ message, openMessagePage }) => {
       }}
     >
       <img 
-        alt="user profile picture"
+        alt="user profile"
         src={message?.messageFriend?.image ? message.messageFriend.image : "https://s.gr-assets.com/assets/nophoto/user/u_60x60-267f0ca0ea48fd3acfd44b95afa64f01.png"}
         height="40px"
         width="40px"

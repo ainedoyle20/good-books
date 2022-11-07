@@ -37,6 +37,8 @@ const DiscussionPage = () => {
     if (!user) {
       navigate("/");
     }
+
+    // eslint-disable-next-line
   }, [user]);
 
   const getDiscussionById = async (discussionId) => {
@@ -48,13 +50,14 @@ const DiscussionPage = () => {
   // fetching discussin document by id
   useEffect(() => {
     getDiscussionById(id);
-  }, []);
+  }, [id]);
 
   // checking if user is participant
   useEffect(() => {
-    if (!discussion) return;
+    if (!discussion || !user) return;
 
     const { participants } = discussion;
+    const { id: userId} = user;
 
     if (!participants.length) {
       setIsParticipant(false);
@@ -62,7 +65,7 @@ const DiscussionPage = () => {
     }
 
     const filteredParticipants = participants?.filter((participant) => (
-      participant._id === user._id
+      participant._id === userId
     ))
 
    
@@ -71,7 +74,7 @@ const DiscussionPage = () => {
     } else {                 // NOT a participant
       setIsParticipant(false);
     }
-  }, [discussion]);
+  }, [discussion, user]);
 
   // checking if today's date is recorded
   useEffect(() => {
@@ -123,7 +126,9 @@ const DiscussionPage = () => {
 
   // checking if discussion is PUBLIC and if current user is a MEMBER of discussion's group
   useEffect(() => {
-    if (!group) return;
+    if (!group || !user || !discussion) return;
+
+    const { id: userId } = user;
 
     const checkIfMember = (userId, specificGroup) => {
       const {members} = specificGroup;
@@ -166,11 +171,11 @@ const DiscussionPage = () => {
       }
     }
 
-    checkIfMember(user._id, group);
+    checkIfMember(userId, group);
     checkIfPublic(group);
-    checkIfBlocked(user?._id, group, discussion);
+    checkIfBlocked(userId, group, discussion);
     
-  }, [group]);
+  }, [group, user, discussion]);
 
   const handleContribute = async (contribution) => {
     if (!isPublic && !isMember) {

@@ -30,7 +30,7 @@ const RequestedFriendItem = ({ member, user }) => {
       }}
     >
       <img 
-        alt="user profile picture"
+        alt="user profile"
         src={member.image}
         height="40px"
         width="40px"

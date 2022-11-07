@@ -1,7 +1,6 @@
 import React, {useEffect, useState} from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { Stack, Typography } from '@mui/material';
-import { MdMenu } from "react-icons/md";
+import { Stack } from '@mui/material';
 
 import useGlobalStore from '../store/globalStore';
 import { 
@@ -29,7 +28,7 @@ const Profile = () => {
     if (!user) {
       navigate("/");
     }
-  }, [user]);
+  }, [user, navigate]);
 
   useEffect(() => {
     if (navSection?.length && userDetails && user) {
@@ -39,6 +38,8 @@ const Profile = () => {
 
       updateSidebarActiveOption(navSection);
     }
+
+    // eslint-disable-next-line
   }, [navSection, userDetails]); 
 
   useEffect(() => {
@@ -50,10 +51,14 @@ const Profile = () => {
     if (user) {
       getUserDetails();
     }
+
+    // eslint-disable-next-line
   }, [id]);
 
   useEffect(() => {
     fetchAllUsers(updateAllUsers);
+
+    // eslint-disable-next-line
   }, []);
 
   if (!userDetails || !user) {

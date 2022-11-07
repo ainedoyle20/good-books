@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Stack, Box, Typography } from '@mui/material';
 import { MdOutlineCancel } from "react-icons/md"
 
-import { BookDetails } from '../../utils/testObject';
+import { BookDetailsObject } from '../../utils/testObject';
 
 const MyBooksSection = () => {
   const [acitiveShelf, setAcitiveShelf] = useState(1);
@@ -71,21 +71,21 @@ const MyBooksSection = () => {
           >
             <Stack direction="row" height="160px" width="100%" borderBottom="1px solid #382110" marginBottom="20px" sx={{ cursor: "default"}}>
               <Box height="100%" width="160px" padding="0 15px" paddingBottom="10px">
-                <img alt="book cover" src={BookDetails.cover} width="100%" height="100%" />
+                <img alt="book cover" src={BookDetailsObject.cover} width="100%" height="100%" />
               </Box>
               <Box height="100%" width="160px" paddingTop="10px" display="flex" justifyContent="center">
                 <Typography>
-                  {BookDetails.name}
+                  {BookDetailsObject.name}
                 </Typography>
               </Box>
               <Box height="100%" width="160px" paddingTop="10px" display="flex" justifyContent="center">
                 <Typography>
-                  {BookDetails.authors[0]}
+                  {BookDetailsObject.authors[0]}
                 </Typography>
               </Box>
               <Box height="100%" width="200px" paddingTop="10px" display="flex" justifyContent="center">
                 <Typography>
-                  {BookDetails.rating}
+                  {BookDetailsObject.rating}
                 </Typography>
               </Box>
               <Box height="100%" width="160px" paddingTop="10px" display="flex" justifyContent="center">
@@ -105,21 +105,21 @@ const MyBooksSection = () => {
 
             <Stack direction="row" height="160px" borderBottom="1px solid #382110" marginBottom="20px" sx={{ cursor: "default"}}>
               <Box height="100%" width="160px" padding="0 15px" paddingBottom="10px">
-                <img alt="book cover" src={BookDetails.cover} width="100%" height="100%" />
+                <img alt="book cover" src={BookDetailsObject.cover} width="100%" height="100%" />
               </Box>
               <Box height="100%" width="160px" paddingTop="10px" display="flex" justifyContent="center">
                 <Typography>
-                  {BookDetails.name}
+                  {BookDetailsObject.name}
                 </Typography>
               </Box>
               <Box height="100%" width="160px" paddingTop="10px" display="flex" justifyContent="center">
                 <Typography>
-                  {BookDetails.authors[0]}
+                  {BookDetailsObject.authors[0]}
                 </Typography>
               </Box>
               <Box height="100%" width="200px" paddingTop="10px" display="flex" justifyContent="center">
                 <Typography>
-                  {BookDetails.rating}
+                  {BookDetailsObject.rating}
                 </Typography>
               </Box>
               <Box height="100%" width="160px" paddingTop="10px" display="flex" justifyContent="center">
@@ -139,21 +139,21 @@ const MyBooksSection = () => {
 
             <Stack direction="row" height="160px" borderBottom="1px solid #382110" marginBottom="20px" sx={{ cursor: "default"}}>
               <Box height="100%" width="160px" padding="0 15px" paddingBottom="10px">
-                <img alt="book cover" src={BookDetails.cover} width="100%" height="100%" />
+                <img alt="book cover" src={BookDetailsObject.cover} width="100%" height="100%" />
               </Box>
               <Box height="100%" width="160px" paddingTop="10px" display="flex" justifyContent="center">
                 <Typography>
-                  {BookDetails.name}
+                  {BookDetailsObject.name}
                 </Typography>
               </Box>
               <Box height="100%" width="160px" paddingTop="10px" display="flex" justifyContent="center">
                 <Typography>
-                  {BookDetails.authors[0]}
+                  {BookDetailsObject.authors[0]}
                 </Typography>
               </Box>
               <Box height="100%" width="200px" paddingTop="10px" display="flex" justifyContent="center">
                 <Typography>
-                  {BookDetails.rating}
+                  {BookDetailsObject.rating}
                 </Typography>
               </Box>
               <Box height="100%" width="160px" paddingTop="10px" display="flex" justifyContent="center">
@@ -173,21 +173,21 @@ const MyBooksSection = () => {
 
             <Stack direction="row" height="160px" borderBottom="1px solid #382110" marginBottom="20px" sx={{ cursor: "default"}}>
               <Box height="100%" width="160px" padding="0 15px" paddingBottom="10px">
-                <img alt="book cover" src={BookDetails.cover} width="100%" height="100%" />
+                <img alt="book cover" src={BookDetailsObject.cover} width="100%" height="100%" />
               </Box>
               <Box height="100%" width="160px" paddingTop="10px" display="flex" justifyContent="center">
                 <Typography>
-                  {BookDetails.name}
+                  {BookDetailsObject.name}
                 </Typography>
               </Box>
               <Box height="100%" width="160px" paddingTop="10px" display="flex" justifyContent="center">
                 <Typography>
-                  {BookDetails.authors[0]}
+                  {BookDetailsObject.authors[0]}
                 </Typography>
               </Box>
               <Box height="100%" width="200px" paddingTop="10px" display="flex" justifyContent="center">
                 <Typography>
-                  {BookDetails.rating}
+                  {BookDetailsObject.rating}
                 </Typography>
               </Box>
               <Box height="100%" width="160px" paddingTop="10px" display="flex" justifyContent="center">
@@ -207,21 +207,21 @@ const MyBooksSection = () => {
 
             <Stack direction="row" height="160px" borderBottom="1px solid #382110" marginBottom="20px" sx={{ cursor: "default"}}>
               <Box height="100%" width="160px" padding="0 15px" paddingBottom="10px">
-                <img alt="book cover" src={BookDetails.cover} width="100%" height="100%" />
+                <img alt="book cover" src={BookDetailsObject.cover} width="100%" height="100%" />
               </Box>
               <Box height="100%" width="160px" paddingTop="10px" display="flex" justifyContent="center">
                 <Typography>
-                  {BookDetails.name}
+                  {BookDetailsObject.name}
                 </Typography>
               </Box>
               <Box height="100%" width="160px" paddingTop="10px" display="flex" justifyContent="center">
                 <Typography>
-                  {BookDetails.authors[0]}
+                  {BookDetailsObject.authors[0]}
                 </Typography>
               </Box>
               <Box height="100%" width="200px" paddingTop="10px" display="flex" justifyContent="center">
                 <Typography>
-                  {BookDetails.rating}
+                  {BookDetailsObject.rating}
                 </Typography>
               </Box>
               <Box height="100%" width="160px" paddingTop="10px" display="flex" justifyContent="center">
