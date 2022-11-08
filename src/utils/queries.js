@@ -3,9 +3,9 @@ export const userDetailsQuery = (id) => {
     _id,
     image,
     userName,
-    readShelf,
-    readingShelf,
-    wantToReadShelf,
+    read,
+    currentlyReading,
+    wantToRead,
     friends[]->{
       _id,
       userName,
@@ -234,5 +234,14 @@ export const specificDiscussionQuery = (discussionId) => {
     }
   }`;
 
+  return query;
+}
+
+export const getShelvesQuery = (userId) => {
+  const query = `*[_type=="user" && _id=="${userId}"]{
+    wantToRead,
+    currentlyReading,
+    read
+  }`;
   return query;
 }

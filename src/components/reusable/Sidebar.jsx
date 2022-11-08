@@ -12,7 +12,7 @@ const Sidebar = ({ setShowSidebar, showSidebar }) => {
     <>
       {!showSidebar ? (
         // Menu
-        <Typography position="fixed" sx={{ top: { xs: "130px", md: "70px" }, cursor: "pointer"}} 
+        <Typography position="fixed" sx={{ top: "70px", cursor: "pointer"}} 
           left="20px" fontSize="40px" zIndex={1000}
           onClick={() => setShowSidebar(true)}
         >

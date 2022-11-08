@@ -8,7 +8,8 @@ import { userDetailsQuery,
   allGroupsQuery, 
   myGroupsQuery, 
   specificGroupQuery,
-  specificDiscussionQuery
+  specificDiscussionQuery,
+  getShelvesQuery
 } from './queries';
 
 export const handleLoginWithGoogle = async (storeUser) => {
@@ -711,3 +712,124 @@ export const formatLargeImgUrl = (smallImgUrl) => {
   
   return `https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/${longId}/${shortId}.jpg`;
 }
+
+const shelfObject = {
+  1: "wantToRead",
+  2: "currentlyReading",
+  3: "read"
+};
+
+// const checkIfInOtherShelves = (bookId, otherShelves) => {
+//   let otherShelf;
+
+//   otherShelves.forEach((shelf) => {
+//     if (shelf) {
+//       shelf.forEach((book) => {
+//         if (book === bookId) {
+//           otherShelf = shelf.name;
+//         }
+//       })
+//     }
+//   });
+
+//   if (otherShelf) {
+//     console.log("otherShelf name: ", otherShelf);
+//     const otherShelfKey = Object.keys(shelfObject).find(key => shelfObject[key] === otherShelf);
+//     otherShelf = otherShelfKey;
+//   }
+
+//   console.log("otherShelf: ", otherShelf);
+//   return otherShelf;
+// }
+
+const checkIfInSameShelfAlready = (bookId, activeShelf) => {
+  let inShelf = false;
+
+  if (activeShelf && activeShelf.length) {
+    activeShelf.forEach((book) => {
+      if (book.bookId === bookId) {
+        inShelf = true;
+      }
+    }); 
+  }
+
+  return inShelf;
+}
+
+export const removeBookFromShelf = async (userId, shelfKey, bookKey) => {
+  console.log(shelfKey, userId, bookKey);
+  if (!shelfKey || !userId || !bookKey) return;
+
+  const chosenShelf = shelfObject[shelfKey];
+
+  console.log("bookKey: ", bookKey, "chosenShelf: ", chosenShelf);
+
+  try {
+    await client.patch(userId)
+      .unset([`${chosenShelf}[_key=="${bookKey}"]`])
+      .commit();
+  } catch (error) {
+    console.log("Error removing book from shelf: ", error);
+  }
+}
+
+export const addBookToShelf = async (userId, bookDetails, shelfKey) => {
+  if (!shelfKey || !userId || !bookDetails?.book_id) return;
+
+  const chosenShelf = shelfObject[shelfKey];
+
+  const userShelvesQuery = getShelvesQuery(userId);
+  const data = await client.fetch(userShelvesQuery);
+  const { wantToRead, currentlyReading, read } = data[0];
+  const shelves = [wantToRead, currentlyReading, read];
+
+  const { book_id, name, cover, authors, rating } = bookDetails;
+
+  const activeShelf = shelves[shelfKey-1];
+  const inSameShelf = checkIfInSameShelfAlready(book_id, activeShelf);
+
+  if (inSameShelf) {
+    return;
+  } 
+
+  console.log("adding book..");
+  try {
+    await client.patch(userId)
+      .setIfMissing({ [chosenShelf]: [] })
+      .insert("after", `${chosenShelf}[-1]`, [{
+        _key: uuidv4(),
+        type: "bookDetails",
+        bookId: book_id,
+        bookTitle: name,
+        bookCover: cover,
+        bookAuthors: authors,
+        bookRating: rating,
+        dateAdded: new Date().toLocaleDateString("GB")
+      }])
+      .commit();
+
+    const otherKeys = [1, 2, 3].filter(key => key !== shelfKey);
+    console.log("otherKeys: ", otherKeys);
+    const updatedShelf1 = shelves[otherKeys[0]-1]?.filter((book) => book.bookId !== book_id);
+    const updatedShelf2 = shelves[otherKeys[1]-1]?.filter((book) => book.bookId !== book_id);
+    console.log("updated: ", updatedShelf1, updatedShelf2);
+
+    if (updatedShelf1) {
+      console.log(shelfObject[otherKeys[0]]);
+      await client.patch(userId)
+      .set({ [shelfObject[otherKeys[0]]]: updatedShelf1 })
+      .commit();
+    }
+
+    if (updatedShelf2) {
+      console.log(shelfObject[otherKeys[1]]);
+      await client.patch(userId)
+      .set({ [shelfObject[otherKeys[1]]]: updatedShelf2 })
+      .commit();
+    }
+  } catch (error) {
+    console.log("Error adding book to shelf: ", error);
+  }
+}
+
+// .unset([`blockedUsers[_ref=="${toUnBlockId}"]`])

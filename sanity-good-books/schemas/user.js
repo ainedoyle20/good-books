@@ -14,8 +14,8 @@ export default {
       type: 'string',
     },
     {
-      name: 'read',
-      title: 'Read Shelf',
+      name: 'wantToRead',
+      title: 'Want To Read Shelf',
       type: 'array',
       of: [{ type: "bookDetails" }],
     },
@@ -26,8 +26,8 @@ export default {
       of: [{ type: "bookDetails" }],
     },
     {
-      name: 'wantToRead',
-      title: 'Want To Read Shelf',
+      name: 'read',
+      title: 'Read Shelf',
       type: 'array',
       of: [{ type: "bookDetails" }],
     },
