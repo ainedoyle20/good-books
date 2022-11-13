@@ -35,8 +35,9 @@ const ScrollingContainer = ({ children, isLarge, inDiscussion, messageObject, di
           borderLeft: '1px solid #382110',
           paddingTop: "15px",
           paddingBottom: inDiscussion ? "0" : "15px",
-          width: isLarge ? "900px" : '50%',
-          height: isLarge ? "500px" : '400px',
+          width: isLarge ? {xs: "95%", sm: "60%", md: "900px"} : {xs: "95%", sm: "60%", md: "50%"},
+          maxWidth: isLarge ? "900px" : "600px",
+          height: isLarge ? {xs: "300px", sm: "400px", md: "500px"} : {xs: "300px", md: "400px"},
           position: inDiscussion ? "relative" : "static",
         }}
       >

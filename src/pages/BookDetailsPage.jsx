@@ -3,9 +3,9 @@ import { useParams } from 'react-router-dom';
 import { Stack, Typography } from '@mui/material';
 
 import useGlobalStore from '../store/globalStore';
-import { BookDetails } from "../components/reusable/books";
 import { getBookById } from '../utils/rapidApi';
-import Loader from '../components/reusable/Loader';
+import { BookDetails } from "../components/books";
+import { Loader } from "../components/reusable";
 
 const BookDetailsPage = () => {
   const { getBookByIdResults, updateGetBookByIdResults } = useGlobalStore();
@@ -37,7 +37,7 @@ const BookDetailsPage = () => {
   }, []);
 
   return (
-    <Stack width="100vw" height="100vh" display="flex" alignItems="center" paddingTop="150px">
+    <Stack width="100vw" height="auto" display="flex" alignItems="center" paddingTop="150px">
       {isLoading ? (
         <Loader inScrollingContainer={true} />
       ) : (

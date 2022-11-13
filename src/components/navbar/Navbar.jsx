@@ -2,10 +2,10 @@ import React, {useState} from 'react';
 import { Link } from 'react-router-dom';
 import { Stack, Typography, Box } from '@mui/material';
 
-import useGlobalStore from '../../../store/globalStore';
-import LoginButton from "../LoginButton";
+import useGlobalStore from '../../store/globalStore';
 import Searchbar from "./Searchbar";
 import ProfileButton from "./ProfileButton";
+import { LoginButton } from "../auth-components"
 
 const Navbar = () => {
   const { user } = useGlobalStore();

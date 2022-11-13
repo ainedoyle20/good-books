@@ -8,9 +8,10 @@ const LeftArrow = () => {
 
   return (
     <Box onClick={() => {if (!isFirstItemVisible) { scrollPrev() }}}
-      height="450px" width="38px" display="flex" alignItems="center" marginRight="20px"
+      height="450px" display="flex" alignItems="center" paddingLeft="2px"
+      sx={{ marginRight: { xs: "0", md: "20px"}, width: { xs: "auto", md: "38px"}}}
     >
-      <Typography fontSize="35px" sx={{ display: { xs: "block", "2xl": "none"} }}>
+      <Typography sx={{ display: { xs: "block", "2xl": "none"}, fontSize: { xs: "25px", md: "35px"} }}>
         <MdArrowBackIos style={{ cursor: "pointer" }} />
       </Typography>
     </Box>
@@ -22,9 +23,10 @@ const RightArrow = () => {
 
   return (
     <Box onClick={() => {if (!isLastItemVisible) { scrollNext() }}}
-      height="450px" width="38px" display="flex" alignItems="center" marginLeft="20px"
+      height="450px" display="flex" alignItems="center"
+      sx={{ marginLeft: { xs: "0", md: "20px"}, width: { xs: "auto", md: "38px"}}}
     >
-      <Typography fontSize="35px" sx={{ display: { xs: "block", "2xl": "none"} }}>
+      <Typography sx={{ display: { xs: "block", "2xl": "none"}, fontSize: { xs: "25px", md: "35px"} }}>
         <MdArrowForwardIos style={{ cursor: "pointer" }} />
       </Typography>
     </Box>

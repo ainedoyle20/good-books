@@ -4,7 +4,7 @@ import { createTheme, ThemeProvider } from '@mui/material';
 
 import { Home, Profile, GroupPage, DiscussionPage, MessagePage, BookDetailsPage, SearchResultsPage } from './pages';
 import { ScrollButton } from './components/reusable';
-import Navbar from "./components/reusable/navbar/Navbar";
+import Navbar from "./components/navbar/Navbar";
 
 const theme = createTheme({
   breakpoints: {

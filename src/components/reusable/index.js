@@ -4,7 +4,3 @@ export { default as Sidebar } from './Sidebar';
 export { default as ScrollingContainer } from './ScrollingContainer';
 export { default as Discussion } from './Discussion';
 export { default as CreateMessage } from './CreateMessage';
-export { default as LoginButton } from './LoginButton';
-export { default as AuthDropdown } from './AuthDropdown';
-export { default as LoginForm } from './LoginForm';
-export { default as SignUpForm } from './SignUpForm';

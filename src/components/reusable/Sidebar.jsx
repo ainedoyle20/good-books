@@ -23,7 +23,7 @@ const Sidebar = ({ setShowSidebar, showSidebar }) => {
         <Stack
           position="fixed" left='0' height='100%' width='250px'  paddingLeft="20px"
           backgroundColor='#f4f1ea'
-          sx={{top: { xs: "120px", md: "60px"}, zIndex: 1000 }}
+          sx={{top: "60px", zIndex: 1000 }}
         >
           <Box width="100%" display="flex" justifyContent="flex-end" paddingRight="20px" paddingTop="30px">
             <Typography 

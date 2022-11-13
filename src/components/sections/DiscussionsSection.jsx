@@ -3,7 +3,7 @@ import { Box, Stack, Typography } from '@mui/material';
 
 import useGlobalStore from '../../store/globalStore';
 import { ScrollingContainer } from '../reusable';
-import { DiscussionItem } from '../reusable/list-items';
+import { DiscussionItem } from "../list-items";
 import { fetchMyDiscussions, fetchPublicDiscussions } from '../../utils';
 
 const DiscussionsSection = () => {
@@ -72,8 +72,12 @@ const DiscussionsSection = () => {
       display="flex"
       alignItems="center"
       justifyContent="center"
+      marginBottom="100px"
+      sx={{ paddingTop: {xs: "120px", md: "80px"}}}
     >
-      <Stack width="50%" display="flex" justifyContent="center" alignItems="center" marginBottom="30px">
+      <Stack display="flex" justifyContent="center" alignItems="center" marginBottom="30px"
+        sx={{ width: {xs: "95%", sm: "60%", md: "50%"}, maxWidth: "600px"}}
+      >
         <Box sx={{ display: 'flex', marginBottom: "30px"}}>
           <Typography
             onClick={() => {
@@ -82,9 +86,9 @@ const DiscussionsSection = () => {
               setSearchTerm("");
             }}
             sx={{
-              fontSize: 25,
+              fontSize: {xs: "16px", md: "25px"},
               textDecoration: showMyDiscussions ? 'underline' : 'none',
-              margin: '0 20px',
+              marginRight: {xs: "15px", md: "30px"},
               color: '#382110',
               fontWeight: '300',
               cursor: 'pointer',
@@ -99,9 +103,8 @@ const DiscussionsSection = () => {
               setSearchTerm("");
             }}
             sx={{
-              fontSize: 25,
+              fontSize: {xs: "16px", md: "25px"},
               textDecoration: !showMyDiscussions ? 'underline' : 'none',
-              margin: '0 20px',
               color: '#382110',
               fontWeight: '300',
               cursor: 'pointer',
@@ -112,7 +115,12 @@ const DiscussionsSection = () => {
         </Box>
 
         <Stack direction="row" width="100%" sx={{ display: 'flex', alignItems: 'center'}}>
-          <Box sx={{ position: 'relative', backgroundColor: 'white', width: "40%"}}>
+          <Box 
+            sx={{ 
+              position: 'relative', backgroundColor: 'white', 
+              width: {xs: "80%", sm: "50%"},
+              padding: {xs: "5px 5px"},
+            }}>
             <input
               type="text"
               value={searchTerm}
@@ -122,8 +130,7 @@ const DiscussionsSection = () => {
                 position: "relative",
                 width: "80%",
                 height: '100%',
-                padding: "10px 5px",
-                fontSize: '18px',
+                fontSize: '16px',
                 outline: 'none',
                 border: 'none',
               }}
@@ -137,7 +144,7 @@ const DiscussionsSection = () => {
               style={{ 
                 position: 'absolute',
                 right: 10,
-                top: "10px",
+                top: "5px",
               }}
             />
           </Box>

@@ -5,8 +5,8 @@ import { BiArrowBack } from "react-icons/bi"
 
 import useGlobalStore from '../store/globalStore';
 import { ScrollingContainer, Loader } from '../components/reusable';
-import { DiscussionModal } from '../components/reusable/modals';
-import { DiscussionItem, MemberItem } from '../components/reusable/list-items';
+import { DiscussionModal } from '../components/modals';
+import { DiscussionItem, MemberItem } from '../components/list-items';
 import { 
   fetchSpecificGroup, addUserToGroup, createDiscussion, deleteGroup,
   blockUserInGroup, unBlockUserInGroup
@@ -147,13 +147,19 @@ const GroupPage = () => {
 
   return (
     <Stack
-      width="100vw" height="100vh" display="flex"
-      alignItems="center" justifyContent="center" paddingTop="30px"
+      width="100vw" minHeight="100vh" display="flex"
+      alignItems="center" justifyContent="center" 
+      sx={{ overflow: "hidden", paddingTop: {xs: "120px"}}}
     >
       {/* Back to Groups section button */}
       <Typography 
-        position="absolute" top="90px" left="50px" display="flex" alignItems="center" gap={1} fontSize="18px"
-        sx={{ cursor: "pointer", ":hover": { fontSize: "18.5px"} }}
+        position="absolute" top="90px" left="50px" display="flex" alignItems="center" gap={1}
+        sx={{ 
+          cursor: "pointer", 
+          ":hover": { fontSize: "18.5px"},
+          fontSize: {xs: "12px", sm: "14px", md: "18px"},
+          left: {xs: "20px", md: "50px"}
+        }}
         onClick={() => {
           if (!user) return;
           updateNavSection("groups_section");
@@ -165,14 +171,16 @@ const GroupPage = () => {
       </Typography>
 
       <Stack 
-        sx={{ display: showDiscussionModal || !group ? "none" : "flex"}}
-        width="50%" justifyContent="center" alignItems="center" marginBottom="20px"
+        sx={{ 
+          display: showDiscussionModal || !group ? "none" : "flex"
+        }}
+        width="100%" maxWidth="900px" justifyContent="center" alignItems="center" marginBottom="20px"
       >
         <Box sx={{ display: 'flex'}}>
           <Typography
             onClick={() => setShowDiscussions(true)}
             sx={{ 
-              fontSize: 25, margin: '0 20px', color: '#382110', 
+              fontSize: {xs: "14px", sm: "18px", md: "25px"}, margin: '0 20px', color: '#382110', 
               fontWeight: '300', cursor: 'pointer',
               textDecoration: showDiscussions ? 'underline' : 'none',
             }}
@@ -182,7 +190,7 @@ const GroupPage = () => {
           <Typography
             onClick={() => setShowDiscussions(false)}
             sx={{
-              fontSize: 25, margin: '0 20px', color: '#382110',
+              fontSize: {xs: "14px", sm: "18px", md: "25px"}, margin: '0 20px', color: '#382110',
               fontWeight: '300', cursor: 'pointer',
               textDecoration: !showDiscussions ? 'underline' : 'none',
             }}
@@ -193,18 +201,22 @@ const GroupPage = () => {
       </Stack>
 
       <Stack
-        sx={{ display: showDiscussionModal || !group ? "none" : "flex"}}
-        direction="row" width="900px" justifyContent="center" alignItems="center" 
-        marginBottom="20px" paddingX="50px"
+        sx={{ 
+          display: showDiscussionModal || !group ? "none" : "flex",
+          width: {xs: "95%", sm: "60%", md: "900px"}
+        }}
+        direction="row" justifyContent="center" alignItems="center" 
+        marginBottom="20px" paddingX="10px"
+
       >
-        <Box width="50%" display="flex" justifyContent="flex-start" gap={5}>
-          <Typography sx={{ cursor: "pointer"}}
+        <Box display="flex" justifyContent="flex-start" gap={2} width="100%">
+          <Typography sx={{ cursor: "pointer", fontSize: {xs: "12px", sm: "14px", md: "18px"}}}
             onClick={() => setShowDiscussionModal(true)}
           >
             Start Discussion
           </Typography>
 
-          <Typography sx={{ cursor: "pointer", display: user?._id === group?.postedBy._id ? "none" : "block"}}
+          <Typography sx={{ cursor: "pointer", display: user?._id === group?.postedBy._id ? "none" : "block", fontSize: {xs: "12px", sm: "14px", md: "18px"}}}
             onClick={handleJoinGroup}
           >
             Join Group

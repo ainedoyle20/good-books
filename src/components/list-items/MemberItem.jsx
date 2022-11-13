@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Typography, Box, Stack } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 
-import useGlobalStore from '../../../store/globalStore';
+import useGlobalStore from "../../store/globalStore";
 
 const MemberItem = ({ member, handleBlockUser, groupOrDiscussion, handleUnBlockUser }) => {
   const { updateNavSection } = useGlobalStore();
@@ -38,7 +38,7 @@ const MemberItem = ({ member, handleBlockUser, groupOrDiscussion, handleUnBlockU
     <Stack 
       direction="row" display="flex" justifyContent="center" alignItems="center"
       margin="15px 0" padding="10px" borderTop="1px solid #382110" borderBottom="1px solid #382110"
-      sx={{ ':hover': { padding: "11px" } }}
+      sx={{ ':hover': { padding: "9.5px" } }}
     >
       <img 
         alt="user profile"
@@ -52,7 +52,7 @@ const MemberItem = ({ member, handleBlockUser, groupOrDiscussion, handleUnBlockU
         }}
       />
 
-      <Typography component="span" sx={{ fontSize: 20, width: '300px', cursor: "pointer" }}
+      <Typography component="span" sx={{ width: '300px', cursor: "pointer", fontSize: {xs: "16px", md: "20px"}, overflow: "hidden" }}
         onClick={() => { 
           updateNavSection("profile_section");
           navigate(`/profile/${member._id}`);
@@ -63,16 +63,19 @@ const MemberItem = ({ member, handleBlockUser, groupOrDiscussion, handleUnBlockU
 
       <Box sx={{ width: '90%', display: 'flex', justifyContent: 'flex-end', paddingRight: '15px', position: "relative" }}>
         {isLoading ? (
-          <Typography width="75px" height="38px" sx={{ backgroundColor: "#efebe9" }}
+          <Typography width="75px" height="38px" 
+            sx={{ backgroundColor: "#efebe9", padding: {xs: "3px 10px", md: "5px 15px"}, fontSize: {xs: "16px", md: "18px"} }}
             display="flex" justifyContent="center" alignItems="center"
-            padding='5px 15px' borderRadius="10%" fontSize='18px'
           >
             ...
           </Typography>
         ) : (
           <Typography
-            padding='5px 15px' borderRadius="10%" fontSize='18px'
-            sx={{ backgroundColor: "#efebe9", cursor: 'pointer' }}
+            borderRadius="10%"
+            sx={{ backgroundColor: "#efebe9", cursor: 'pointer',
+              padding: {xs: "3px 10px", md: "5px 15px"},
+              fontSize: {xs: "16px", md: "18px"}
+            }}
             onClick={() => {
               if (isBlocked) {
                 setShowUnblock((prev) => !prev);
@@ -88,8 +91,12 @@ const MemberItem = ({ member, handleBlockUser, groupOrDiscussion, handleUnBlockU
         {showUnblock ? (
           <Typography
             position="absolute" marginRight="120px"
-            padding='5px 15px' borderRadius="10%" fontSize='18px'
-            sx={{ backgroundColor: "#efebe9", cursor: 'pointer' }}
+            borderRadius="10%" fontSize='18px'
+            sx={{ 
+              backgroundColor: "#efebe9", 
+              cursor: 'pointer',
+              padding: {xs: "3px 10px", md: "5px 15px"} 
+            }}
             onClick={() => {
               handleUnBlockUser(member._id);
               setShowUnblock(false);

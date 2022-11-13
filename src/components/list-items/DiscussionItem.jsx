@@ -11,42 +11,43 @@ const DiscussionItem = ({ discussion }) => {
         display: "flex",
         alignItems: 'center',
         justifyContent: 'space-between',
-        padding: "10px 0 10px 0",
+        paddingY: "10px",
+        paddingRight: "10px",
         margin: '15px 0',
         borderTop: '1px solid #382110',
         borderBottom: '1px solid #382110',
-        ':hover': { padding: "11px 1px 11px 1px" },
+        ':hover': { paddingY: "9.5px" },
         cursor: 'pointer',
       }}
     >
       <Box component="span" sx={{ width: '300px', cursor: 'pointer', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-        <Typography sx={{ fontSize: 20, color: '#382110', fontWeight: '600'}}>
+        <Typography sx={{ fontSize: {xs: "14px", md: "20px"}, color: '#382110', fontWeight: '600'}}>
           Name:
         </Typography>
 
-        <Typography fontSize={20} color="#382110">
-          {discussion?.discussionName}
+        <Typography sx={{ fontSize: {xs: "12px", md: "18px"}, color: "#382110" }}>
+          {discussion?.discussionName?.length > 14 ? `${discussion?.discussionName?.slice(0, 14)}...` : discussion?.discussionName}
         </Typography>
       </Box>
 
       <Box component="span" sx={{ width: '300px', cursor: 'pointer', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-        <Typography sx={{ fontSize: 20, color: '#382110', fontWeight: '600'}}>
+        <Typography sx={{ fontSize: {xs: "14px", md: "20px"}, color: '#382110', fontWeight: '600'}}>
           Group:
         </Typography>
 
-        <Typography fontSize={20} color="#382110">
-          {discussion?.groupName}
+        <Typography sx={{ fontSize: {xs: "12px", md: "18px"}, color: "#382110" }}>
+          {discussion?.groupName?.length > 14 ? `${discussion?.groupName?.slice(0, 14)}...` : discussion?.groupName}
         </Typography>
       </Box>
 
       <Box component="span" 
         sx={{ width: '200px', cursor: 'pointer', display: 'flex', flexDirection: 'column', alignItems: 'center' }}
       >
-        <Typography sx={{ fontSize: 20, color: '#382110', fontWeight: '600'}}>
+        <Typography sx={{ fontSize: {xs: "14px", md: "20px"}, color: '#382110', fontWeight: '600'}}>
           Participants:
         </Typography>
 
-        <Typography sx={{ fontSize: 20, color: '#382110'}}>
+        <Typography sx={{ fontSize: {xs: "12px", md: "18px"}, color: '#382110'}}>
           {discussion?.participants?.length}
         </Typography>
         

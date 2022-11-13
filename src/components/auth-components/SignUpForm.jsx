@@ -44,7 +44,7 @@ const SignUpForm = ({ setLoading, addUser }) => {
     <form onSubmit={(e) => handleOnSubmit(e)} 
       style={{ 
         width: "100%", height: "100%", display: "flex", flexDirection: "column",
-        alignItems: "center", marginTop: "40px"
+        alignItems: "center"
       }}
     >
       <Typography fontSize="18px" fontWeight="light">Your UserName</Typography>
@@ -117,7 +117,6 @@ const SignUpForm = ({ setLoading, addUser }) => {
           paddingBottom: "5px",
           backgroundColor: "#F4F1EA",
           borderBottom: "1px solid #c2beb8",
-          marginBottom: "40px",
           width: "60%",
           fontSize: "18px"
         }}
@@ -129,6 +128,7 @@ const SignUpForm = ({ setLoading, addUser }) => {
           ":hover": {padding: "5px 14px", backgroundColor: "#F4F1EA"},
           fontSize: "14px", fontWeight: "600", color: "#382110", cursor: "pointer",
           border: "1px solid #c2beb8", borderRadius: "15px", padding: "5px 15px",
+          marginTop: {xs: "20px", md: "30px"}, marginBottom: "15px"
         }}
       >
         Continue

@@ -2,9 +2,9 @@ import React, { useState } from 'react';
 import { Stack, Typography } from '@mui/material';
 import { MdOutlineCancel } from "react-icons/md"; 
 
-import useGlobalStore from "../../../store/globalStore";
-import { addBookToShelf } from '../../../utils';
-import { getBookById } from '../../../utils/rapidApi';
+import useGlobalStore from "../../store/globalStore";
+import { addBookToShelf } from '../../utils';
+import { getBookById } from '../../utils/rapidApi';
 
 const ChooseShelf = ({ setShowShelves, inBookDetails, bookDetails }) => {
   const { getBookByIdResults, updateGetBookByIdResults, user } = useGlobalStore();
@@ -42,12 +42,16 @@ const ChooseShelf = ({ setShowShelves, inBookDetails, bookDetails }) => {
     <Stack 
       height={inBookDetails ? "300px" : "400px"} width="100%"
       marginTop={inBookDetails ? "0" : "35px"} position="absolute"
-       gap={2}
+      gap={2}
       padding={inBookDetails ? "25px" : "10px"} zIndex="1000"
-      sx={{ backgroundColor: inBookDetails ? "#F4F1EA" : 'white' }}  
+      sx={{ 
+        backgroundColor: inBookDetails ? "#F4F1EA" : '#F4F1EA',
+        display: inBookDetails ? "static" : "flex",
+        justifyContent: "center"
+      }}  
     >
       <Typography display="flex" alignItems="center" justifyContent="space-evenly" 
-        fontSize={inBookDetails ? "30px" : "20px"} marginY="10px" sx={{ cursor: "default"}}
+        fontSize={inBookDetails ? "25px" : "20px"} marginY="10px" sx={{ cursor: "default"}}
         color="#382110"
       >
         Choose a Shelf

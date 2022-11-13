@@ -5,7 +5,7 @@ import { BiArrowBack } from "react-icons/bi";
 
 import useGlobalStore from '../store/globalStore';
 import { ScrollingContainer, Loader, CreateMessage } from '../components/reusable';
-import { MemberItem } from "../components/reusable/list-items";
+import { MemberItem } from "../components/list-items";
 import { 
   fetchSpecificDiscussion, 
   fetchSpecificGroup, 

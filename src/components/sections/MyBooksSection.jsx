@@ -5,7 +5,7 @@ import { MdArrowBackIos, MdArrowForwardIos, MdDeleteForever } from "react-icons/
 
 import useGlobalStore from '../../store/globalStore';
 import { removeBookFromShelf, fetchUserDetails } from '../../utils';
-import Stars from "../reusable/books/Stars";
+import { Stars } from "../books";
 import Loader from "../reusable/Loader";
 
 const MyBooksSection = () => {
@@ -43,7 +43,7 @@ const MyBooksSection = () => {
   return (
     <Stack 
       id="bookshelves_section"
-      width="100vw" height="100vh" display="flex"
+      width="100vw" height="auto" display="flex"
       paddingY="150px"
       sx={{ paddingX: { xs: "40px", lg: "80px"}}}
     >

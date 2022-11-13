@@ -30,7 +30,7 @@ const AmazonSites = ({ setShowAmazonChoices, bookName }) => {
       sx={{ backgroundColor: "#F4F1EA", overflowY: "scroll", "&::-webkit-scrollbar": {width: 0 } }}  
     >
       <Typography display="flex" alignItems="center" justifyContent="space-evenly" 
-        fontSize="30px" marginY="10px" sx={{ cursor: "default"}} color="#382110"
+        fontSize="20px" marginY="10px" sx={{ cursor: "default"}} color="#382110"
       >
         Amazon Websites
         <MdOutlineCancel 

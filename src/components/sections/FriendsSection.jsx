@@ -4,7 +4,7 @@ import { useParams } from 'react-router-dom';
 
 import useGlobalStore from '../../store/globalStore';
 import { ScrollingContainer } from '../reusable';
-import { UserItem, RequestedFriendItem } from "../reusable/list-items";
+import { UserItem, RequestedFriendItem } from "../list-items";
 
 const FriendsSection = () => {
   const { allUsers, userDetails, user } = useGlobalStore();
@@ -35,20 +35,27 @@ const FriendsSection = () => {
     <Stack
       id="friends_section"
       width="100vw"
-      height="100vh"
+      minHeight="100vh"
+      height="auto"
       display="flex"
       alignItems="center"
       justifyContent="center"
+      marginBottom="100px"
+      sx={{ 
+        paddingTop: {xs: "70px", md: "0"}
+      }}
+      border="1px solid black"
     >
-      <Stack width="50%" 
+      <Stack
         sx={{ 
           display: 'flex', 
           justifyContent: 'center', 
           alignItems: 'center',
-          marginBottom: '30px'
+          marginBottom: {xs: "10px", md: "30px"},
+          width: {xs: "auto", md: "50%"}
         }}
       >
-        <Box sx={{ display: 'flex', marginBottom: "30px"}}>
+        <Box sx={{ display: 'flex', marginBottom: {xs: "15px", md: "30px"}}}>
           <Typography
             onClick={() => {
               setShowFriends(true);
@@ -57,7 +64,7 @@ const FriendsSection = () => {
               setFilteredFriends(userDetails?.friends ? userDetails?.friends : []);
             }}
             sx={{
-              fontSize: 25,
+              fontSize: {xs: "18px", md: "20px"},
               textDecoration: showFriends && !showFriendReqs ? 'underline' : 'none',
               margin: '0 20px',
               color: '#382110',
@@ -75,7 +82,7 @@ const FriendsSection = () => {
               setFilteredMembers(allUsers.filter((member) => member?._id !== id));
             }}
             sx={{
-              fontSize: 25,
+              fontSize: {xs: "18px", md: "20px"},
               textDecoration: !showFriends && !showFriendReqs ? 'underline' : 'none',
               margin: '0 20px',
               color: '#382110',
@@ -91,7 +98,7 @@ const FriendsSection = () => {
                 setShowFriendReqs(true);
               }}
               sx={{
-                fontSize: 25,
+                fontSize: {xs: "18px", md: "20px"},
                 textDecoration: showFriendReqs ? 'underline' : 'none',
                 margin: '0 20px',
                 color: '#382110',
@@ -107,8 +114,8 @@ const FriendsSection = () => {
         </Box>
 
         {!showFriendReqs && 
-          <Stack width="100%">
-            <Box sx={{ position: 'relative', backgroundColor: 'white', width: "40%"}}>
+          <Stack width="100%" maxWidth="600px">
+            <Box sx={{ position: 'relative', backgroundColor: 'white', width: {xs: "70%", md: "50%"}}}>
               <input
                 type="text"
                 value={searchTerm}
@@ -118,8 +125,8 @@ const FriendsSection = () => {
                   position: "relative",
                   width: "80%",
                   height: '100%',
-                  padding: "10px 5px",
-                  fontSize: '18px',
+                  padding: "5px 5px",
+                  fontSize: '16px',
                   outline: 'none',
                   border: 'none',
                 }}
@@ -133,7 +140,7 @@ const FriendsSection = () => {
                 style={{ 
                   position: 'absolute',
                   right: 10,
-                  top: "10px",
+                  top: "5px",
                 }}
               />
             </Box>

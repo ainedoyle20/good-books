@@ -5,8 +5,8 @@ import { useParams } from 'react-router-dom';
 import useGlobalStore from '../../store/globalStore';
 import { fetchPublicGroups } from '../../utils';
 import { ScrollingContainer } from '../reusable';
-import { CreateGroupModal } from '../reusable/modals';
-import { GroupItem } from '../reusable/list-items';
+import { CreateGroupModal } from "../modals";
+import { GroupItem } from "../list-items";
 
 const GroupsSection = () => {
   const { user, userDetails, publicGroups, updatePublicGroups } = useGlobalStore();
@@ -48,15 +48,18 @@ const GroupsSection = () => {
       {!showGroupModal ? (
         <Stack
           id="groups_section" width="100vw" height="100vh" display="flex"
-          alignItems="center" justifyContent="center"
+          alignItems="center" justifyContent="center" marginBottom="100px"
+          sx={{ paddingTop: { xs: "120px", md: "60px"}}}
         >
           
-          <Stack width="50%" 
+          <Stack
             sx={{ 
               display: 'flex', 
               justifyContent: 'center', 
               alignItems: 'center',
-              marginBottom: '30px'
+              marginBottom: '30px',
+              width: {xs: "95%", sm: "60%", md: "50%"},
+              maxWidth: "600px",
             }}
           >
             <Box sx={{ display: 'flex', marginBottom: "30px"}}>
@@ -67,7 +70,7 @@ const GroupsSection = () => {
                   setFilteredGroups(userDetails?.groups ? userDetails?.groups : []);
                 }}
                 sx={{
-                  fontSize: 25,
+                  fontSize: {xs: "16px", md: "25px"},
                   textDecoration: showMyGroups ? 'underline' : 'none',
                   margin: '0 20px',
                   color: '#382110',
@@ -84,7 +87,7 @@ const GroupsSection = () => {
                   setFilteredPublicGroups(publicGroups);
                 }}
                 sx={{
-                  fontSize: 25,
+                  fontSize: {xs: "16px", md: "25px"},
                   textDecoration: !showMyGroups ? 'underline' : 'none',
                   margin: '0 20px',
                   color: '#382110',
@@ -96,8 +99,20 @@ const GroupsSection = () => {
               </Typography>
             </Box>
 
-            <Stack direction="row" width="100%" sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}>
-              <Box sx={{ position: 'relative', backgroundColor: 'white', width: "40%"}}>
+            <Stack direction="row"
+              sx={{ 
+                display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+                width: "100%"
+              }}
+            >
+              <Box sx={{ 
+                position: 'relative', 
+                width: {xs: "60%", md: "40%"}, 
+                marginLeft: {xs: "5px", sm: "0"},
+                backgroundColor: "white",
+                height: "35px",
+                paddingLeft: "5px",
+              }}>
                 <input
                   type="text"
                   value={searchTerm}
@@ -107,10 +122,9 @@ const GroupsSection = () => {
                     position: "relative",
                     width: "80%",
                     height: '100%',
-                    padding: "10px 5px",
-                    fontSize: '18px',
                     outline: 'none',
                     border: 'none',
+                    fontSize: "16px"
                   }}
                 />
 
@@ -131,7 +145,7 @@ const GroupsSection = () => {
                 <Box paddingRight="25px">
                   <Typography
                     onClick={() => setShowGroupModal(true)}
-                    sx={{ fontSize: "18px", cursor: 'pointer' }}
+                    sx={{ fontSize: {xs: "14px", md: "18px"}, cursor: 'pointer' }}
                   >
                     Create Group
                   </Typography>

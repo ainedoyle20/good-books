@@ -2,7 +2,7 @@ import React from 'react';
 import { useParams } from 'react-router-dom';
 import { Box, Typography } from '@mui/material';
 
-import { acceptFriendRequest } from "../../../utils";
+import { acceptFriendRequest } from "../../utils";
 
 const RequestedFriendItem = ({ member, user }) => {
   const {id} = useParams();
@@ -26,7 +26,7 @@ const RequestedFriendItem = ({ member, user }) => {
         margin: '15px 0',
         borderTop: '1px solid #382110',
         borderBottom: '1px solid #382110',
-        ':hover': { padding: "11px" },
+        ':hover': { padding: "9.5px" },
       }}
     >
       <img 

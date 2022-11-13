@@ -3,9 +3,9 @@ import { useParams } from 'react-router-dom';
 import { Stack, Typography } from '@mui/material';
 
 import useGlobalStore from '../store/globalStore';
-import { BookDetails } from '../components/reusable/books';
+import { BookDetails } from '../components/books';
+import { Loader } from '../components/reusable';
 import { searchBookByName } from '../utils/rapidApi';
-import Loader from '../components/reusable/Loader';
 
 const SearchResultsPage = () => {
   const { storedBookSearchResults, updateStoredBookSearchResults } = useGlobalStore();
@@ -35,7 +35,11 @@ const SearchResultsPage = () => {
   }, [searchTerm]); 
 
   return (
-    <Stack width="100vw" height={searchResults.length ? "auto" : "100vh"} display="flex" alignItems="center" paddingTop="150px" paddingBottom="150px">
+    <Stack 
+      width="100vw" height={searchResults.length ? "auto" : "100vh"} 
+      display="flex" alignItems="center" 
+      paddingTop="150px" paddingBottom="150px"
+    >
       {isLoading ? (
         <Loader inScrollingContainer={true} />
       ) : (

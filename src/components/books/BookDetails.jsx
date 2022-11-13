@@ -3,8 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import { Stack, Box, Typography } from '@mui/material';
 
 import { BookStatus, AmazonButton, ChooseShelf, Stars, AmazonSites } from "./";
-import { formatLargeImgUrl } from "../../../utils";
-import Loader from "../Loader";
+import { formatLargeImgUrl } from "../../utils";
+import { Loader } from "../reusable";
 
 const BookDetails = ({ bookDetails, inSearchResults }) => {
   const [showShelves, setShowShelves] = useState(false);
@@ -34,9 +34,15 @@ const BookDetails = ({ bookDetails, inSearchResults }) => {
   }
 
   return (
-    <Box display="flex" width="80%" marginBottom="50px">
-      <Stack  display="flex" alignItems="center" marginRight="40px">
-        <Box height="400px" width="300px" marginBottom="40px" display="flex" justifyContent="center" alignItems="center">
+    <Box display="flex" marginBottom="50px"
+      sx={{ flexDirection: {xs: "column", md: "row" }, width: {xs: "100%", md: "80%"}, maxWidth: "1500px"}}
+    >
+      <Stack display="flex" alignItems="center"
+        sx={{ width: { xs: "100%", md: "auto"}, marginRight: { xs: "0", md: "40px"}, marginBottom: {xs: "50px", md: "0"}}}
+      >
+        <Box height="400px" width="300px" display="flex" justifyContent="center" alignItems="center"
+          sx={{ marginBottom: {xs: "20px", md: "40px"}}}
+        >
           {loadingImage ? (
               <Loader inScrollingContainer={true} />
           ) : (
@@ -53,7 +59,7 @@ const BookDetails = ({ bookDetails, inSearchResults }) => {
             />
           )}
         </Box>
-        <Box position="relative" width="400px">
+        <Box position="relative" width="100%" maxWidth="350px">
           <BookStatus setShowShelves={setShowShelves} inBookDetails={true} />
 
           {showShelves ? (
@@ -69,17 +75,22 @@ const BookDetails = ({ bookDetails, inSearchResults }) => {
 
       </Stack>
 
-      <Stack>
-        <Typography fontSize="40px" sx={{ cursor: inSearchResults ? "pointer" : "text" }} onClick={handleClickedBook}>
+      <Stack sx={{ paddingX: {xs: "5px", sm: "15px", md: "0"}}}>
+        <Typography 
+          sx={{ cursor: inSearchResults ? "pointer" : "text", fontSize: {xs: "20px", md: inSearchResults? "30px" : "40px"} }} 
+          onClick={handleClickedBook}
+        >
           {bookDetails?.name}
         </Typography>
 
-        <Typography variant='h5' marginBottom="10px">
+        <Typography marginBottom="10px"
+         sx={{ fontSize: {xs: "18px", md: "30px"} }}
+        >
           {bookDetails?.authors[0]}
         </Typography>
 
         <Box marginBottom="30px" display="flex">
-          <Typography variant='h5' >
+          <Typography sx={{ fontSize: {xs: "18px", md: "30px"} }} >
             Rating: {bookDetails?.rating}
           </Typography>
           <Stars stars={bookDetails?.rating ? bookDetails?.rating : 1} />
@@ -90,7 +101,7 @@ const BookDetails = ({ bookDetails, inSearchResults }) => {
             <Stack width="100%" height={showAllSynopsis ? "auto" : "250px"}
               borderBottom="1px solid rgba(1, 1, 1, 0.1)" sx={{ overflow: "hidden"}}>
               {bookDetails?.synopsis.split(".").map((sentence, idx) => (
-                <Typography key={`${sentence}-${idx}`} marginBottom="10px" fontSize="18px">
+                <Typography key={`${sentence}-${idx}`} marginBottom="10px" sx={{ fontSize: {xs: "14px", md: "18px"}}}>
                   {sentence}
                 </Typography>
               ))}
@@ -105,10 +116,10 @@ const BookDetails = ({ bookDetails, inSearchResults }) => {
           </>
         ) : null}
 
-        <Typography marginTop="20px" fontSize="22px">
+        <Typography marginTop={inSearchResults ? "0" : "20px"} sx={{ fontSize: {xs: "15px", md: "22px"} }}>
           {!inSearchResults ? bookDetails?.pages + " pages" : "created editions: " + bookDetails?.created_editions}
         </Typography>
-        <Typography marginTop="10px" fontSize="22px">
+        <Typography marginTop="10px" sx={{ fontSize: {xs: "15px", md: "22px"} }}>
           {!inSearchResults 
             ? "Date published: " + bookDetails?.published_date 
             : "Year published: " + bookDetails?.year

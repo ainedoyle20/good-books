@@ -30,24 +30,26 @@ const MessageItem = ({ message, openMessagePage }) => {
         margin: '15px 0',
         borderTop: '1px solid #382110',
         borderBottom: '1px solid #382110',
-        ':hover': { padding: "11px" },
+        ':hover': { padding: "9.5px" },
         cursor: 'pointer',
       }}
     >
+      
       <img 
         alt="user profile"
         src={message?.messageFriend?.image ? message.messageFriend.image : "https://s.gr-assets.com/assets/nophoto/user/u_60x60-267f0ca0ea48fd3acfd44b95afa64f01.png"}
         height="40px"
         width="40px"
-        style={{ borderRadius: "100%", margin: '0 15px 0 10px'}}
+        style={{ borderRadius: "50%", marginRight: "10px", maginLeft: "10px"}}
         onError={({ currentTarget }) => {
           currentTarget.onerror = null; // to prevent looping
           currentTarget.src="https://s.gr-assets.com/assets/nophoto/user/u_60x60-267f0ca0ea48fd3acfd44b95afa64f01.png"
         }}
       />
 
+
       <Box component="span" 
-        sx={{ fontSize: 20, width: '400px', }}
+        sx={{ fontSize: {xs: "16px", md: "20px"}, width: '200px', overflow: "hidden" }}
       >
         {message?.messageFriend?.userName}
       </Box>

@@ -4,8 +4,7 @@ import { useNavigate } from 'react-router-dom';
 
 import useGlobalStore from '../../store/globalStore';
 import { ScrollingContainer } from '../reusable';
-import { MessageItem } from '../reusable/list-items';
-import { UserItem } from "../reusable/list-items";
+import { MessageItem, UserItem } from "../list-items";
 
 const MessagesSection = () => {
   const { user, userDetails } = useGlobalStore();
@@ -62,15 +61,24 @@ const MessagesSection = () => {
       alignItems="center"
       justifyContent="center"
       position="relative"
+      sx={{ paddingTop: {xs: "120px", md: "70px"}}}
     >
 
       <Stack 
-        width="50%" display="flex" justifyContent="center" alignItems="center" marginBottom="30px"
+        display="flex" justifyContent="center" alignItems="center" marginBottom="30px"
+        sx={{
+          width: {xs: "95%", sm: "60%", md: "50%"},
+          maxWidth: "500px"
+        }}
       >
         <Box sx={{ display: 'flex', marginBottom: "30px"}}>
           <Typography
-            margin="0 20px" color="#382110" fontWeight="300" fontSize="25px"
-            sx={{ textDecoration: showMessages ? 'underline' : 'none', cursor: 'pointer' }}
+            margin="0 20px" color="#382110" fontWeight="300"
+            sx={{ 
+              textDecoration: showMessages ? 'underline' : 'none', 
+              cursor: 'pointer',
+              fontSize: {xs: "18px", md: "25px"}
+            }}
             onClick={() => {
               setShowMessages(true);
               setSearchTerm("");
@@ -79,8 +87,12 @@ const MessagesSection = () => {
             messages
           </Typography>
           <Typography
-            margin="0 20px" color="#382110" fontWeight="300" fontSize="25px"
-            sx={{ textDecoration: !showMessages ? 'underline' : 'none', cursor: 'pointer' }}
+            margin="0 20px" color="#382110" fontWeight="300"
+            sx={{ 
+              textDecoration: !showMessages ? 'underline' : 'none', 
+              cursor: 'pointer',
+              fontSize: {xs: "18px", md: "25px"}
+            }}
             onClick={() => {
               setShowMessages(false);
               setSearchTerm("");
@@ -91,7 +103,7 @@ const MessagesSection = () => {
         </Box>
 
         <Stack direction="row" width="100%" sx={{ display: 'flex', alignItems: 'center'}}>
-          <Box sx={{ position: 'relative', backgroundColor: 'white', width: "40%"}}>
+          <Box sx={{ position: 'relative', backgroundColor: 'white', width: {xs: "70%", sm: "50%"}, padding: "5px"}}>
             <input
               type="text"
               value={searchTerm}
@@ -101,8 +113,7 @@ const MessagesSection = () => {
                 position: "relative",
                 width: "80%",
                 height: '100%',
-                padding: "10px 5px",
-                fontSize: '18px',
+                fontSize: '16px',
                 outline: 'none',
                 border: 'none',
               }}
@@ -116,7 +127,6 @@ const MessagesSection = () => {
               style={{ 
                 position: 'absolute',
                 right: 10,
-                top: "10px",
               }}
             />
           </Box>

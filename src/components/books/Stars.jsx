@@ -10,9 +10,8 @@ const Stars = ({ stars, inMyBooks }) => {
   return (
     <Box display="flex" alignItems="center" justifyContent="center"
       marginLeft={inMyBooks ? "0" : "10px"}
-      height={inMyBooks ? "20px" : "100%"}
       width={inMyBooks ? "100%" : "auto"}
-      fontSize={inMyBooks ? "15px" : "25px"}
+      sx={{ fontSize: inMyBooks ? "15px" : { xs: "18px", md: "30px" }}}
     >
       {stars === 5 ? (
         <>

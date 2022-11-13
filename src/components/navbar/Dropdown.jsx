@@ -2,8 +2,8 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Stack, Typography, Divider } from '@mui/material';
 
-import useGlobalStore from '../../../store/globalStore';
-import { handleLogout } from '../../../utils';
+import useGlobalStore from '../../store/globalStore';
+import { handleLogout } from '../../utils';
 
 const Dropdown = ({ setShowDropdown }) => {
   const { removeUser, user, removeUserDetails, updateNavSection } = useGlobalStore();

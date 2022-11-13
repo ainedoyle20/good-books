@@ -66,7 +66,7 @@ const Profile = () => {
   }
 
   return (
-    <Stack sx={{ paddingTop: { xs: "120px", md: "60px"} }}>
+    <Stack sx={{ paddingTop: { xs: "120px", md: "60px"}, width: "100vw", margin: 0, overflowX: "hidden" }}>
       <Sidebar setShowSidebar={setShowSidebar} showSidebar={showSidebar} />
       <ProfileSection />
       <MyBooksSection />

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Box, Typography } from '@mui/material';
 
-import { requestFriendship, unfriendMember } from "../../../utils";
+import { requestFriendship, unfriendMember } from "../../utils";
 
 const UserItem = ({ member, showFriends, inGroup, user, userDetails, inMessages, openMessagePage }) => {
   const [requestedFriend, setRequestedFriend] = useState(false);
@@ -65,28 +65,42 @@ const UserItem = ({ member, showFriends, inGroup, user, userDetails, inMessages,
       sx={{
         display: "flex",
         alignItems: 'center',
-        padding: "10px",
+        padding: {xs: "5px", md: '10px'}, 
         margin: '15px 0',
         borderTop: '1px solid #382110',
         borderBottom: '1px solid #382110',
-        ':hover': { padding: "11px" },
+        ':hover': { padding: {xs: "4.5px", md: '9.5px'} },
         cursor: inMessages ? "default" : 'pointer',
       }}
     >
-      <img 
-        alt="user profile"
-        src={member.image ? member.image : "https://s.gr-assets.com/assets/nophoto/user/u_60x60-267f0ca0ea48fd3acfd44b95afa64f01.png"}
-        height="40px"
-        width="40px"
-        style={{ borderRadius: "100%", margin: '0 15px 0 10px'}}
-        onError={({ currentTarget }) => {
-          currentTarget.onerror = null; // to prevent looping
-          currentTarget.src="https://s.gr-assets.com/assets/nophoto/user/u_60x60-267f0ca0ea48fd3acfd44b95afa64f01.png"
+      <Box
+        sx={{ 
+          height: {xs: "30px", md: '40px'}, 
+          width: {xs: "60px", md: '80px'}, 
+          borderRadius: "100%", 
+          marginLeft: {xs: "5px", md: '20px'}, 
+          marginRight: "10px",
+          display: "flex", justifyContent: "center", alignItems: "center",
+          overflow: "hidden"
         }}
-      />
+      >
+        <img 
+          alt="user profile"
+          src={member.image ? member.image : "https://s.gr-assets.com/assets/nophoto/user/u_60x60-267f0ca0ea48fd3acfd44b95afa64f01.png"}
+          height="100%"
+          width="100%"
+          onError={({ currentTarget }) => {
+            currentTarget.onerror = null; // to prevent looping
+            currentTarget.src="https://s.gr-assets.com/assets/nophoto/user/u_60x60-267f0ca0ea48fd3acfd44b95afa64f01.png"
+          }}
+        />
+      </Box>
 
       <Box component="span" 
-        sx={{ fontSize: 20, width: '300px' }}
+        sx={{ 
+          fontSize: {xs: "16px", md: '20px'}, 
+          width: '300px' 
+        }}
       >
         {member?.userName}
       </Box>
@@ -102,7 +116,7 @@ const UserItem = ({ member, showFriends, inGroup, user, userDetails, inMessages,
               sx={{
                 padding: '5px 10px',
                 borderRadius: "10%",
-                fontSize: '18px',
+                fontSize: {xs: "14px", md: '18px'},
                 backgroundColor: "#efebe9",
                 cursor: 'pointer'
               }}
@@ -123,7 +137,7 @@ const UserItem = ({ member, showFriends, inGroup, user, userDetails, inMessages,
                 cursor: user?._id === id && !requestedFriend ? 'pointer': 'default',
                 opacity: '0.70',
                 ":hover": { opacity: user?._id === id && !requestedFriend ? '1' : '0.70'},
-                fontSize: '18px',
+                fontSize: {xs: "14px", md: '18px'}, 
                 color: "black",
                 backgroundColor: "#efebe9",
               }}
