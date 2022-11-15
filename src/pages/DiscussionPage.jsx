@@ -237,13 +237,19 @@ const DiscussionPage = () => {
 
   return (
     <Stack
-      width="100vw" height="100vh" display="flex"
+      width="100vw" minHeight="100vh" display="flex"
       alignItems="center" justifyContent="center" 
       sx={{ paddingTop: { xs: "140px", md: "80px" }}}
     >
       <Typography 
-        position="absolute" top="90px" left="50px" display="flex" alignItems="center" gap={1} fontSize="18px"
-        sx={{ cursor: "pointer", ":hover": { fontSize: "18.5px"} }}
+        position="absolute" display="flex" alignItems="center" gap={1}
+        sx={{ 
+          cursor: "pointer", 
+          ":hover": { fontSize: "18.5px"},
+          top: "90px",
+          left: {xs: "20px", md: "50px"},
+          fontSize: {xs: "16px", sm: "18px"}
+        }}
         onClick={() => {
           if (!user) return;
           updateNavSection("discussions_section");
@@ -255,24 +261,26 @@ const DiscussionPage = () => {
       </Typography>
 
       <Stack 
-        width="50%"  display="flex" justifyContent="center" 
+        width="95%" maxWidth="900px" display="flex" justifyContent="center" 
         alignItems="center" marginBottom="30px"
       >
-        <Box sx={{ display: 'flex', marginBottom: "30px"}}>
+        <Box sx={{ display: 'flex', marginBottom: "30px", paddingX: "5px", gap: 5}}>
           <Typography
             onClick={() => setShowDiscussion(true)}
             sx={{ 
-              fontSize: 25, margin: '0 20px', color: '#382110', 
+              fontSize: {xs: "16px", sm: "18px", md: "25px"}, 
+              color: '#382110', 
               fontWeight: '300', cursor: 'pointer',
               textDecoration: showDiscussion ? 'underline' : 'none',
             }}
           >
-            {discussion?.discussionName.slice(0,30) + "..." || "discussion"}
+            {discussion?.discussionName ? discussion?.discussionName.slice(0,30) + "..." : "discussion"}
           </Typography>
           <Typography
             onClick={() => setShowDiscussion(false)}
             sx={{
-              fontSize: 25, margin: '0 20px', color: '#382110',
+              fontSize: {xs: "16px", sm: "18px", md: "25px"}, 
+              color: '#382110',
               fontWeight: '300', cursor: 'pointer',
               textDecoration: !showDiscussion ? 'underline' : 'none',
             }}
@@ -295,7 +303,7 @@ const DiscussionPage = () => {
                     key={_key}
                     sx={{
                       width: "100%",
-                      height: "100%",
+                      height: "auto",
                       display: "flex",
                       alignItems: "center",
                       marginBottom: "20px"
@@ -322,17 +330,18 @@ const DiscussionPage = () => {
                         >
                           {postedBy?.userName}
                         </Typography>
-                        <p
-                          style={{ 
-                            width: "40%", 
-                            padding: "15px",  
+                        <Typography
+                          sx={{ 
+                            width: "auto", 
+                            maxWidth: {xs: "70%", md: "50%"},
+                            padding: {xs: "5px 10px", md: "15px"},  
                             borderRadius: "15px",
                             fontSize: "18px",
                             backgroundColor: postedBy._id === user?._id ? "#e3f2fd" : "#e0e0e0"
                           }}
                         >
                           {text}
-                        </p>
+                        </Typography>
                       </Box>
                     ))}
                   </Stack>

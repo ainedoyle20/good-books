@@ -6,7 +6,7 @@ const CreateMessage = ({ handleCreateMessage, isLoading }) => {
   const [createdMessage, setCreatedMessage] = useState("");
 
   return (
-    <Box width="100%" position="sticky" bottom="0"
+    <Box width="100%" position="absolute" bottom="0"
       display="flex" alignItems="center" justifyContent="center"
       sx={{  backgroundColor: "#f4f1ea" }}
     >

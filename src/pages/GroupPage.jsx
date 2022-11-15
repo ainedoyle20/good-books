@@ -181,7 +181,7 @@ const GroupPage = () => {
             onClick={() => setShowDiscussions(true)}
             sx={{ 
               fontSize: {xs: "14px", sm: "18px", md: "25px"}, margin: '0 20px', color: '#382110', 
-              fontWeight: '300', cursor: 'pointer',
+              cursor: 'pointer',
               textDecoration: showDiscussions ? 'underline' : 'none',
             }}
           >
@@ -191,7 +191,7 @@ const GroupPage = () => {
             onClick={() => setShowDiscussions(false)}
             sx={{
               fontSize: {xs: "14px", sm: "18px", md: "25px"}, margin: '0 20px', color: '#382110',
-              fontWeight: '300', cursor: 'pointer',
+              cursor: 'pointer',
               textDecoration: !showDiscussions ? 'underline' : 'none',
             }}
           >
@@ -225,7 +225,7 @@ const GroupPage = () => {
 
         <Box width="50%" display="flex" justifyContent="flex-end">
           {user?._id === group?.postedBy._id ? (
-            <Typography sx={{ cursor: "pointer"}}
+            <Typography sx={{ cursor: "pointer", fontSize: {xs: "12px", sm: "14px", md: "18px"}}}
               onClick={handleDeleteGroup}
             >
               Delete Group

@@ -13,7 +13,7 @@ const ScrollButton = () => {
   const handleScrollEventListener = () => {
     const position = window.pageYOffset;
 
-    if (position > 100) {
+    if (position > 1000) {
       setShowScrollBtn(true);
     } else {
       setShowScrollBtn(false);
@@ -21,7 +21,6 @@ const ScrollButton = () => {
   }
 
   useEffect(() => {
-    console.log("in here");
     window.addEventListener("scroll", handleScrollEventListener)
   }, []);
 
@@ -39,14 +38,19 @@ const ScrollButton = () => {
   }
 
   return (
-    <Box height="100px" position="fixed" bottom="40px" right="40px" sx={{ display: "flex", alignItems: "end", cursor: "pointer"}}
+    <Box height="100px" position="fixed" bottom="20px" right="20px" sx={{ display: "flex", alignItems: "end", cursor: "pointer"}}
       onClick={(e) => {
         e.stopPropagation();
         handleScrollTopTop();
       }}
     >
     
-      <Typography color="#382110" fontSize={30} borderLeft="3px solid #382110" sx={{ rotate: "-90deg"}}>
+      <Typography color="#382110" borderLeft="3px solid #382110" 
+        sx={{ 
+          rotate: "-90deg",
+          fontSize: {xs: "20px", md: "28px"}
+        }}
+      >
         &#10132;
       </Typography>
     </Box>

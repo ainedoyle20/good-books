@@ -132,10 +132,16 @@ const MessagePage = () => {
   }
 
   return (
-    <Stack width="100vw" height="100vh" display="flex" justifyContent="center" alignItems="center">
+    <Stack width="100vw" minHeight="100vh" display="flex" justifyContent="center" alignItems="center">
       <Typography 
-        position="absolute" top="90px" left="50px" display="flex" alignItems="center" gap={1} fontSize="18px"
-        sx={{ cursor: "pointer", ":hover": { fontSize: "18.5px"} }}
+        position="absolute" display="flex" alignItems="center" gap={1}
+        sx={{ 
+          cursor: "pointer", 
+          ":hover": { fontSize: "18.5px"},
+          top: "90px",
+          left: {xs: "10px", md: "50px"},
+          fontSize: {xs: "16px", md: "18px"}
+        }}
         onClick={() => {
           if (!user) return;
           updateNavSection("messages_section");
@@ -146,7 +152,7 @@ const MessagePage = () => {
         Messages
       </Typography>
 
-      <Stack width="50%" display="flex" justifyContent="center" alignItems="center" marginTop="70px">
+      <Stack width="50%" display="flex" justifyContent="center" alignItems="center" marginTop="110px">
         <img
           alt="profile"
           src={messageObject?.messageFriend?.image 
@@ -193,7 +199,6 @@ const MessagePage = () => {
                   key={_key}
                   sx={{
                     width: "100%",
-                    height: "100%",
                     display: "flex",
                     alignItems: "center",
                     paddingTop: "10px",
@@ -217,17 +222,18 @@ const MessagePage = () => {
                         padding: "0 10px"
                       }}
                     >
-                      <p
-                        style={{ 
-                          width: "40%", 
-                          padding: "15px",  
+                      <Typography
+                        sx={{ 
+                          width: "100%",
+                          maxWidth: { xs: "70%", md: "40%"}, 
+                          padding: { xs: "5px 10px", md: "10px"},  
                           borderRadius: "15px",
                           fontSize: "18px",
                           backgroundColor: postedBy._id === user._id ? "#e3f2fd" : "#e0e0e0"
                         }}
                       >
                         {text}
-                      </p>
+                      </Typography>
                     </Box>
                   ))}
                 </Stack>

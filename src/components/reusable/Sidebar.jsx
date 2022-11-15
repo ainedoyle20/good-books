@@ -23,9 +23,14 @@ const Sidebar = ({ setShowSidebar, showSidebar }) => {
         <Stack
           position="fixed" left='0' height='100%' width='250px'  paddingLeft="20px"
           backgroundColor='#f4f1ea'
-          sx={{top: "60px", zIndex: 1000 }}
+          sx={{
+            top: "60px", zIndex: 1000,
+            width: {xs: "180px", md: "250px"}
+          }}
         >
-          <Box width="100%" display="flex" justifyContent="flex-end" paddingRight="20px" paddingTop="30px">
+          <Box width="100%" display="flex" justifyContent="flex-end"
+            sx={{ paddingTop: {xs: "15px", md: "22px"}, paddingRight: {xs: "5px", md: "20px"}}}
+          >
             <Typography 
               fontSize="30px" sx={{ cursor: "pointer", ":hover": { fontSize: "31px" }}}
               display="flex" justifyContent="center" alignItems="center" height="50px" width="50px"
@@ -39,8 +44,12 @@ const Sidebar = ({ setShowSidebar, showSidebar }) => {
             {sidebarOptions.map((option, idx) => (
               <Typography 
                 onClick={() => updateNavSection(`${option}_section`)} key={`${idx}${option}`}
-                color="#382110" marginBottom="50px" fontSize="28px"
-                sx={{ fontWeight: sidebarActiveOption === `${option}_section` ? '600' : '400', cursor: "pointer" }}
+                color="#382110" marginBottom="50px"
+                sx={{ 
+                  fontWeight: sidebarActiveOption === `${option}_section` ? '600' : '400', 
+                  cursor: "pointer", 
+                  fontSize: {xs: "20px", md: "28px"}
+                }}
               >
                 {option}
               </Typography>

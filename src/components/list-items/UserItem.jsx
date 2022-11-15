@@ -2,9 +2,11 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Box, Typography } from '@mui/material';
 
-import { requestFriendship, unfriendMember } from "../../utils";
+import { requestFriendship, unfriendMember, fetchUserDetails } from "../../utils";
+import useGlobalStore from "../../store/globalStore";
 
-const UserItem = ({ member, showFriends, inGroup, user, userDetails, inMessages, openMessagePage }) => {
+const UserItem = ({ member, inGroup, user, userDetails, inMessages, openMessagePage }) => {
+  const { addUserDetails } = useGlobalStore();
   const [requestedFriend, setRequestedFriend] = useState(false);
   const [isFriend, setIsFriend] = useState(false);
   const {id} = useParams();
@@ -29,7 +31,8 @@ const UserItem = ({ member, showFriends, inGroup, user, userDetails, inMessages,
 
     const success = await requestFriendship(id, memberId);
     if (success) {
-      window.location.reload();
+      if (!user?._id) return;
+      fetchUserDetails(user?._id, addUserDetails);
     }
   }
 
@@ -38,7 +41,8 @@ const UserItem = ({ member, showFriends, inGroup, user, userDetails, inMessages,
 
     const success = await unfriendMember(id, friendId);
     if (success) {
-      window.location.reload();
+      if (!user?._id) return;
+      fetchUserDetails(user?._id, addUserDetails);
     }
   }
 

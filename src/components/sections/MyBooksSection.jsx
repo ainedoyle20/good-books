@@ -45,7 +45,7 @@ const MyBooksSection = () => {
       id="bookshelves_section"
       width="100vw" height="auto" display="flex"
       paddingY="150px"
-      sx={{ paddingX: { xs: "40px", lg: "80px"}}}
+      sx={{ paddingX: { xs: "5px", lg: "80px"}}}
     >
       <Box width="100%" borderBottom="2px solid #382110" paddingBottom="10px" marginBottom="50px">
         <Typography fontSize="30px">
@@ -54,13 +54,15 @@ const MyBooksSection = () => {
       </Box>
 
       <Box display="flex" width="100%" sx={{ flexDirection: { xs: "column", lg: "row"}}}>
-        <Stack marginRight="50px" padding="0 10px" display="flex"
-          sx={{ cursor: "default", 
+        <Stack display="flex"
+          sx={{ 
+            cursor: "default", 
             width: { xs: "100%", lg: "300px"}, 
-            justifyContent: { xs: "center", lg: "normal"},
+            justifyContent: { xs: "space-between", lg: "normal"},
             flexDirection: { xs: "row", lg: "column"},
             marginBottom: { xs: "20px", lg: "0"},
-            gap: { xs: 5, lg: 0} 
+            gap: { xs: 2, lg: 0},
+            paddingX: {xs: 0, sm: "30px", md: "50px", lg: 0}
           }}
         >
           <Typography variant="h5" marginBottom="10px" sx={{ display: { xs: "none", lg: "block"}}}>
@@ -74,17 +76,20 @@ const MyBooksSection = () => {
               + (userDetails?.read?.length || 0)
             } &#10089;
           </Typography>
-          <Typography fontWeight={activeShelf === 1 ? "bold" : "400"} marginBottom="5px" sx={{ cursor: "pointer", fontSize: { xs: "16px", lg: "18px"} }}
+          <Typography fontWeight={activeShelf === 1 ? "bold" : "400"} marginBottom="5px" 
+            sx={{ cursor: "pointer", fontSize: { xs: "12px", sm: "16px", lg: "18px"} }}
             onClick={() => setActive(1)}
           >
             Want to Read &#10088; {userDetails?.wantToRead?.length || 0} &#10089;
           </Typography>
-          <Typography fontWeight={activeShelf === 2 ? "bold" : "400"} marginBottom="5px" sx={{ cursor: "pointer", fontSize: { xs: "16px", lg: "18px"} }}
+          <Typography fontWeight={activeShelf === 2 ? "bold" : "400"} marginBottom="5px" 
+            sx={{ cursor: "pointer", fontSize: { xs: "12px", sm: "16px", lg: "18px"} }}
             onClick={() => setActive(2)}
           >
-            Currently Reading &#10088; {userDetails?.currentlyReading?.length || 0} &#10089;
+            Reading &#10088; {userDetails?.currentlyReading?.length || 0} &#10089;
           </Typography>
-          <Typography fontWeight={activeShelf === 3 ? "bold" : "400"} marginBottom="5px" sx={{ cursor: "pointer", fontSize: { xs: "16px", lg: "18px"} }}
+          <Typography fontWeight={activeShelf === 3 ? "bold" : "400"} marginBottom="5px" 
+            sx={{ cursor: "pointer", fontSize: { xs: "12px", sm: "16px", lg: "18px"} }}
             onClick={() => setActive(3)}
           >
             Read &#10088; {userDetails?.read?.length || 0} &#10089;
@@ -95,19 +100,40 @@ const MyBooksSection = () => {
           <Stack direction="row" marginBottom="30px" borderBottom='3px solid #382110'
             width="100%"
           >
-            <Typography width="22%" display="flex" justifyContent="center">
+            <Typography width="22%" display="flex" justifyContent="center" 
+              sx={{ 
+                fontSize: { xs: "12px", sm: "14px", md: "16px"},
+              }} 
+            >
               cover
             </Typography>
-            <Typography width="22%" display="flex" justifyContent="center">
+            <Typography width="22%" display="flex" justifyContent="center" 
+              sx={{ 
+                fontSize: { xs: "12px", sm: "14px", md: "16px"},
+              }}
+            >
               tite
             </Typography>
-            <Typography width="22%" display="flex" justifyContent="center">
+            <Typography width="22%" display="flex" justifyContent="center" 
+              sx={{ 
+                fontSize: { xs: "12px", sm: "14px", md: "16px"},
+              }}
+            >
               author
             </Typography>
-            <Typography width="22%" display="flex" justifyContent="center">
+            <Typography width="22%" justifyContent="center" 
+              sx={{ 
+                fontSize: { xs: "12px", sm: "14px", md: "16px"},
+                display: {xs: "none", sm: "flex"}
+              }}
+            >
               rating
             </Typography>
-            <Typography width="22%" display="flex" justifyContent="center">
+            <Typography width="22%" display="flex" justifyContent="center" 
+              sx={{ 
+                fontSize: { xs: "12px", sm: "14px", md: "16px"},
+              }}
+            >
               date read
             </Typography>
           </Stack>
@@ -119,8 +145,8 @@ const MyBooksSection = () => {
             {!loading && myBooks.length ? (
               myBooks.map(({ _key, bookId, bookCover, bookTitle, bookAuthors, bookRating, dateAdded }, idx) => (
                 <Stack key={_key}
-                  direction="row" position="relative" height="160px" width="100%"  
-                  marginBottom="30px" sx={{ cursor: "default"}}
+                  direction="row" position="relative" width="100%" 
+                  marginBottom="30px" sx={{ cursor: "default", height: {xs: "100px", sm: "auto", md: "160px"}}}
                 >
                   <Box height="100%" width="22%" padding="0 15px" paddingBottom="10px" display="flex" justifyContent="center" alignItems="center">
                     <img alt="book cover" src={bookCover} width="100%" height="auto" 
@@ -129,20 +155,22 @@ const MyBooksSection = () => {
                     />
                   </Box>
                   <Box height="100%" width="22%" paddingTop="10px" paddingX="5px" display="flex" justifyContent="center">
-                    <Typography fontSize="14px">
+                    <Typography sx={{ fontSize: {xs: "10px", sm: "14px", md: "16px"}}}>
                       {bookTitle}
                     </Typography>
                   </Box>
                   <Box height="100%" width="22%" paddingTop="10px" display="flex" justifyContent="center">
-                    <Typography fontSize="14px">
+                    <Typography sx={{ fontSize: {xs: "10px", sm: "14px", md: "16px"}}}>
                       {bookAuthors[0]}
                     </Typography>
                   </Box>
-                  <Box height="100%" width="22%" paddingTop="10px" display="flex" justifyContent="center">
+                  <Box height="100%" width="22%" paddingTop="10px" justifyContent="center"
+                   sx={{ display: {xs: "none", sm: "flex"}}}  
+                  >
                     <Stars stars={bookRating} inMyBooks={true} />
                   </Box>
                   <Box height="100%" width="22%" paddingTop="10px" display="flex" justifyContent="center">
-                    <Typography fontSize="14px">
+                    <Typography sx={{ fontSize: {xs: "10px", sm: "14px", md: "16px"}}}>
                       {dateAdded}
                     </Typography>
                   </Box>
