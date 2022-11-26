@@ -57,7 +57,7 @@ const DiscussionPage = () => {
     if (!discussion || !user) return;
 
     const { participants } = discussion;
-    const { id: userId} = user;
+    const { _id: userId} = user;
 
     if (!participants.length) {
       setIsParticipant(false);
@@ -320,13 +320,14 @@ const DiscussionPage = () => {
                           width: "100%",
                           display: "flex",
                           flexDirection: "column",
-                          alignItems: postedBy._id === user?._id ? "flex-end" : "flex-start",
+                          alignItems: postedBy?._id === user?._id ? "flex-end" : "flex-start",
                           margin: "10px 0",
                           padding: "0 10px"
                         }}
                       >
-                        <Typography width="40%" color="#bdbdbd" fontSize="14px" fontWeight="light"
-                          paddingLeft="5px"
+                        <Typography color="#bdbdbd" fontSize="14px" fontWeight="light"
+                          marginLeft={postedBy?._id === user?._id ? "0" : "10px"}
+                          marginRight={postedBy?._id === user?._id ? "10px" : "0"}
                         >
                           {postedBy?.userName}
                         </Typography>

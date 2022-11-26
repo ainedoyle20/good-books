@@ -41,7 +41,15 @@ export const login = async (email, password) => {
     const { displayName, uid, photoURL } = userCredential.user;
     return { displayName, uid, photoURL };
   } catch (error) {
-    console.log("Error logging in firebase user: ", error);
+    if (error.code  === "auth/wrong-password") {
+      alert("Incorrect password, please try again.");
+    } else if (error.code === "auth/user-not-found") {
+      alert("No user with this email was found. Please make sure the email you have entered is correct. If you do not have an account please sign up.");
+    } else {
+      alert("Incorrect details please try again");
+    }
+
+    window.location.reload();
   }
 }
 

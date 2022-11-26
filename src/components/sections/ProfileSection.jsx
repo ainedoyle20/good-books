@@ -4,45 +4,37 @@ import { useParams } from 'react-router-dom';
 import { BsChevronDown, BsChevronUp } from 'react-icons/bs';
 
 import useGlobalStore from '../../store/globalStore';
-import { incrementReadingChallange, decrementReadingChallange } from '../../utils';
+import { incrementReadingChallange, decrementReadingChallange, fetchUserDetails } from '../../utils';
+import { Loader } from "../reusable/index"
 
 const ProfileSection = () => {
-  const { userDetails, user } = useGlobalStore();
+  const { userDetails, user, addUserDetails } = useGlobalStore();
+  const [loading, setLoading] = useState(false);
   const [currentYear] = useState(new Date().getFullYear());
-  const [val, setVal] = useState(userDetails?.readingChallange || 0);
+  const [val] = useState(userDetails?.readingChallange || 0);
 
   const {id} = useParams();
 
-  // useEffect(() => {
-  //   if (picture === userDetails?.image || user?._id !== id) return;
-
-  //   updateUserImage(picture, id);
-  // }, [picture]);
-
   const handleIncrement = async () => {
-    console.log("incrementing");
-    setVal((prev) => prev + 1);
+    if (!user?._id) return;
+    setLoading(true);
 
-    const success = await incrementReadingChallange(id);
+    await incrementReadingChallange(id);
 
-    if (!success) {
-      setVal((prev) => prev - 1);
-    }
+    await fetchUserDetails(user?._id, addUserDetails);
 
+    window.location.reload();
   }
 
   const handleDecrement = async () => {
-    console.log("decrementing");
-    if (val < 1) return;
-    console.log("decrementing 2");
+    if (val < 1 || !user?._id) return;
+    setLoading(true);
 
-    setVal((prev) => prev - 1);
+    await decrementReadingChallange(id);
 
-    const success = await decrementReadingChallange(id);
+    await fetchUserDetails(user?._id, addUserDetails);
 
-    if (!success) {
-      setVal(prev => prev + 1);
-    }
+    window.location.reload();
   }
   
   return (
@@ -89,44 +81,49 @@ const ProfileSection = () => {
           alignItems="center"
           fontSize={40}
         >
-          {user?._id === id ? (
-            <Typography 
-              onClick={handleDecrement}
-              sx={{ 
-                color: '#382110',
-                marginRight: 3,
-                fontSize: '30px',
-                padding: 1,
-                cursor: 'pointer',
-                display: 'flex',
-                alignItems: 'center'
-              }}
-            >
-              <BsChevronDown />
-            </Typography>
+          {loading ? (
+            <Loader inScrollingContainer={true} />
           ) : (
-            null
+            <>
+              {user?._id === id ? (
+                <Typography 
+                  onClick={handleDecrement}
+                  sx={{ 
+                    color: '#382110',
+                    marginRight: 3,
+                    fontSize: '30px',
+                    padding: 1,
+                    cursor: 'pointer',
+                    display: 'flex',
+                    alignItems: 'center'
+                  }}
+                >
+                  <BsChevronDown />
+                </Typography>
+              ) : (
+                null
+              )}
+
+              <span style={{ cursor: 'default' }}>{val}</span>
+
+              {user?._id === id ? (
+                <Typography 
+                  onClick={handleIncrement}
+                  sx={{ 
+                    color: '#382110',
+                    marginLeft: 3,
+                    fontSize: '30px',
+                    padding: 1,
+                    cursor: 'pointer',
+                    display: 'flex',
+                    alignItems: 'center'
+                  }}
+                >
+                  <BsChevronUp />
+                </Typography> 
+              ) : null}
+            </>
           )}
-
-          <span style={{ cursor: 'default' }}>{val}</span>
-
-          {user?._id === id ? (
-            <Typography 
-              onClick={handleIncrement}
-              sx={{ 
-                color: '#382110',
-                marginLeft: 3,
-                fontSize: '30px',
-                padding: 1,
-                cursor: 'pointer',
-                display: 'flex',
-                alignItems: 'center'
-              }}
-            >
-              <BsChevronUp />
-            </Typography> 
-          ) : null}
-          
         </Stack>
         
 
